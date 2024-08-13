@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 17:25:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/08/13 22:14:32 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/08/13 22:30:30 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ void EpollSelector::remove(int fd) {
   int ret;
 
   ret = epoll_ctl(__fd, EPOLL_CTL_DEL, fd, NULL);
-	std::cerr <<  fd  << " " << errno << std::endl;
   if (ret < 0)
     throw OSError(errno);
   __count--;
