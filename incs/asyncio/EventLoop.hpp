@@ -6,21 +6,44 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/08/06 17:00:19 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/08/13 22:02:44 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-/*
-	eventloopの実装です
-	非同期ioとタスクの管理をします。
+#pragma once
+#ifndef __ASYNCIO_EVENTLOOP_HPP__
+#define __ASYNCIO_EVENTLOOP_HPP__
 
-	非同期的に扱いたいfdはここのメソッドで登録します。
-	（コールバック、その引数）
-	add_reader, add_writer, remove_reader, remove_writer
-	slectorを用いて処理されます。
-	readeyになると登録したコールバックが呼ばれます。
+#include <map>
+#include <queue>
 
-	コルーチンをタスクに登録し、それを実行します
-	タスクがない場合はselectorをブロックします。
-	タスクがある場合はタイムアウトし、他のタスクも進めます。
-*/
+#include "asyncio/Handler.hpp"
+#include "selectors/Selector.hpp"
+
+class EventLoop {
+private:
+  struct IOHandlers {
+    BaseHandler *read;
+    BaseHandler *write;
+  };
+
+  bool __running;
+  Selector __selector;
+  std::map<int, IOHandlers> __fd_ready;
+  std::queue<BaseHandler *> __ready;
+
+public:
+  EventLoop();
+  ~EventLoop();
+
+  void call_soon(BaseHandler *handler);
+  void add_reader(int fd, BaseHandler *handler);
+  void remove_reader(int fd);
+  void add_writer(int fd, BaseHandler *handler);
+  void remove_writer(int fd);
+  void stop();
+  void run_forever();
+  EventLoop &operator++(int);
+};
+
+#endif

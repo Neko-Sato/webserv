@@ -6,22 +6,24 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2024/08/09 21:14:31 by hshimizu         ###   ########.fr        #
+#    Updated: 2024/08/13 20:11:43 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		:= webserv
 
 DIR			:= .
-# CXX			:= c++
+CXX			:= c++
 INCS_DIR	:= $(DIR)/incs
 SRCS_DIR	:= $(DIR)/srcs
 OUT_DIR		:= $(DIR)/out
 
 SRCS		:= \
 	$(addprefix $(SRCS_DIR)/, \
+		$(addprefix asyncio/, \
+			EventLoop.cpp \
+		) \
 		$(addprefix selectors/, \
-			BaseSelector.cpp \
 			EpollSelector.cpp \
 		) \
 		$(addprefix exceptions/, \
@@ -35,7 +37,7 @@ DEPS		:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=.d))
 
 CXXFLAGS	:= -Wall -Wextra -Werror
 CXXFLAGS	+= -std=c++98
-CFLAGS		+= -g -fsanitize=address
+CXXFLAGS	+= -g -fsanitize=address
 IDFLAGS		:= -I$(INCS_DIR)
 LDFLAGS		:=
 LIBS		:=

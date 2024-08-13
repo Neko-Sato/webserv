@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 21:12:03 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/08/09 21:13:12 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/08/13 20:59:19 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,6 @@
 
 #include "./EpollSelector.hpp"
 
-using Selector = EpollSelector;
+typedef EpollSelector Selector;
 
 #endif

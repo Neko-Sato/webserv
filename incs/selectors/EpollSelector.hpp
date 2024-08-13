@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 17:23:36 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/08/09 21:03:43 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/08/13 21:50:43 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,17 +22,17 @@
 #include "./BaseSelector.hpp"
 
 class EpollSelector : public BaseSelector {
- private:
-  int _fd;
-  int _count;
+private:
+  int __fd;
+  int __count;
 
- public:
+public:
   EpollSelector();
   ~EpollSelector();
   void add(int fd, int events);
   void remove(int fd);
   void modify(int fd, int events);
-  std::vector<events> wait(int timeout);
+  void wait(std::vector<events> &events, int timeout);
 };
 
 #endif
