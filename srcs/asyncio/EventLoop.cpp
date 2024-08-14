@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 21:29:29 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/08/13 22:25:16 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/08/14 18:20:34 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ void EventLoop::run_forever() {
   __running = false;
 }
 
-EventLoop &EventLoop::operator++(int) {
+void EventLoop::operator++(int) {
   {
     std::vector<BaseSelector::events> events;
     __selector.wait(events, __ready.empty() ? -1 : 0);
@@ -129,5 +129,4 @@ EventLoop &EventLoop::operator++(int) {
     }
     delete handler;
   }
-  return (*this);
 }

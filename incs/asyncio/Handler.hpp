@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/13 19:43:46 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/08/13 21:30:36 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/08/14 19:25:00 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,12 +57,50 @@ public:
   }
 
   void operator()() {
-    __t.*__f(__t);
+    __t.*__f(__a);
   }
 
   MethodHandler *copy() {
     return new MethodHandler(*this);
   }
 };
+
+template <typename T, typename A>
+class ConstMethodHandler : public BaseHandler {
+private:
+  typedef void (T::*F)(A) const;
+  F __f;
+  T &__t;
+  A __a;
+
+public:
+  ConstMethodHandler(F f, T &t, A a) : __f(f), __t(t), __a(a) {
+  }
+  ConstMethodHandler(const ConstMethodHandler &src)
+      : __f(src.__f), __t(src.__t), __a(src.__a) {
+  }
+
+  void operator()() {
+    __t.*__f(__a);
+  }
+
+  ConstMethodHandler *copy() {
+    return new ConstMethodHandler(*this);
+  }
+};
+
+template <typename A> BaseHandler *make_handler(void (*f)(A), A a) {
+  return new FunctionHandler<A>(f, a);
+}
+
+template <typename T, typename A>
+BaseHandler *make_handler(void (T::*f)(A), T &t, A a) {
+  return new MethodHandler<T, A>(f, t, a);
+}
+
+template <typename T, typename A>
+BaseHandler *make_handler(void (T::*f)(A) const, T &t, A a) {
+  return new ConstMethodHandler<T, A>(f, t, a);
+}
 
 #endif

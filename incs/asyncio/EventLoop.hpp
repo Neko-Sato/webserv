@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/08/13 22:02:44 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/08/14 18:20:13 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ public:
   void remove_writer(int fd);
   void stop();
   void run_forever();
-  EventLoop &operator++(int);
+  void operator++(int);
 };
 
 #endif
