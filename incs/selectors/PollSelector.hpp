@@ -1,27 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   EpollSelector.hpp                                  :+:      :+:    :+:   */
+/*   PollSelector.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/09 17:23:36 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/10/13 17:51:44 by hshimizu         ###   ########.fr       */
+/*   Created: 2024/10/14 00:18:31 by hshimizu          #+#    #+#             */
+/*   Updated: 2024/10/14 00:25:52 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "./BaseSelector.hpp"
+#include <poll.h>
+#include <map>
 
-class EpollSelector : public BaseSelector {
+class PollSelector : public BaseSelector {
 private:
-  int _epfd;
+  std::map<int, unsigned int> _fds;
 
 public:
-  static const int max_events = 1024;
-  EpollSelector();
-  ~EpollSelector();
+  PollSelector();
+  ~PollSelector();
   void add(int fd, int events);
   void remove(int fd);
   void modify(int fd, int events);
