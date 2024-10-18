@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/10/14 00:33:30 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/10/18 19:00:26 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,8 @@ void PollSelector::wait(std::deque<events> &events, int timeout) const {
   if (nfds == -1)
     throw OSError(errno);
   events.clear();
+  if (nfds == 0)
+	return;
   for (std::size_t i = 0; i < size; i++) {
     struct events tmp;
     tmp.fd = fds[i].fd;

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:20:10 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/10/14 00:18:43 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/10/14 02:09:45 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ public:
   static const unsigned int ERROR = 4;
   struct events {
     int fd;
-    int events;
+    unsigned int events;
   };
   virtual ~BaseSelector() {};
   virtual void add(int fd, int events) = 0;
