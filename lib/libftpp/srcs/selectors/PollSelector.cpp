@@ -6,12 +6,12 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/10/18 19:00:26 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/13 21:58:56 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "selectors/PollSelector.hpp"
-#include "exceptions/OSError.hpp"
+#include <exceptions/OSError.hpp>
+#include <selectors/PollSelector.hpp>
 
 PollSelector::PollSelector() : _fds() {
 }
@@ -55,7 +55,7 @@ void PollSelector::wait(std::deque<events> &events, int timeout) const {
     throw OSError(errno);
   events.clear();
   if (nfds == 0)
-	return;
+    return;
   for (std::size_t i = 0; i < size; i++) {
     struct events tmp;
     tmp.fd = fds[i].fd;

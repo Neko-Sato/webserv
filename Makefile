@@ -6,45 +6,40 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2024/08/13 20:11:43 by hshimizu         ###   ########.fr        #
+#    Updated: 2024/11/13 23:59:54 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME		:= webserv
+NAME				:= webserv
 
-DIR			:= .
-CXX			:= c++
-INCS_DIR	:= $(DIR)/incs
-SRCS_DIR	:= $(DIR)/srcs
-OUT_DIR		:= $(DIR)/out
+DIR					:= $(CURDIR)
+INCS_DIR			:= $(DIR)/incs
+SRCS_DIR			:= $(DIR)/srcs
+OUT_DIR				:= $(DIR)/out
+LIBFTEV				:= $(DIR)/lib/libftev
+LIBFTEV_INCS_DIR	:= $(LIBFTEV)/incs
+LIBFTPP				:= $(DIR)/lib/libftpp
+LIBFTPP_INCS_DIR	:= $(LIBFTPP)/incs
 
-SRCS		:= \
-	$(addprefix $(SRCS_DIR)/, \
-		$(addprefix asyncio/, \
-			EventLoop.cpp \
-		) \
-		$(addprefix selectors/, \
-			EpollSelector.cpp \
-		) \
-		$(addprefix exceptions/, \
-			OSError.cpp \
-		) \
-		main.cpp \
-	)
+SRCS				:= $(shell find $(SRCS_DIR) -name "*.cpp")
+OBJS				:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=.o))
+DEPS				:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=.d))
 
-OBJS		:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=.o))
-DEPS		:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=.d))
+CXXFLAGS			:= -Wall -Wextra -Werror
+CXXFLAGS			+= -std=c++98
+IDFLAGS				:= -I$(INCS_DIR) -I$(LIBFTEV_INCS_DIR) -I$(LIBFTPP_INCS_DIR)
+LDFLAGS				:= -L$(LIBFTEV) -L$(LIBFTPP)
+LIBS				:= -lftev -Wl,-rpath $(LIBFTEV) -lftpp -Wl,-rpath $(LIBFTPP)
 
-CXXFLAGS	:= -Wall -Wextra -Werror
-CXXFLAGS	+= -std=c++98
+ifeq ($(DEBUG), 1)
 CXXFLAGS	+= -g -fsanitize=address
-IDFLAGS		:= -I$(INCS_DIR)
-LDFLAGS		:=
-LIBS		:=
+else
+CXXFLAGS	+= -O3
+endif
 
-.PHONY: all bonus clean fclean re
+.PHONY: all bonus clean fclean re neko $(LIBFTEV) $(LIBFTPP)
 
-all: $(NAME)
+all: $(LIBFTEV) $(LIBFTPP) $(NAME)
 
 $(NAME): $(OBJS)
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
@@ -57,10 +52,24 @@ $(OUT_DIR)/%.o: %.cpp
 
 clean:
 	$(RM) -r $(OUT_DIR)
+	$(MAKE) fclean -C $(LIBFTEV)
+	$(MAKE) fclean -C $(LIBFTPP)
 
 fclean: clean
 	$(RM) $(NAME)
 
 re: fclean all
+
+neko:
+	@echo "🐈 ﾆｬｰﾝ"
+
+$(LIBFTPP):
+	$(MAKE) -C $@
+
+$(LIBFTEV): $(LIBFTPP)
+	CPLUS_INCLUDE_PATH="$(CPLUS_INCLUDE_PATH):$(LIBFTPP_INCS_DIR)" \
+	LD_RUN_PATH="$(LD_RUN_PATH):$(LIBFTPP)" \
+	LIBRARY_PATH="$(LIBRARY_PATH):$(LIBFTPP)" \
+	$(MAKE) -C $@
 
 -include $(DEPS)

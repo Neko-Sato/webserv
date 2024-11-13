@@ -1,29 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   EpollSelector.hpp                                  :+:      :+:    :+:   */
+/*   Selector.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/09 17:23:36 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/10/13 17:51:44 by hshimizu         ###   ########.fr       */
+/*   Created: 2024/08/09 21:12:03 by hshimizu          #+#    #+#             */
+/*   Updated: 2024/11/13 21:57:17 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "./BaseSelector.hpp"
+#ifdef __linux__
+#include <selectors/EpollSelector.hpp>
 
-class EpollSelector : public BaseSelector {
-private:
-  int _epfd;
+typedef EpollSelector Selector;
 
-public:
-  static const int max_events = 1024;
-  EpollSelector();
-  ~EpollSelector();
-  void add(int fd, int events);
-  void remove(int fd);
-  void modify(int fd, int events);
-  void wait(std::deque<events> &events, int timeout) const;
-};
+#else
+#include <selectors/SelectSelector.hpp>
+
+typedef SelectSelector Selector;
+
+#endif

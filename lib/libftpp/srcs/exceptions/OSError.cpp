@@ -1,25 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Selector.hpp                                       :+:      :+:    :+:   */
+/*   OSError.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/09 21:12:03 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/10/14 02:16:36 by hshimizu         ###   ########.fr       */
+/*   Created: 2024/08/09 17:37:23 by hshimizu          #+#    #+#             */
+/*   Updated: 2024/11/13 21:58:28 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#include <exceptions/OSError.hpp>
 
-#ifdef __linux__
-#include "./EpollSelector.hpp"
+#include <cstring>
 
-typedef EpollSelector Selector;
+OSError::OSError(int __errno) : _errno(__errno) {
+}
 
-#else
-#include "./SelectSelector.hpp"
-
-typedef SelectSelector Selector;
-
-#endif
+char const *OSError::what() const throw() {
+  return std::strerror(_errno);
+}

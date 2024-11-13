@@ -6,12 +6,12 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 23:35:50 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/10/14 00:38:15 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/13 21:59:06 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "selectors/SelectSelector.hpp"
-#include "exceptions/OSError.hpp"
+#include <exceptions/OSError.hpp>
+#include <selectors/SelectSelector.hpp>
 
 #include <sys/select.h>
 

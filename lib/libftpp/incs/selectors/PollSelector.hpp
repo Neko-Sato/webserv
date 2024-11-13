@@ -1,22 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   OSError.cpp                                        :+:      :+:    :+:   */
+/*   PollSelector.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/09 17:37:23 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/10/13 17:52:50 by hshimizu         ###   ########.fr       */
+/*   Created: 2024/10/14 00:18:31 by hshimizu          #+#    #+#             */
+/*   Updated: 2024/11/13 21:56:20 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "exceptions/OSError.hpp"
+#pragma once
 
-#include <cstring>
+#include <selectors/BaseSelector.hpp>
+#include <poll.h>
+#include <map>
 
-OSError::OSError(int __errno) : _errno(__errno) {
-}
+class PollSelector : public BaseSelector {
+private:
+  std::map<int, unsigned int> _fds;
 
-char const *OSError::what() const throw() {
-  return std::strerror(_errno);
-}
+public:
+  PollSelector();
+  ~PollSelector();
+  void add(int fd, int events);
+  void remove(int fd);
+  void modify(int fd, int events);
+  void wait(std::deque<events> &events, int timeout) const;
+};
