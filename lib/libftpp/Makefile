@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2024/11/13 23:58:57 by hshimizu         ###   ########.fr        #
+#    Updated: 2024/11/14 00:07:07 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ NAME		:= libftpp
 NAME_A		:= $(addsuffix .a, $(NAME))
 NAME_SO		:= $(addsuffix .so, $(NAME))
 
-DIR			:= $(CURDIR)
+DIR			:= .
 INCS_DIR	:= $(DIR)/incs
 SRCS_DIR	:= $(DIR)/srcs
 OUT_DIR		:= $(DIR)/out

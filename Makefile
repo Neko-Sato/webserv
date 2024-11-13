@@ -6,13 +6,13 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2024/11/13 23:59:54 by hshimizu         ###   ########.fr        #
+#    Updated: 2024/11/14 00:08:08 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME				:= webserv
 
-DIR					:= $(CURDIR)
+DIR					:= .
 INCS_DIR			:= $(DIR)/incs
 SRCS_DIR			:= $(DIR)/srcs
 OUT_DIR				:= $(DIR)/out
@@ -67,9 +67,9 @@ $(LIBFTPP):
 	$(MAKE) -C $@
 
 $(LIBFTEV): $(LIBFTPP)
-	CPLUS_INCLUDE_PATH="$(CPLUS_INCLUDE_PATH):$(LIBFTPP_INCS_DIR)" \
-	LD_RUN_PATH="$(LD_RUN_PATH):$(LIBFTPP)" \
-	LIBRARY_PATH="$(LIBRARY_PATH):$(LIBFTPP)" \
+	CPLUS_INCLUDE_PATH="$(CPLUS_INCLUDE_PATH):$(CURDIR)/$(LIBFTPP_INCS_DIR)" \
+	LD_RUN_PATH="$(LD_RUN_PATH):$(CURDIR)/$(LIBFTPP)" \
+	LIBRARY_PATH="$(LIBRARY_PATH):$(CURDIR)/$(LIBFTPP)" \
 	$(MAKE) -C $@
 
 -include $(DEPS)
