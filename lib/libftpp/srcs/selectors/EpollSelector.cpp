@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/13 21:58:46 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/15 03:46:31 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 #include <sys/epoll.h>
 #include <unistd.h>
+
+namespace ftpp {
 
 EpollSelector::EpollSelector() {
   _epfd = epoll_create(1);
@@ -47,7 +49,7 @@ void EpollSelector::modify(int fd, int events) {
     throw OSError(errno);
 }
 
-void EpollSelector::wait(std::deque<events> &events, int timeout) const {
+void EpollSelector::select(std::deque<events> &events, int timeout) const {
   epoll_event ev[max_events];
   int nfds = epoll_wait(_epfd, ev, max_events, timeout);
   if (nfds == -1)
@@ -66,3 +68,5 @@ void EpollSelector::wait(std::deque<events> &events, int timeout) const {
     events.push_back(tmp);
   }
 }
+
+} // namespace ftpp

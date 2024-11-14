@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 23:35:50 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/13 21:59:06 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/15 03:46:52 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #include <selectors/SelectSelector.hpp>
 
 #include <sys/select.h>
+
+namespace ftpp {
 
 SelectSelector::SelectSelector() : _fds() {
 }
@@ -37,7 +39,7 @@ void SelectSelector::modify(int fd, int events) {
     it->second = events;
 }
 
-void SelectSelector::wait(std::deque<events> &events, int timeout) const {
+void SelectSelector::select(std::deque<events> &events, int timeout) const {
   fd_set readfds, writefds, exceptfds;
   struct timeval _timeout = {};
   int maxfd = 0;
@@ -59,7 +61,7 @@ void SelectSelector::wait(std::deque<events> &events, int timeout) const {
     _timeout.tv_sec = timeout / 1000;
     _timeout.tv_usec = (timeout % 1000) * 1000;
   }
-  int nfds = select(maxfd + 1, &readfds, &writefds, &exceptfds, &_timeout);
+  int nfds = ::select(maxfd + 1, &readfds, &writefds, &exceptfds, &_timeout);
   if (nfds == -1)
     throw OSError(errno);
   events.clear();
@@ -80,3 +82,5 @@ void SelectSelector::wait(std::deque<events> &events, int timeout) const {
       events.push_back(tmp);
   }
 }
+
+} // namespace ftpp

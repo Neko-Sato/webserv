@@ -1,33 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   SelectSelector.hpp                                 :+:      :+:    :+:   */
+/*   TimerWatcher.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/09 17:23:36 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/15 03:46:19 by hshimizu         ###   ########.fr       */
+/*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
+/*   Updated: 2024/11/15 05:09:49 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <map>
-#include <selectors/BaseSelector.hpp>
+#include <EventLoop.hpp>
 
-namespace ftpp {
+namespace ftev {
 
-class SelectSelector : public BaseSelector {
+class EventLoop::TimerWatcher {
 private:
-  std::map<int, unsigned int> _fds;
+  EventLoop &_loop;
 
 public:
-  SelectSelector();
-  ~SelectSelector();
-  void add(int fd, int events);
-  void remove(int fd);
-  void modify(int fd, int events);
-  void select(std::deque<events> &events, int timeout) const;
 };
 
-} // namespace ftpp
+} // namespace ftev
