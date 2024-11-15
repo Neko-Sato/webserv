@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/15 03:46:36 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/15 22:43:43 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void PollSelector::modify(int fd, int events) {
     it->second = events;
 }
 
-void PollSelector::select(std::deque<events> &events, int timeout) const {
+void PollSelector::select(Events &events, int timeout) const {
   std::size_t size = _fds.size();
   pollfd fds[size];
   for (std::map<int, unsigned int>::const_iterator it = _fds.begin();
@@ -53,13 +53,13 @@ void PollSelector::select(std::deque<events> &events, int timeout) const {
       fd.events |= POLLERR;
   }
   int nfds = poll(fds, size, timeout);
-  if (nfds == -1)
-    throw OSError(errno);
+  if (__glibc_unlikely(nfds == -1))
+    throw OSError(errno, "poll");
   events.clear();
   if (nfds == 0)
     return;
   for (std::size_t i = 0; i < size; i++) {
-    struct events tmp;
+    event_detals tmp;
     tmp.fd = fds[i].fd;
     tmp.events = 0;
     if (fds[i].revents & (POLLIN | POLLHUP))

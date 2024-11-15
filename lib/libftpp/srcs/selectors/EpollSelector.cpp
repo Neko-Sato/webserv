@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/15 03:46:31 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/15 23:57:05 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@ namespace ftpp {
 
 EpollSelector::EpollSelector() {
   _epfd = epoll_create(1);
-  if (_epfd == -1)
-    throw OSError(errno);
+  if (__glibc_unlikely(_epfd == -1))
+    throw OSError(errno, "epoll_create");
 }
 
 EpollSelector::~EpollSelector() {
@@ -30,33 +30,45 @@ EpollSelector::~EpollSelector() {
 
 void EpollSelector::add(int fd, int events) {
   struct epoll_event ev;
-  ev.events = events;
+  ev.events = 0;
+  if (events & READ)
+    ev.events |= EPOLLIN | EPOLLHUP;
+  if (events & WRITE)
+    ev.events |= EPOLLOUT;
+  if (events & ERROR)
+    ev.events |= EPOLLERR;
   ev.data.fd = fd;
-  if (epoll_ctl(_epfd, EPOLL_CTL_ADD, fd, &ev) == -1)
-    throw OSError(errno);
+  if (__glibc_unlikely(epoll_ctl(_epfd, EPOLL_CTL_ADD, fd, &ev) == -1))
+    throw OSError(errno, "epoll_ctl");
 }
 
 void EpollSelector::remove(int fd) {
-  if (epoll_ctl(_epfd, EPOLL_CTL_DEL, fd, NULL) == -1)
-    throw OSError(errno);
+  if (__glibc_unlikely(epoll_ctl(_epfd, EPOLL_CTL_DEL, fd, NULL) == -1))
+    throw OSError(errno, "epoll_ctl");
 }
 
 void EpollSelector::modify(int fd, int events) {
   struct epoll_event ev;
-  ev.events = events;
+  ev.events = 0;
+  if (events & READ)
+    ev.events |= EPOLLIN | EPOLLHUP;
+  if (events & WRITE)
+    ev.events |= EPOLLOUT;
+  if (events & ERROR)
+    ev.events |= EPOLLERR;
   ev.data.fd = fd;
-  if (epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, &ev) == -1)
-    throw OSError(errno);
+  if (__glibc_unlikely(epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, &ev) == -1))
+    throw OSError(errno, "epoll_ctl");
 }
 
-void EpollSelector::select(std::deque<events> &events, int timeout) const {
+void EpollSelector::select(Events &events, int timeout) const {
   epoll_event ev[max_events];
   int nfds = epoll_wait(_epfd, ev, max_events, timeout);
-  if (nfds == -1)
-    throw OSError(errno);
+  if (__glibc_unlikely(nfds == -1))
+    throw OSError(errno, "epoll_wait");
   events.clear();
   for (int i = 0; i < nfds; i++) {
-    struct events tmp;
+    event_detals tmp;
     tmp.fd = ev[i].data.fd;
     tmp.events = 0;
     if (ev[i].events & (EPOLLIN | EPOLLHUP))

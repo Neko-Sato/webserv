@@ -1,27 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Selector.hpp                                       :+:      :+:    :+:   */
+/*   BaseSelector copy.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/09 21:12:03 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/15 19:11:31 by hshimizu         ###   ########.fr       */
+/*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
+/*   Updated: 2024/11/15 22:47:04 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
-
-#include <selectors/EpollSelector.hpp>
-#include <selectors/PollSelector.hpp>
-#include <selectors/SelectSelector.hpp>
+#include <cassert>
+#include <exceptions/OSError.hpp>
+#include <selectors/BaseSelector.hpp>
 
 namespace ftpp {
 
-#ifdef __linux__
-typedef EpollSelector Selector;
-#else
-typedef SelectSelector Selector;
-#endif
+BaseSelector::BaseSelector() {
+}
+
+BaseSelector::BaseSelector(BaseSelector const &rhs) {
+  (void)rhs;
+  assert(false);
+}
+
+BaseSelector &BaseSelector::operator=(BaseSelector const &rhs) {
+  (void)rhs;
+  assert(false);
+  return *this;
+}
 
 } // namespace ftpp

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 17:23:36 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/15 03:46:19 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/15 19:27:47 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ public:
   void add(int fd, int events);
   void remove(int fd);
   void modify(int fd, int events);
-  void select(std::deque<events> &events, int timeout) const;
+  void select(Events &events, int timeout) const;
 };
 
 } // namespace ftpp

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 23:35:50 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/15 03:46:52 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/15 19:44:28 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void SelectSelector::modify(int fd, int events) {
     it->second = events;
 }
 
-void SelectSelector::select(std::deque<events> &events, int timeout) const {
+void SelectSelector::select(Events &events, int timeout) const {
   fd_set readfds, writefds, exceptfds;
   struct timeval _timeout = {};
   int maxfd = 0;
@@ -62,14 +62,14 @@ void SelectSelector::select(std::deque<events> &events, int timeout) const {
     _timeout.tv_usec = (timeout % 1000) * 1000;
   }
   int nfds = ::select(maxfd + 1, &readfds, &writefds, &exceptfds, &_timeout);
-  if (nfds == -1)
-    throw OSError(errno);
+  if (__glibc_unlikely(nfds == -1))
+    throw OSError(errno, "select");
   events.clear();
   if (nfds == 0)
     return;
   for (std::map<int, unsigned int>::const_iterator it = _fds.begin();
        it != _fds.end(); it++) {
-    struct events tmp;
+    event_detals tmp;
     tmp.fd = it->first;
     tmp.events = 0;
     if (FD_ISSET(it->first, &readfds))
