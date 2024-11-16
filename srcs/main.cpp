@@ -23,7 +23,7 @@ public:
     // if (_count == 5)
     //   _loop.stop();
     // else
-    start(2000);
+    start(100);
   }
 };
 
@@ -88,7 +88,7 @@ int main() {
   MySignalWatcher signal_watcher(loop);
   MyProcessWatcher process_watcher(loop);
 
-  timer_watcher.start(1000);
+  timer_watcher.start(100);
   io_watcher.start(ftpp::BaseSelector::READ);
   signal_watcher.start(SIGINT);
   process_watcher.start(pid);

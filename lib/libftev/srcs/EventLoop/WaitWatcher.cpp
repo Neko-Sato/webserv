@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 16:43:50 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/16 17:38:31 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/16 18:18:02 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,21 +37,23 @@ void EventLoop::WaitWatcher::on_signal() {
     do {
       try {
         pid = waitpid(-1, &status, WNOHANG);
-        if (__glibc_unlikely(pid == 0))
+        if (pid == 0)
           return;
         else if (__glibc_unlikely(pid == -1))
           throw ftpp::OSError(errno, "waitpid");
       } catch (const std::exception &e) {
         if (errno == EINTR)
           continue;
+        else if (errno == ECHILD)
+		  return;
         throw;
       }
     } while (0);
     EventLoop::ProcessWatchers::iterator it = _loop._process_watchers.find(pid);
     if (it == _loop._process_watchers.end())
       continue;
-    _loop._process_watchers.erase(it);
     it->second->on_exit(status);
+    _loop._process_watchers.erase(it);
   }
 }
 

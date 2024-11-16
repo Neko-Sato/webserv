@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/16 17:08:14 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/16 18:07:59 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,12 @@ namespace ftev {
 
 EventLoop EventLoop::default_loop;
 
-EventLoop::EventLoop()
-    : _selector(new ftpp::Selector), _time(0), _running(false),
+ftpp::BaseSelector *EventLoop::default_selector_factory() {
+  return new ftpp::Selector();
+}
+
+EventLoop::EventLoop(selector_factory_t selector_factory)
+    : _selector(selector_factory()), _time(0), _running(false),
       _stop_flag(true), _signal_io_watcher(NULL), _wait_watcher(NULL) {
   _update_time();
 }

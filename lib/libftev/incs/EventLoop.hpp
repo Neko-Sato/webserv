@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/16 16:59:45 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/16 18:06:58 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,10 @@ private:
 public:
   static EventLoop default_loop;
 
-  EventLoop();
+  typedef ftpp::BaseSelector *(*selector_factory_t)();
+  static ftpp::BaseSelector *default_selector_factory();
+
+  EventLoop(selector_factory_t selector_factory = default_selector_factory);
   ~EventLoop();
 
   void run();
