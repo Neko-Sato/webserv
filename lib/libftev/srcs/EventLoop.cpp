@@ -6,16 +6,17 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/16 18:07:59 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 03:00:57 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <EventLoop.hpp>
 #include <EventLoop/BaseIOWatcher.hpp>
 #include <EventLoop/BaseTimerWatcher.hpp>
+#include <exceptions/OSError.hpp>
+
 #include <cassert>
 #include <cstdlib>
-#include <exceptions/OSError.hpp>
 #include <limits>
 #include <unistd.h>
 
@@ -23,31 +24,20 @@ namespace ftev {
 
 EventLoop EventLoop::default_loop;
 
+int EventLoop::_signal_pipe[2] = {-1, -1};
+
 ftpp::BaseSelector *EventLoop::default_selector_factory() {
   return new ftpp::Selector();
 }
 
 EventLoop::EventLoop(selector_factory_t selector_factory)
     : _selector(selector_factory()), _time(0), _running(false),
-      _stop_flag(true), _signal_io_watcher(NULL), _wait_watcher(NULL) {
+      _stop_flag(true) {
   _update_time();
-}
-
-EventLoop::EventLoop(EventLoop const &rhs) {
-  (void)rhs;
-  assert(false);
-}
-
-EventLoop &EventLoop::operator=(EventLoop const &rhs) {
-  (void)rhs;
-  assert(false);
-  return *this;
 }
 
 EventLoop::~EventLoop() {
 }
-
-int EventLoop::_signal_pipe[2] = {-1, -1};
 
 void EventLoop::_acquire_signal_pipe() {
   if (_signal_pipe[0] != -1)
@@ -85,18 +75,19 @@ int EventLoop::_backend_timeout() {
 }
 
 void EventLoop::_run_timer() {
+  _update_time();
+  TimerWatchers::iterator begin = _timer_watchers.begin();
   TimerWatchers::iterator end = _timer_watchers.lower_bound(_time);
-  TimerWatchers tmp(_timer_watchers.begin(), end);
-  _timer_watchers.erase(_timer_watchers.begin(), end);
+  TimerWatchers tmp(begin, end);
+  _timer_watchers.erase(begin, end);
   for (TimerWatchers::iterator it = tmp.begin(); it != tmp.end(); ++it)
-    it->second->on_timeout();
+    it->second->operator()();
 }
 
 void EventLoop::operator++() {
-  typedef typename ftpp::BaseSelector::Events Events;
   _running = true;
+  typedef typename ftpp::BaseSelector::Events Events;
   Events events;
-  _update_time();
   do {
     try {
       _selector->select(events, _backend_timeout());
@@ -107,8 +98,7 @@ void EventLoop::operator++() {
     }
   } while (0);
   for (Events::iterator it = events.begin(); it != events.end(); ++it)
-    _io_watchers[it->fd]->on_event(*it);
-  _update_time();
+    _io_watchers[it->fd]->operator()(*it);
   _run_timer();
   _running = false;
 }
@@ -116,6 +106,7 @@ void EventLoop::operator++() {
 void EventLoop::run() {
   assert(!_running);
   _stop_flag = false;
+  _run_timer();
   while (__glibc_likely(!_stop_flag))
     operator++();
 }

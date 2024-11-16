@@ -1,42 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   BaseIOWatcher.hpp                                  :+:      :+:    :+:   */
+/*   BaseWatcher.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/15 22:09:31 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 02:39:30 by hshimizu         ###   ########.fr       */
+/*   Created: 2024/11/17 02:16:25 by hshimizu          #+#    #+#             */
+/*   Updated: 2024/11/17 02:39:13 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <EventLoop.hpp>
-#include <EventLoop/BaseWatcher.hpp>
 
 namespace ftev {
 
-class EventLoop::BaseIOWatcher : public EventLoop::BaseWatcher {
+class EventLoop::BaseWatcher {
 private:
-  typedef ftpp::BaseSelector::event_detals event_detals;
-  bool _is_active;
-  int _fd;
+  BaseWatcher(BaseWatcher const &rhs);
+  BaseWatcher &operator=(BaseWatcher const &rhs);
 
 public:
-  BaseIOWatcher(EventLoop &loop);
-  virtual ~BaseIOWatcher();
-  void operator()(event_detals const &ev);
+  EventLoop &loop;
 
-  void start(int fd, int events);
-  void modify(int events);
-  void close();
-
-  int get_fd() const;
-
-  virtual void on_read() = 0;
-  virtual void on_write() = 0;
-  virtual void on_error() = 0;
+  BaseWatcher(EventLoop &loop);
+  virtual ~BaseWatcher();
 };
 
 } // namespace ftev

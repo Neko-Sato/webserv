@@ -1,27 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   WaitWatcher.hpp                                    :+:      :+:    :+:   */
+/*   TimerWatcher.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/16 16:40:45 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/16 16:58:20 by hshimizu         ###   ########.fr       */
+/*   Created: 2024/11/17 01:30:24 by hshimizu          #+#    #+#             */
+/*   Updated: 2024/11/17 02:35:00 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <EventLoop/BaseSignalWatcher.hpp>
+#include <EventLoop/BaseTimerWatcher.hpp>
 
 namespace ftev {
 
-class EventLoop::WaitWatcher : public EventLoop::BaseSignalWatcher {
+template <typename T> class TimerWatcher : public EventLoop::BaseTimerWatcher {
 public:
-  WaitWatcher(EventLoop &loop);
-  ~WaitWatcher();
+  typedef void (*callback)(TimerWatcher &watcher, T data);
 
-  void start();
-  void on_signal();
+private:
+  callback _on_timeout;
+  T _data;
+
+public:
+  TimerWatcher(EventLoop &loop, callback on_timeout, T data)
+      : BaseTimerWatcher(loop), _on_timeout(on_timeout), _data(data) {
+  }
+
+  void on_timeout() {
+    _on_timeout(*this, _data);
+  }
 };
+
 } // namespace ftev

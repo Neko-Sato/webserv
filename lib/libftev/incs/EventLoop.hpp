@@ -6,61 +6,33 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/16 18:06:58 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 02:59:53 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <ctime>
-#include <memory>
 #include <selectors/Selector.hpp>
+
+#include <ctime>
+#include <map>
+#include <memory>
 #include <set>
 
 namespace ftev {
 
 class EventLoop {
-public:
-  // Base Watchers
-  class BaseTimerWatcher;
-  class BaseIOWatcher;
-  class BaseSignalWatcher;
-  class BaseProcessWatcher;
-
 private:
-  // Private Members
   std::auto_ptr<ftpp::BaseSelector> _selector;
   time_t _time;
   bool _running;
   bool _stop_flag;
 
-  // Members for Watchers
-  typedef std::multimap<time_t, BaseTimerWatcher *> TimerWatchers;
-  TimerWatchers _timer_watchers;
-
-  typedef std::map<int, BaseIOWatcher *> IOWatchers;
-  IOWatchers _io_watchers;
-
-  class SignalIOWatcher;
-  static int _signal_pipe[2];
-  static void _acquire_signal_pipe();
-  static void _release_signal_pipe();
-  std::auto_ptr<SignalIOWatcher> _signal_io_watcher;
-  typedef std::map<int, BaseSignalWatcher *> SignalWatchers;
-  SignalWatchers _signal_watchers;
-
-  class WaitWatcher;
-  std::auto_ptr<WaitWatcher> _wait_watcher;
-  typedef std::map<pid_t, BaseProcessWatcher *> ProcessWatchers;
-  ProcessWatchers _process_watchers;
-
-  // Private Methods
   void _update_time();
   int _backend_timeout();
   void _run_timer();
   void operator++();
 
-  // Invalid Methods
   EventLoop(EventLoop const &rhs);
   EventLoop &operator=(EventLoop const &rhs);
 
@@ -75,6 +47,34 @@ public:
 
   void run();
   void stop();
+
+  // ---------------------------------------------------------------------------
+public:
+  class BaseWatcher;
+  class BaseTimerWatcher;
+  class BaseIOWatcher;
+  class BaseSignalWatcher;
+  class BaseProcessWatcher;
+
+private:
+  typedef std::multimap<time_t, BaseTimerWatcher *> TimerWatchers;
+  TimerWatchers _timer_watchers;
+
+  typedef std::map<int, BaseIOWatcher *> IOWatchers;
+  IOWatchers _io_watchers;
+
+  static int _signal_pipe[2];
+  static void _acquire_signal_pipe();
+  static void _release_signal_pipe();
+  std::auto_ptr<BaseIOWatcher> _signal_io_watcher;
+  typedef std::map<int, BaseSignalWatcher *> SignalWatchers;
+  SignalWatchers _signal_watchers;
+
+  class WaitWatcher;
+  std::auto_ptr<BaseSignalWatcher> _wait_watcher;
+  typedef std::map<pid_t, BaseProcessWatcher *> ProcessWatchers;
+  ProcessWatchers _process_watchers;
+  // ---------------------------------------------------------------------------
 };
 
 } // namespace ftev

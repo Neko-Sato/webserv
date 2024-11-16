@@ -6,66 +6,87 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 00:31:00 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/16 17:08:04 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 02:56:18 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <EventLoop.hpp>
 #include <EventLoop/BaseSignalWatcher.hpp>
-#include <EventLoop/SignalIOWatcher.hpp>
+#include <Watchers/IOWatcher.hpp>
+#include <exceptions/OSError.hpp>
+
 #include <cassert>
 #include <cstdlib>
-#include <exceptions/OSError.hpp>
 
 namespace ftev {
 
 EventLoop::BaseSignalWatcher::BaseSignalWatcher(EventLoop &loop)
-    : _loop(loop), _signum(-1), _old_handler(SIG_DFL), _old_watcher(NULL) {
-  _loop._acquire_signal_pipe();
-  if (!_loop._signal_io_watcher.get()) {
-    _loop._signal_io_watcher.reset(new SignalIOWatcher(_loop));
-    _loop._signal_io_watcher->start(EventLoop::_signal_pipe[0]);
+    : EventLoop::BaseWatcher(loop), _is_active(false), _signum(-1),
+      _is_current(false), _old_handler(SIG_DFL), _old_watcher(NULL) {
+  loop._acquire_signal_pipe();
+  if (!loop._signal_io_watcher.get()) {
+    loop._signal_io_watcher.reset(
+        new IOWatcher<int>(loop, _signal_pipe_on_read, NULL, NULL, 0));
+    loop._signal_io_watcher->start(EventLoop::_signal_pipe[0],
+                                   ftpp::BaseSelector::READ);
   }
 }
 
 EventLoop::BaseSignalWatcher::~BaseSignalWatcher() {
+  if (_is_active && _is_current)
+    stop();
+  assert(!_is_active);
 }
 
-EventLoop::BaseSignalWatcher::BaseSignalWatcher(BaseSignalWatcher const &rhs)
-    : _loop(rhs._loop), _signum(rhs._signum), _old_handler(rhs._old_handler) {
-  assert(false);
+void EventLoop::BaseSignalWatcher::operator()() {
+  assert(_is_active);
+  on_signal();
 }
 
-EventLoop::BaseSignalWatcher &
-EventLoop::BaseSignalWatcher::operator=(BaseSignalWatcher const &rhs) {
-  (void)rhs;
-  assert(false);
-  return *this;
+void EventLoop::BaseSignalWatcher::start(int signum) {
+  assert(!_is_active);
+  _signum = signum;
+  _old_handler = signal(_signum, _signal_handler);
+  if (__glibc_unlikely(_old_handler == SIG_ERR))
+    throw ftpp::OSError(errno, "signal");
+  _old_watcher = loop._signal_watchers[_signum];
+  loop._signal_watchers[_signum] = this;
+  if (_old_watcher)
+    _old_watcher->_is_current = false;
+  _is_current = true;
+  _is_active = true;
+}
+
+void EventLoop::BaseSignalWatcher::stop() {
+  assert(_is_active);
+  assert(_is_current);
+  sighandler_t tmp = signal(_signum, _old_handler);
+  if (__glibc_unlikely(tmp == SIG_ERR))
+    throw ftpp::OSError(errno, "signal");
+  if (_old_watcher) {
+    loop._signal_watchers[_signum] = _old_watcher;
+    _old_watcher->_is_current = true;
+  } else
+    loop._signal_watchers.erase(_signum);
+  _is_active = false;
 }
 
 void EventLoop::BaseSignalWatcher::_signal_handler(int signum) {
   assert(EventLoop::_signal_pipe[1] != -1);
   ssize_t size = write(EventLoop::_signal_pipe[1], &signum, sizeof(signum));
-  (void)size;
+  assert(size == sizeof(signum));
 }
 
-void EventLoop::BaseSignalWatcher::start(int signum) {
-  _signum = signum;
-  _old_handler = signal(_signum, _signal_handler);
-  if (__glibc_unlikely(_old_handler == SIG_ERR))
-    throw ftpp::OSError(errno, "signal");
-  _old_watcher = _loop._signal_watchers[_signum];
-  _loop._signal_watchers[_signum] = this;
-}
-
-void EventLoop::BaseSignalWatcher::stop() {
-  sighandler_t tmp = signal(_signum, _old_handler);
-  if (__glibc_unlikely(tmp == SIG_ERR))
-    throw ftpp::OSError(errno, "signal");
-  if (_old_watcher)
-	_loop._signal_watchers[_signum] = _old_watcher;
-  else
-	_loop._signal_watchers.erase(_signum);
+void EventLoop::BaseSignalWatcher::_signal_pipe_on_read(IOWatcher<int> &watcher,
+                                                        int _) {
+  (void)_;
+  int signum;
+  ssize_t size = read(watcher.get_fd(), &signum, sizeof(signum));
+  assert(size == sizeof(signum));
+  EventLoop::SignalWatchers::iterator it =
+      watcher.loop._signal_watchers.find(signum);
+  if (it != watcher.loop._signal_watchers.end())
+    it->second->operator()();
 }
 
 } // namespace ftev

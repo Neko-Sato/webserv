@@ -1,35 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   BaseTimerWatcher.hpp                               :+:      :+:    :+:   */
+/*   SignalWatcher.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 02:53:47 by hshimizu         ###   ########.fr       */
+/*   Created: 2024/11/17 01:30:24 by hshimizu          #+#    #+#             */
+/*   Updated: 2024/11/17 02:35:02 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <EventLoop.hpp>
-#include <EventLoop/BaseWatcher.hpp>
-
-#include <ctime>
+#include <EventLoop/BaseSignalWatcher.hpp>
 
 namespace ftev {
 
-class EventLoop::BaseTimerWatcher : public EventLoop::BaseWatcher {
+template <typename T>
+class SignalWatcher : public EventLoop::BaseSignalWatcher {
+public:
+  typedef void (*callback)(SignalWatcher &watcher, T data);
+
 private:
-  bool _is_active;
+  callback _on_signal;
+  T _data;
 
 public:
-  BaseTimerWatcher(EventLoop &loop);
-  virtual ~BaseTimerWatcher();
-  void operator()();
+  SignalWatcher(EventLoop &loop, callback on_signal, T data)
+      : BaseSignalWatcher(loop), _on_signal(on_signal), _data(data) {
+  }
 
-  void start(time_t timeout);
-  virtual void on_timeout() = 0;
+  void on_signal() {
+    _on_signal(*this, _data);
+  }
 };
 
 } // namespace ftev

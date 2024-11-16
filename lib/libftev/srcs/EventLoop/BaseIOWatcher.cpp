@@ -6,37 +6,28 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 22:48:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/16 17:07:50 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 02:54:54 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <EventLoop.hpp>
 #include <EventLoop/BaseIOWatcher.hpp>
+
 #include <cassert>
 #include <unistd.h>
 
 namespace ftev {
 
-EventLoop::BaseIOWatcher::BaseIOWatcher(EventLoop &loop, int fd)
-    : _loop(loop), _fd(fd) {
+EventLoop::BaseIOWatcher::BaseIOWatcher(EventLoop &loop)
+    : EventLoop::BaseWatcher(loop), _is_active(false), _fd(-1) {
 }
 
 EventLoop::BaseIOWatcher::~BaseIOWatcher() {
+  assert(!_is_active);
 }
 
-EventLoop::BaseIOWatcher::BaseIOWatcher(EventLoop::BaseIOWatcher const &rhs)
-    : _loop(rhs._loop), _fd(rhs._fd) {
-  assert(false);
-}
-
-EventLoop::BaseIOWatcher &
-EventLoop::BaseIOWatcher::operator=(EventLoop::BaseIOWatcher const &rhs) {
-  (void)rhs;
-  assert(false);
-  return *this;
-}
-
-void EventLoop::BaseIOWatcher::on_event(event_detals const &ev) {
+void EventLoop::BaseIOWatcher::operator()(event_detals const &ev) {
+  assert(_is_active);
   if (ev.events & ftpp::BaseSelector::READ)
     on_read();
   if (ev.events & ftpp::BaseSelector::WRITE)
@@ -45,18 +36,25 @@ void EventLoop::BaseIOWatcher::on_event(event_detals const &ev) {
     on_error();
 }
 
-void EventLoop::BaseIOWatcher::start(int events) {
-  _loop._selector->add(_fd, events);
-  _loop._io_watchers[_fd] = this;
+
+void EventLoop::BaseIOWatcher::start(int fd, int events) {
+  assert(!_is_active);
+  _fd = fd;
+  loop._selector->add(_fd, events);
+  loop._io_watchers[_fd] = this;
+  _is_active = true;
 }
 
 void EventLoop::BaseIOWatcher::modify(int events) {
-  _loop._selector->modify(_fd, events);
+  assert(_is_active);
+  loop._selector->modify(_fd, events);
 }
 
 void EventLoop::BaseIOWatcher::close() {
-  _loop._selector->remove(_fd);
-  _loop._io_watchers.erase(_fd);
+  assert(_is_active);
+  loop._selector->remove(_fd);
+  loop._io_watchers.erase(_fd);
+  _is_active = false;
   ::close(_fd);
   _fd = -1;
 }

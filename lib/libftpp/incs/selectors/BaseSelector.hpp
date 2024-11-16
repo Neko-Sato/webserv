@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:20:10 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/15 22:44:21 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/16 23:36:38 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ public:
   };
 
   BaseSelector();
-  virtual ~BaseSelector() {};
+  virtual ~BaseSelector();
   virtual void add(int fd, int events) = 0;
   virtual void remove(int fd) = 0;
   virtual void modify(int fd, int events) = 0;

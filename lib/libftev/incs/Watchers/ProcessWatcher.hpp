@@ -1,36 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   SignalIOWatcher.hpp                                :+:      :+:    :+:   */
+/*   ProcessWatcher.hpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/16 02:10:31 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/16 16:20:43 by hshimizu         ###   ########.fr       */
+/*   Created: 2024/11/17 01:30:24 by hshimizu          #+#    #+#             */
+/*   Updated: 2024/11/17 02:49:31 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <EventLoop.hpp>
-#include <EventLoop/BaseIOWatcher.hpp>
-#include <cstddef>
-#include <unistd.h>
+#include <EventLoop/BaseProcessWatcher.hpp>
 
 namespace ftev {
 
-class EventLoop::SignalIOWatcher : public EventLoop::BaseIOWatcher {
+template <typename T>
+class ProcessWatcher : public EventLoop::BaseProcessWatcher {
+public:
+  typedef void (*callback)(ProcessWatcher &watcher, int status, T data);
+
 private:
-  SignalIOWatcher(SignalIOWatcher const &rhs);
-  SignalIOWatcher &operator=(SignalIOWatcher const &rhs);
+  callback _on_exit;
+  T _data;
 
 public:
-  SignalIOWatcher(EventLoop &loop);
-  ~SignalIOWatcher();
+  ProcessWatcher(EventLoop &loop, callback on_exit, T data)
+      : BaseProcessWatcher(loop), _on_exit(on_exit), _data(data) {
+  }
 
-  void on_read();
-  void on_write();
-  void on_error();
+  void on_exit(int status) {
+    _on_exit(*this, status, _data);
+  };
 };
 
 } // namespace ftev
