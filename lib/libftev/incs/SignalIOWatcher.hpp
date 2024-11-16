@@ -1,34 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   OSError.hpp                                        :+:      :+:    :+:   */
+/*   SignalIOWatcher.hpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/09 17:37:23 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/16 15:16:45 by hshimizu         ###   ########.fr       */
+/*   Created: 2024/11/16 02:10:31 by hshimizu          #+#    #+#             */
+/*   Updated: 2024/11/16 14:53:16 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <cerrno>
-#include <exception>
-#include <string>
+#include <BaseIOWatcher.hpp>
+#include <EventLoop.hpp>
+#include <cstddef>
+#include <unistd.h>
 
-namespace ftpp {
+namespace ftev {
 
-class OSError : public std::exception {
+class EventLoop::SignalIOWatcher : public EventLoop::BaseIOWatcher {
 private:
-  int _errno;
-  std::string _s;
+  SignalIOWatcher(SignalIOWatcher const &rhs);
+  SignalIOWatcher &operator=(SignalIOWatcher const &rhs);
 
 public:
-  OSError(int __errno, std::string const &s = "OSError");
-  ~OSError() throw();
+  SignalIOWatcher(EventLoop &loop);
+  ~SignalIOWatcher();
 
-  int get_errno() const;
-  char const *what() const throw();
+  void on_read();
+  void on_write();
+  void on_error();
 };
 
-} // namespace ftpp
+} // namespace ftev

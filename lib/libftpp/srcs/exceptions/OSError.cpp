@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 17:37:23 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/16 00:03:43 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/16 15:17:00 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,10 @@ OSError::OSError(int __errno, std::string const &s)
 }
 
 OSError::~OSError() throw() {
+}
+
+int OSError::get_errno() const {
+  return _errno;
 }
 
 char const *OSError::what() const throw() {

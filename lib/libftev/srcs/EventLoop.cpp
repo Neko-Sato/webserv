@@ -6,16 +6,18 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/16 00:10:17 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/16 15:18:02 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <BaseTimerWatcher.hpp>
 #include <BaseIOWatcher.hpp>
+#include <BaseTimerWatcher.hpp>
 #include <EventLoop.hpp>
 #include <cassert>
+#include <cstdlib>
 #include <exceptions/OSError.hpp>
 #include <limits>
+#include <unistd.h>
 
 namespace ftev {
 
@@ -23,7 +25,7 @@ EventLoop EventLoop::default_loop;
 
 EventLoop::EventLoop()
     : _selector(new ftpp::Selector), _time(0), _running(false),
-      _stop_flag(true) {
+      _stop_flag(true), _signal_io_watcher(NULL) {
   _update_time();
 }
 
@@ -41,7 +43,25 @@ EventLoop &EventLoop::operator=(EventLoop const &rhs) {
 EventLoop::~EventLoop() {
 }
 
-#include <iostream>
+int EventLoop::_signal_pipe[2] = {-1, -1};
+
+void EventLoop::_acquire_signal_pipe() {
+  if (_signal_pipe[0] != -1)
+    return;
+  if (__glibc_unlikely(pipe(_signal_pipe) == -1))
+    throw ftpp::OSError(errno, "pipe");
+  atexit(_release_signal_pipe);
+}
+
+void EventLoop::_release_signal_pipe() {
+  if (_signal_pipe[0] != -1) {
+    close(_signal_pipe[0]);
+    close(_signal_pipe[1]);
+    _signal_pipe[0] = -1;
+    _signal_pipe[1] = -1;
+  }
+}
+
 void EventLoop::_update_time() {
   struct timespec ts;
   if (__glibc_unlikely(clock_gettime(CLOCK_MONOTONIC, &ts) == -1))
@@ -73,7 +93,15 @@ void EventLoop::operator++() {
   _running = true;
   Events events;
   _update_time();
-  _selector->select(events, _backend_timeout());
+  do {
+    try {
+      _selector->select(events, _backend_timeout());
+    } catch (ftpp::OSError const &e) {
+      if (e.get_errno() != EINTR)
+        throw;
+      continue;
+    }
+  } while (0);
   for (Events::iterator it = events.begin(); it != events.end(); ++it)
     _io_watchers[it->fd]->operator()(*it);
   _update_time();

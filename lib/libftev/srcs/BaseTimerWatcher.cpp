@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 05:31:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/15 22:16:28 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/16 14:50:34 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,9 @@
 namespace ftev {
 
 EventLoop::BaseTimerWatcher::BaseTimerWatcher(EventLoop &loop) : _loop(loop) {
+}
+
+EventLoop::BaseTimerWatcher::~BaseTimerWatcher() {
 }
 
 EventLoop::BaseTimerWatcher::BaseTimerWatcher(BaseTimerWatcher const &rhs)
@@ -31,11 +34,8 @@ EventLoop::BaseTimerWatcher::operator=(BaseTimerWatcher const &rhs) {
   return *this;
 }
 
-EventLoop::BaseTimerWatcher::~BaseTimerWatcher() {
-}
-
 void EventLoop::BaseTimerWatcher::operator()() {
-  onTimeout();
+  on_timeout();
 }
 
 void EventLoop::BaseTimerWatcher::start(time_t timeout) {
