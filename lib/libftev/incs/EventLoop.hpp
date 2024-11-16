@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/16 14:15:07 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/16 16:59:45 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ public:
   class BaseTimerWatcher;
   class BaseIOWatcher;
   class BaseSignalWatcher;
-  //   class BaseProcessWatcher;
+  class BaseProcessWatcher;
 
 private:
   // Private Members
@@ -35,7 +35,7 @@ private:
   bool _stop_flag;
 
   // Members for Watchers
-  typedef std::map<time_t, BaseTimerWatcher *> TimerWatchers;
+  typedef std::multimap<time_t, BaseTimerWatcher *> TimerWatchers;
   TimerWatchers _timer_watchers;
 
   typedef std::map<int, BaseIOWatcher *> IOWatchers;
@@ -48,6 +48,11 @@ private:
   std::auto_ptr<SignalIOWatcher> _signal_io_watcher;
   typedef std::map<int, BaseSignalWatcher *> SignalWatchers;
   SignalWatchers _signal_watchers;
+
+  class WaitWatcher;
+  std::auto_ptr<WaitWatcher> _wait_watcher;
+  typedef std::map<pid_t, BaseProcessWatcher *> ProcessWatchers;
+  ProcessWatchers _process_watchers;
 
   // Private Methods
   void _update_time();

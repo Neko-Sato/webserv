@@ -1,47 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   BaseIOWatcher.hpp                                  :+:      :+:    :+:   */
+/*   BaseProcessWatcher.hpp                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/15 22:09:31 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/15 23:04:38 by hshimizu         ###   ########.fr       */
+/*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
+/*   Updated: 2024/11/16 17:06:41 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <EventLoop.hpp>
-#include <selectors/BaseSelector.hpp>
+#include <csignal>
+#include <ctime>
 
 namespace ftev {
 
-class EventLoop::BaseIOWatcher {
+class EventLoop::BaseProcessWatcher {
 protected:
   EventLoop &_loop;
 
 private:
-  typedef ftpp::BaseSelector::event_detals event_detals;
-  int _fd;
+  pid_t _pid;
 
-  BaseIOWatcher(BaseIOWatcher const &rhs);
-  BaseIOWatcher &operator=(BaseIOWatcher const &rhs);
+  BaseProcessWatcher(BaseProcessWatcher const &rhs);
+  BaseProcessWatcher &operator=(BaseProcessWatcher const &rhs);
 
 public:
-  BaseIOWatcher(EventLoop &loop, int fd);
-  virtual ~BaseIOWatcher();
-  void operator()(event_detals const &ev);
+  BaseProcessWatcher(EventLoop &loop);
+  virtual ~BaseProcessWatcher();
 
-  void start(int events);
-  void modify(int events);
-  void close();
-
-  int get_fd() const;
-
-  virtual void on_read() = 0;
-  virtual void on_write() = 0;
-  virtual void on_error() = 0;
+  void start(pid_t pid);
+  void kill(int signum = SIGKILL);
+  virtual void on_exit(int status) = 0;
 };
 
 } // namespace ftev

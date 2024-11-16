@@ -6,12 +6,12 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 22:48:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/16 00:19:36 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/16 17:07:50 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <BaseIOWatcher.hpp>
 #include <EventLoop.hpp>
+#include <EventLoop/BaseIOWatcher.hpp>
 #include <cassert>
 #include <unistd.h>
 
@@ -36,7 +36,7 @@ EventLoop::BaseIOWatcher::operator=(EventLoop::BaseIOWatcher const &rhs) {
   return *this;
 }
 
-void EventLoop::BaseIOWatcher::operator()(event_detals const &ev) {
+void EventLoop::BaseIOWatcher::on_event(event_detals const &ev) {
   if (ev.events & ftpp::BaseSelector::READ)
     on_read();
   if (ev.events & ftpp::BaseSelector::WRITE)

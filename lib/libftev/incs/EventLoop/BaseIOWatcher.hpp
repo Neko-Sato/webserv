@@ -1,43 +1,47 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   BaseSignalWatcher.hpp                              :+:      :+:    :+:   */
+/*   BaseIOWatcher.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/16 00:22:29 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/16 14:51:53 by hshimizu         ###   ########.fr       */
+/*   Created: 2024/11/15 22:09:31 by hshimizu          #+#    #+#             */
+/*   Updated: 2024/11/16 17:06:06 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <BaseIOWatcher.hpp>
 #include <EventLoop.hpp>
-#include <csignal>
+#include <selectors/BaseSelector.hpp>
 
 namespace ftev {
 
-class EventLoop::BaseSignalWatcher {
+class EventLoop::BaseIOWatcher {
 protected:
   EventLoop &_loop;
 
 private:
-  int _signum;
-  sighandler_t _old_handler;
+  typedef ftpp::BaseSelector::event_detals event_detals;
+  int _fd;
 
-  static void _signal_handler(int signum);
-
-  BaseSignalWatcher(BaseSignalWatcher const &rhs);
-  BaseSignalWatcher &operator=(BaseSignalWatcher const &rhs);
+  BaseIOWatcher(BaseIOWatcher const &rhs);
+  BaseIOWatcher &operator=(BaseIOWatcher const &rhs);
 
 public:
-  BaseSignalWatcher(EventLoop &loop);
-  virtual ~BaseSignalWatcher();
-  void operator()();
+  BaseIOWatcher(EventLoop &loop, int fd);
+  virtual ~BaseIOWatcher();
+  void on_event(event_detals const &ev);
 
-  void start(int signum);
-  void stop();
-  virtual void on_signal() = 0;
+  void start(int events);
+  void modify(int events);
+  void close();
+
+  int get_fd() const;
+
+  virtual void on_read() = 0;
+  virtual void on_write() = 0;
+  virtual void on_error() = 0;
 };
+
 } // namespace ftev

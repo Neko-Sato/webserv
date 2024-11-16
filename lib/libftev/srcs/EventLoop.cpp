@@ -6,13 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/16 15:18:02 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/16 17:08:14 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <BaseIOWatcher.hpp>
-#include <BaseTimerWatcher.hpp>
 #include <EventLoop.hpp>
+#include <EventLoop/BaseIOWatcher.hpp>
+#include <EventLoop/BaseTimerWatcher.hpp>
 #include <cassert>
 #include <cstdlib>
 #include <exceptions/OSError.hpp>
@@ -25,7 +25,7 @@ EventLoop EventLoop::default_loop;
 
 EventLoop::EventLoop()
     : _selector(new ftpp::Selector), _time(0), _running(false),
-      _stop_flag(true), _signal_io_watcher(NULL) {
+      _stop_flag(true), _signal_io_watcher(NULL), _wait_watcher(NULL) {
   _update_time();
 }
 
@@ -85,7 +85,7 @@ void EventLoop::_run_timer() {
   TimerWatchers tmp(_timer_watchers.begin(), end);
   _timer_watchers.erase(_timer_watchers.begin(), end);
   for (TimerWatchers::iterator it = tmp.begin(); it != tmp.end(); ++it)
-    it->second->operator()();
+    it->second->on_timeout();
 }
 
 void EventLoop::operator++() {
@@ -103,7 +103,7 @@ void EventLoop::operator++() {
     }
   } while (0);
   for (Events::iterator it = events.begin(); it != events.end(); ++it)
-    _io_watchers[it->fd]->operator()(*it);
+    _io_watchers[it->fd]->on_event(*it);
   _update_time();
   _run_timer();
   _running = false;

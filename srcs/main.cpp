@@ -1,6 +1,7 @@
-#include <BaseIOWatcher.hpp>
-#include <BaseSignalWatcher.hpp>
-#include <BaseTimerWatcher.hpp>
+#include <EventLoop/BaseIOWatcher.hpp>
+#include <EventLoop/BaseSignalWatcher.hpp>
+#include <EventLoop/BaseTimerWatcher.hpp>
+#include <EventLoop/BaseProcessWatcher.hpp>
 #include <EventLoop.hpp>
 #include <fcntl.h>
 #include <iostream>
@@ -61,15 +62,36 @@ public:
   }
 };
 
+class MyProcessWatcher : public ftev::EventLoop::BaseProcessWatcher {
+public:
+  MyProcessWatcher(ftev::EventLoop &loop)
+	  : ftev::EventLoop::BaseProcessWatcher(loop) {
+  }
+  ~MyProcessWatcher() {
+  }
+  void on_exit(int status) {
+	std::cout << "Process exited! " << status << std::endl;
+  }
+};
+
+#include <unistd.h>
+
 int main() {
+  pid_t pid = fork();
+  if (pid == 0) {
+    char const *const argv[] = {"python", "-m", "http.server", NULL};
+	execve("/bin/python", const_cast<char* const*>(argv), environ);
+  }
   ftev::EventLoop &loop = ftev::EventLoop::default_loop;
   MyTimerWatcher timer_watcher(loop);
   MyIOWatcher io_watcher(loop, "./pipe");
   MySignalWatcher signal_watcher(loop);
+  MyProcessWatcher process_watcher(loop);
 
   timer_watcher.start(1000);
   io_watcher.start(ftpp::BaseSelector::READ);
   signal_watcher.start(SIGINT);
+  process_watcher.start(pid);
   loop.run();
   return 0;
 }

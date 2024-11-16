@@ -6,12 +6,12 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 14:19:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/16 14:51:01 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/16 17:40:03 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <BaseSignalWatcher.hpp>
-#include <SignalIOWatcher.hpp>
+#include <EventLoop/BaseSignalWatcher.hpp>
+#include <EventLoop/SignalIOWatcher.hpp>
 #include <cassert>
 
 namespace ftev {
@@ -40,7 +40,10 @@ void EventLoop::SignalIOWatcher::on_read() {
   int signum;
   ssize_t size = read(get_fd(), &signum, sizeof(signum));
   assert(size == sizeof(signum));
-  _loop._signal_watchers[signum]->operator()();
+  EventLoop::SignalWatchers::iterator it = _loop._signal_watchers.find(signum);
+  if (it == _loop._signal_watchers.end())
+	return;
+  it->second->on_signal();
 }
 
 void EventLoop::SignalIOWatcher::on_write() {
