@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2024/11/15 22:41:50 by hshimizu         ###   ########.fr        #
+#    Updated: 2024/11/16 15:00:14 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -51,9 +51,9 @@ $(OUT_DIR)/%.o: %.cpp
 	$(CXX) -c $(CXXFLAGS) -MMD -MP $(IDFLAGS) $< -o $@
 
 clean:
+	$(MAKE) -C $(LIBFTEV) fclean
+	$(MAKE) -C $(LIBFTPP) fclean
 	$(RM) -r $(OUT_DIR)
-	$(MAKE) fclean -C $(LIBFTEV)
-	$(MAKE) fclean -C $(LIBFTPP)
 
 fclean: clean
 	$(RM) $(NAME)
