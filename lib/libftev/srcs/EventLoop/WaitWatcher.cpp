@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 16:43:50 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/16 18:18:02 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/16 18:20:23 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,15 +45,20 @@ void EventLoop::WaitWatcher::on_signal() {
         if (errno == EINTR)
           continue;
         else if (errno == ECHILD)
-		  return;
+          return;
         throw;
       }
     } while (0);
-    EventLoop::ProcessWatchers::iterator it = _loop._process_watchers.find(pid);
-    if (it == _loop._process_watchers.end())
-      continue;
-    it->second->on_exit(status);
-    _loop._process_watchers.erase(it);
+    EventLoop::BaseProcessWatcher *watcher;
+    {
+      EventLoop::ProcessWatchers::iterator it =
+          _loop._process_watchers.find(pid);
+      if (it == _loop._process_watchers.end())
+        continue;
+      watcher = it->second;
+      _loop._process_watchers.erase(it);
+    }
+    watcher->on_exit(status);
   }
 }
 
