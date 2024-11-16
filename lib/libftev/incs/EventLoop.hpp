@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 02:59:53 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 05:08:40 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,14 +63,12 @@ private:
   typedef std::map<int, BaseIOWatcher *> IOWatchers;
   IOWatchers _io_watchers;
 
-  static int _signal_pipe[2];
-  static void _acquire_signal_pipe();
-  static void _release_signal_pipe();
+  class SignalPipe;
+  static std::auto_ptr<SignalPipe> _signal_pipe;
   std::auto_ptr<BaseIOWatcher> _signal_io_watcher;
   typedef std::map<int, BaseSignalWatcher *> SignalWatchers;
   SignalWatchers _signal_watchers;
 
-  class WaitWatcher;
   std::auto_ptr<BaseSignalWatcher> _wait_watcher;
   typedef std::map<pid_t, BaseProcessWatcher *> ProcessWatchers;
   ProcessWatchers _process_watchers;

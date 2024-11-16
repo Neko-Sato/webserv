@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 16:23:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 03:18:00 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 07:57:55 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ EventLoop::BaseProcessWatcher::~BaseProcessWatcher() {
 
 void EventLoop::BaseProcessWatcher::operator()(int status) {
   assert(_is_active);
+  _is_active = false;
   on_exit(status);
 }
 

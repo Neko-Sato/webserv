@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 03:00:57 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 06:48:09 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,7 @@
 namespace ftev {
 
 EventLoop EventLoop::default_loop;
-
-int EventLoop::_signal_pipe[2] = {-1, -1};
+std::auto_ptr<EventLoop::SignalPipe> EventLoop::_signal_pipe;
 
 ftpp::BaseSelector *EventLoop::default_selector_factory() {
   return new ftpp::Selector();
@@ -37,23 +36,8 @@ EventLoop::EventLoop(selector_factory_t selector_factory)
 }
 
 EventLoop::~EventLoop() {
-}
-
-void EventLoop::_acquire_signal_pipe() {
-  if (_signal_pipe[0] != -1)
-    return;
-  if (__glibc_unlikely(pipe(_signal_pipe) == -1))
-    throw ftpp::OSError(errno, "pipe");
-  atexit(_release_signal_pipe);
-}
-
-void EventLoop::_release_signal_pipe() {
-  if (_signal_pipe[0] != -1) {
-    close(_signal_pipe[0]);
-    close(_signal_pipe[1]);
-    _signal_pipe[0] = -1;
-    _signal_pipe[1] = -1;
-  }
+  if (_signal_io_watcher.get())
+    _signal_io_watcher->stop();
 }
 
 void EventLoop::_update_time() {

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 22:48:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 02:54:54 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 07:41:15 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 #include <EventLoop/BaseIOWatcher.hpp>
 
 #include <cassert>
-#include <unistd.h>
 
 namespace ftev {
 
@@ -36,7 +35,6 @@ void EventLoop::BaseIOWatcher::operator()(event_detals const &ev) {
     on_error();
 }
 
-
 void EventLoop::BaseIOWatcher::start(int fd, int events) {
   assert(!_is_active);
   _fd = fd;
@@ -50,13 +48,11 @@ void EventLoop::BaseIOWatcher::modify(int events) {
   loop._selector->modify(_fd, events);
 }
 
-void EventLoop::BaseIOWatcher::close() {
+void EventLoop::BaseIOWatcher::stop() {
   assert(_is_active);
   loop._selector->remove(_fd);
   loop._io_watchers.erase(_fd);
   _is_active = false;
-  ::close(_fd);
-  _fd = -1;
 }
 
 int EventLoop::BaseIOWatcher::get_fd() const {

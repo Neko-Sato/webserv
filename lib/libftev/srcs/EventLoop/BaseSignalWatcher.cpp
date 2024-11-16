@@ -6,12 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 00:31:00 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 02:56:18 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 07:50:22 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <EventLoop.hpp>
 #include <EventLoop/BaseSignalWatcher.hpp>
+#include <EventLoop/SignalPipe.hpp>
 #include <Watchers/IOWatcher.hpp>
 #include <exceptions/OSError.hpp>
 
@@ -23,11 +24,12 @@ namespace ftev {
 EventLoop::BaseSignalWatcher::BaseSignalWatcher(EventLoop &loop)
     : EventLoop::BaseWatcher(loop), _is_active(false), _signum(-1),
       _is_current(false), _old_handler(SIG_DFL), _old_watcher(NULL) {
-  loop._acquire_signal_pipe();
-  if (!loop._signal_io_watcher.get()) {
+  if (__glibc_unlikely(!loop._signal_pipe.get()))
+    loop._signal_pipe.reset(new SignalPipe);
+  if (__glibc_unlikely(!loop._signal_io_watcher.get())) {
     loop._signal_io_watcher.reset(
         new IOWatcher<int>(loop, _signal_pipe_on_read, NULL, NULL, 0));
-    loop._signal_io_watcher->start(EventLoop::_signal_pipe[0],
+    loop._signal_io_watcher->start(EventLoop::_signal_pipe->get_in(),
                                    ftpp::BaseSelector::READ);
   }
 }
@@ -72,8 +74,8 @@ void EventLoop::BaseSignalWatcher::stop() {
 }
 
 void EventLoop::BaseSignalWatcher::_signal_handler(int signum) {
-  assert(EventLoop::_signal_pipe[1] != -1);
-  ssize_t size = write(EventLoop::_signal_pipe[1], &signum, sizeof(signum));
+  ssize_t size =
+      write(EventLoop::_signal_pipe->get_out(), &signum, sizeof(signum));
   assert(size == sizeof(signum));
 }
 

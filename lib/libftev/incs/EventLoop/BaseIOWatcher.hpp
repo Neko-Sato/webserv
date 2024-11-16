@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 22:09:31 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 02:39:30 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 04:55:48 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ public:
 
   void start(int fd, int events);
   void modify(int events);
-  void close();
+  void stop();
 
   int get_fd() const;
 
