@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2024/11/16 15:00:14 by hshimizu         ###   ########.fr        #
+#    Updated: 2024/11/17 04:06:18 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -51,8 +51,8 @@ $(OUT_DIR)/%.o: %.cpp
 	$(CXX) -c $(CXXFLAGS) -MMD -MP $(IDFLAGS) $< -o $@
 
 clean:
-	$(MAKE) -C $(LIBFTEV) fclean
-	$(MAKE) -C $(LIBFTPP) fclean
+	@$(MAKE) -C $(LIBFTEV) fclean
+	@$(MAKE) -C $(LIBFTPP) fclean
 	$(RM) -r $(OUT_DIR)
 
 fclean: clean
@@ -64,10 +64,10 @@ neko:
 	@echo "🐈 ﾆｬｰﾝ"
 
 $(LIBFTPP):
-	$(MAKE) -C $@
+	@$(MAKE) -C $@
 
 $(LIBFTEV): $(LIBFTPP)
-	CPLUS_INCLUDE_PATH="$(CPLUS_INCLUDE_PATH):$(CURDIR)/$(LIBFTPP_INCS_DIR)" \
+	@CPLUS_INCLUDE_PATH="$(CPLUS_INCLUDE_PATH):$(CURDIR)/$(LIBFTPP_INCS_DIR)" \
 	LD_RUN_PATH="$(LD_RUN_PATH):$(CURDIR)/$(LIBFTPP)" \
 	LIBRARY_PATH="$(LIBRARY_PATH):$(CURDIR)/$(LIBFTPP)" \
 	$(MAKE) -C $@
