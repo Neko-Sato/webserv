@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 05:31:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 20:43:40 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 20:54:12 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,8 @@ bool EventLoop::BaseTimerWatcher::is_active() const {
 }
 
 void EventLoop::BaseTimerWatcher::operator()() {
-  assert(_is_active);
+  if (!_is_active)
+    return;
   loop._timer_watchers.erase(_it);
   _is_active = false;
   on_timeout();

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 00:31:00 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 20:45:50 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 20:54:08 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,8 @@ bool EventLoop::BaseSignalWatcher::is_active() const {
 }
 
 void EventLoop::BaseSignalWatcher::operator()() {
-  assert(_is_active);
+  if (!_is_active)
+    return;
   on_signal();
 }
 

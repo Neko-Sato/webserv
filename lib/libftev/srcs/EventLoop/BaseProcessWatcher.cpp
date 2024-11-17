@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 16:23:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 20:44:10 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 20:53:55 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,8 @@ bool EventLoop::BaseProcessWatcher::is_active() const {
 }
 
 void EventLoop::BaseProcessWatcher::operator()(int status) {
-  assert(_is_active);
+  if (!_is_active)
+    return;
   loop._process_watchers.erase(_it);
   _is_active = false;
   on_exit(status);

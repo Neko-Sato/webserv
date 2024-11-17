@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 20:22:29 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 20:47:16 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ public:
   void stop();
   void cleanup();
 
-  // ---------------------------------------------------------------------------
 public:
   class BaseWatcher;
   class BaseTimerWatcher;
@@ -74,7 +73,6 @@ private:
   std::auto_ptr<BaseSignalWatcher> _wait_watcher;
   typedef std::multimap<pid_t, BaseProcessWatcher *> ProcessWatchers;
   ProcessWatchers _process_watchers;
-  // ---------------------------------------------------------------------------
 };
 
 } // namespace ftev
