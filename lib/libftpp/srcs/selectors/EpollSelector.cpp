@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 18:35:18 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/18 00:52:56 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ void EpollSelector::select(Events &events, int timeout) const {
     throw OSError(errno, "epoll_wait");
   events.clear();
   for (int i = 0; i < nfds; i++) {
-    event_detals tmp;
+    event_details tmp;
     tmp.fd = ev[i].data.fd;
     tmp.events = 0;
     if (ev[i].events & (EPOLLIN | EPOLLHUP))

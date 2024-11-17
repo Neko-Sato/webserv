@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 22:48:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 20:53:51 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/18 00:52:56 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ bool EventLoop::BaseIOWatcher::is_active() const {
   return _is_active;
 }
 
-void EventLoop::BaseIOWatcher::operator()(event_detals const &ev) {
+void EventLoop::BaseIOWatcher::operator()(event_details const &ev) {
   if (!_is_active)
     return;
   if (ev.events & ftpp::BaseSelector::READ)

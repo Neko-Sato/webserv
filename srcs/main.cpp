@@ -42,7 +42,7 @@ int main() {
   pid_t pid = fork();
   if (pid == 0) {
     char const *const argv[] = {
-        "python", "-c", "from time import sleep; sleep(2); print('Bye!')",
+        "python", "-c", "from time import sleep; sleep(2000); print('Bye!')",
         NULL};
     execve("/bin/python", const_cast<char *const *>(argv), environ);
   }

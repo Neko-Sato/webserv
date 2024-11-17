@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 23:35:50 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 18:34:20 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/18 00:52:56 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ void SelectSelector::select(Events &events, int timeout) const {
     return;
   for (std::map<int, unsigned int>::const_iterator it = _fds.begin();
        it != _fds.end(); it++) {
-    event_detals tmp;
+    event_details tmp;
     tmp.fd = it->first;
     tmp.events = 0;
     if (FD_ISSET(it->first, &readfds))
