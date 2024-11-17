@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/17 02:16:25 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 02:39:13 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 20:42:17 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ public:
 
   BaseWatcher(EventLoop &loop);
   virtual ~BaseWatcher();
+  virtual bool is_active() const = 0;
 };
 
 } // namespace ftev

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 18:55:31 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 20:22:29 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,6 @@ private:
   typedef std::map<int, BaseIOWatcher *> IOWatchers;
   IOWatchers _io_watchers;
 
-  class SignalPipe;
-  static std::auto_ptr<SignalPipe> _signal_pipe;
   std::auto_ptr<BaseIOWatcher> _signal_io_watcher;
   std::map<int, sighandler_t> _old_sighandlers;
   typedef std::multimap<int, BaseSignalWatcher *> SignalWatchers;

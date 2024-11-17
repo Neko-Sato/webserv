@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 22:09:31 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 16:40:54 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 20:44:45 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ private:
 public:
   BaseIOWatcher(EventLoop &loop);
   virtual ~BaseIOWatcher();
+  bool is_active() const;
   void operator()(event_detals const &ev);
 
   void start(int fd, int events);

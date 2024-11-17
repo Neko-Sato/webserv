@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/17 01:30:24 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 02:35:02 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 19:16:46 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ namespace ftev {
 template <typename T>
 class SignalWatcher : public EventLoop::BaseSignalWatcher {
 public:
-  typedef void (*callback)(SignalWatcher &watcher, T data);
+  typedef void (*callback)(BaseSignalWatcher &watcher, T data);
 
 private:
   callback _on_signal;

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 22:48:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 16:49:23 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 20:42:46 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,10 @@ EventLoop::BaseIOWatcher::BaseIOWatcher(EventLoop &loop)
 
 EventLoop::BaseIOWatcher::~BaseIOWatcher() {
   assert(!_is_active);
+}
+
+bool EventLoop::BaseIOWatcher::is_active() const {
+  return _is_active;
 }
 
 void EventLoop::BaseIOWatcher::operator()(event_detals const &ev) {

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/17 01:30:24 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 02:35:00 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 19:16:53 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ namespace ftev {
 
 template <typename T> class TimerWatcher : public EventLoop::BaseTimerWatcher {
 public:
-  typedef void (*callback)(TimerWatcher &watcher, T data);
+  typedef void (*callback)(BaseTimerWatcher &watcher, T data);
 
 private:
   callback _on_timeout;

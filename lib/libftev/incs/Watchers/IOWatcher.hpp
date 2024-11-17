@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/17 01:30:24 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 02:35:10 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 19:16:23 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ namespace ftev {
 
 template <typename T> class IOWatcher : public EventLoop::BaseIOWatcher {
 public:
-  typedef void (*callback)(IOWatcher &watcher, T data);
+  typedef void (*callback)(BaseIOWatcher &watcher, T data);
 
 private:
   callback _on_read, _on_write, _on_error;

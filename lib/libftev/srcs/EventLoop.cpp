@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 18:56:00 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 20:23:46 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@
 namespace ftev {
 
 EventLoop EventLoop::default_loop;
-std::auto_ptr<EventLoop::SignalPipe> EventLoop::_signal_pipe;
 
 ftpp::BaseSelector *EventLoop::default_selector_factory() {
   return new ftpp::Selector();
