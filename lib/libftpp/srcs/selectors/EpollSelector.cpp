@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/16 15:15:39 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 18:35:18 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,36 +29,63 @@ EpollSelector::~EpollSelector() {
 }
 
 void EpollSelector::add(int fd, int events) {
-  struct epoll_event ev;
-  ev.events = 0;
-  if (events & READ)
-    ev.events |= EPOLLIN | EPOLLHUP;
-  if (events & WRITE)
-    ev.events |= EPOLLOUT;
-  if (events & ERROR)
-    ev.events |= EPOLLERR;
-  ev.data.fd = fd;
-  if (__glibc_unlikely(epoll_ctl(_epfd, EPOLL_CTL_ADD, fd, &ev) == -1))
-    throw OSError(errno, "epoll_ctl");
+  try {
+    struct epoll_event ev;
+    ev.events = 0;
+    if (events & READ)
+      ev.events |= EPOLLIN | EPOLLHUP;
+    if (events & WRITE)
+      ev.events |= EPOLLOUT;
+    if (events & ERROR)
+      ev.events |= EPOLLERR;
+    ev.data.fd = fd;
+    if (__glibc_unlikely(epoll_ctl(_epfd, EPOLL_CTL_ADD, fd, &ev) == -1))
+      throw OSError(errno, "epoll_ctl");
+  } catch (OSError const &e) {
+    switch (e.get_errno()) {
+    case EEXIST:
+      throw RegisteredError();
+    default:
+      throw;
+    }
+  }
 }
 
 void EpollSelector::remove(int fd) {
-  if (__glibc_unlikely(epoll_ctl(_epfd, EPOLL_CTL_DEL, fd, NULL) == -1))
-    throw OSError(errno, "epoll_ctl");
+  try {
+    if (__glibc_unlikely(epoll_ctl(_epfd, EPOLL_CTL_DEL, fd, NULL) == -1))
+      throw OSError(errno, "epoll_ctl");
+  } catch (OSError const &e) {
+    switch (e.get_errno()) {
+    case ENOENT:
+      throw NotRegisteredError();
+    default:
+      throw;
+    }
+  }
 }
 
 void EpollSelector::modify(int fd, int events) {
-  struct epoll_event ev;
-  ev.events = 0;
-  if (events & READ)
-    ev.events |= EPOLLIN | EPOLLHUP;
-  if (events & WRITE)
-    ev.events |= EPOLLOUT;
-  if (events & ERROR)
-    ev.events |= EPOLLERR;
-  ev.data.fd = fd;
-  if (__glibc_unlikely(epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, &ev) == -1))
-    throw OSError(errno, "epoll_ctl");
+  try {
+    struct epoll_event ev;
+    ev.events = 0;
+    if (events & READ)
+      ev.events |= EPOLLIN | EPOLLHUP;
+    if (events & WRITE)
+      ev.events |= EPOLLOUT;
+    if (events & ERROR)
+      ev.events |= EPOLLERR;
+    ev.data.fd = fd;
+    if (__glibc_unlikely(epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, &ev) == -1))
+      throw OSError(errno, "epoll_ctl");
+  } catch (OSError const &e) {
+    switch (e.get_errno()) {
+    case ENOENT:
+      throw NotRegisteredError();
+    default:
+      throw;
+    }
+  }
 }
 
 void EpollSelector::select(Events &events, int timeout) const {

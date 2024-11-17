@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 05:31:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 03:19:48 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 16:55:20 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,12 @@ EventLoop::BaseTimerWatcher::BaseTimerWatcher(EventLoop &loop)
 }
 
 EventLoop::BaseTimerWatcher::~BaseTimerWatcher() {
-  assert(!_is_active);
+    assert(!_is_active);
 }
 
 void EventLoop::BaseTimerWatcher::operator()() {
   assert(_is_active);
+  loop._timer_watchers.erase(_it);
   _is_active = false;
   on_timeout();
 }
@@ -34,7 +35,13 @@ void EventLoop::BaseTimerWatcher::operator()() {
 void EventLoop::BaseTimerWatcher::start(time_t timeout) {
   assert(!_is_active);
   _is_active = true;
-  loop._timer_watchers.insert(std::make_pair(loop._time + timeout, this));
+  _it = loop._timer_watchers.insert(std::make_pair(loop._time + timeout, this));
+}
+
+void EventLoop::BaseTimerWatcher::cancel() {
+  assert(_is_active);
+  loop._timer_watchers.erase(_it);
+  _is_active = false;
 }
 
 } // namespace ftev

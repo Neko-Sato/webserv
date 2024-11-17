@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 16:23:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 07:57:55 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 18:45:28 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 namespace ftev {
 
 EventLoop::BaseProcessWatcher::BaseProcessWatcher(EventLoop &loop)
-    : EventLoop::BaseWatcher(loop), _is_active(false), _pid(-1) {
+    : EventLoop::BaseWatcher(loop), _is_active(false) {
   if (!loop._wait_watcher.get()) {
     loop._wait_watcher.reset(new SignalWatcher<int>(loop, _on_sigchld, 0));
     loop._wait_watcher->start(SIGCHLD);
@@ -34,20 +34,26 @@ EventLoop::BaseProcessWatcher::~BaseProcessWatcher() {
 
 void EventLoop::BaseProcessWatcher::operator()(int status) {
   assert(_is_active);
+  loop._process_watchers.erase(_it);
   _is_active = false;
   on_exit(status);
 }
 
 void EventLoop::BaseProcessWatcher::start(pid_t pid) {
   assert(!_is_active);
-  _pid = pid;
-  loop._process_watchers[_pid] = this;
+  _it = loop._process_watchers.insert(std::make_pair(pid, this));
   _is_active = true;
 }
 
 void EventLoop::BaseProcessWatcher::kill(int signum) {
   assert(_is_active);
-  ::kill(_pid, signum);
+  ::kill(_it->first, signum);
+}
+
+void EventLoop::BaseProcessWatcher::detach() {
+  assert(_is_active);
+  loop._process_watchers.erase(_it);
+  _is_active = false;
 }
 
 void EventLoop::BaseProcessWatcher::_on_sigchld(SignalWatcher<int> &watcher,
@@ -63,24 +69,22 @@ void EventLoop::BaseProcessWatcher::_on_sigchld(SignalWatcher<int> &watcher,
           return;
         else if (__glibc_unlikely(pid == -1))
           throw ftpp::OSError(errno, "waitpid");
-      } catch (const std::exception &e) {
-        if (errno == EINTR)
+      } catch (ftpp::OSError const &e) {
+        switch (e.get_errno()) {
+        case EINTR:
           continue;
-        else if (errno == ECHILD)
+        case ECHILD:
           return;
-        throw;
+        default:
+          throw;
+        }
       }
     } while (0);
-    EventLoop::BaseProcessWatcher *process_watcher;
-    {
-      EventLoop::ProcessWatchers::iterator it =
-          watcher.loop._process_watchers.find(pid);
-      if (it == watcher.loop._process_watchers.end())
-        continue;
-      process_watcher = it->second;
-      watcher.loop._process_watchers.erase(it);
-    }
-    process_watcher->operator()(status);
+    std::pair<ProcessWatchers::iterator, ProcessWatchers::iterator> range =
+        watcher.loop._process_watchers.equal_range(pid);
+    ProcessWatchers tmp(range.first, range.second);
+    for (ProcessWatchers::iterator it = tmp.begin(); it != tmp.end(); ++it)
+      it->second->operator()(status);
   }
 }
 

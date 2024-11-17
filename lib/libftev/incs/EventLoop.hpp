@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 05:08:40 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 18:55:31 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,9 @@
 
 #include <selectors/Selector.hpp>
 
+#include <csignal>
 #include <ctime>
+#include <list>
 #include <map>
 #include <memory>
 #include <set>
@@ -47,6 +49,7 @@ public:
 
   void run();
   void stop();
+  void cleanup();
 
   // ---------------------------------------------------------------------------
 public:
@@ -66,11 +69,12 @@ private:
   class SignalPipe;
   static std::auto_ptr<SignalPipe> _signal_pipe;
   std::auto_ptr<BaseIOWatcher> _signal_io_watcher;
-  typedef std::map<int, BaseSignalWatcher *> SignalWatchers;
+  std::map<int, sighandler_t> _old_sighandlers;
+  typedef std::multimap<int, BaseSignalWatcher *> SignalWatchers;
   SignalWatchers _signal_watchers;
 
   std::auto_ptr<BaseSignalWatcher> _wait_watcher;
-  typedef std::map<pid_t, BaseProcessWatcher *> ProcessWatchers;
+  typedef std::multimap<pid_t, BaseProcessWatcher *> ProcessWatchers;
   ProcessWatchers _process_watchers;
   // ---------------------------------------------------------------------------
 };

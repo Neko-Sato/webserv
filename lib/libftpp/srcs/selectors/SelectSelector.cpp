@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 23:35:50 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/15 19:44:28 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 18:34:20 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,19 +24,24 @@ SelectSelector::~SelectSelector() {
 }
 
 void SelectSelector::add(int fd, int events) {
-  _fds.insert(std::make_pair(fd, events));
+  if (!_fds.insert(std::make_pair(fd, events)).second)
+    throw RegisteredError();
 }
 
 void SelectSelector::remove(int fd) {
   std::map<int, unsigned int>::iterator it = _fds.find(fd);
   if (it != _fds.end())
     _fds.erase(it);
+  else
+    throw NotRegisteredError();
 }
 
 void SelectSelector::modify(int fd, int events) {
   std::map<int, unsigned int>::iterator it = _fds.find(fd);
   if (it != _fds.end())
     it->second = events;
+  else
+    throw NotRegisteredError();
 }
 
 void SelectSelector::select(Events &events, int timeout) const {

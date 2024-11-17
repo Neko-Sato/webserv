@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:20:10 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/16 23:36:38 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 16:36:45 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,14 @@ public:
   virtual void modify(int fd, int events) = 0;
   typedef std::deque<event_detals> Events;
   virtual void select(Events &events, int timeout) const = 0;
+
+  class RegisteredError : public std::exception {
+    const char *what() const throw();
+  };
+
+  class NotRegisteredError : public std::exception {
+    const char *what() const throw();
+  };
 };
 
 } // namespace ftpp

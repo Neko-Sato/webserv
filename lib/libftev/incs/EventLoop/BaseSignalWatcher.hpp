@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 00:22:29 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 02:53:44 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/17 17:53:27 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,7 @@ namespace ftev {
 class EventLoop::BaseSignalWatcher : public EventLoop::BaseWatcher {
 private:
   bool _is_active;
-  int _signum;
-  bool _is_current;
-  sighandler_t _old_handler;
-  BaseSignalWatcher *_old_watcher;
+  SignalWatchers::iterator _it;
 
   static void _signal_handler(int signum);
   static void _signal_pipe_on_read(IOWatcher<int> &watcher, int _);
