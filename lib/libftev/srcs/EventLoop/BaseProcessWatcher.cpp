@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 16:23:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/20 04:52:01 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/20 05:12:38 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,8 @@ pid_t EventLoop::BaseProcessWatcher::_spawn(options const &opts) {
     if (opts.pipe[1] != -1 &&
         __glibc_unlikely(dup2(opts.pipe[1], STDOUT_FILENO) == -1))
       throw ftpp::OSError(errno, "dup2");
-    execve(opts.file, opts.args, opts.envp ? opts.envp : environ);
+    execve(opts.file, const_cast<char *const *>(opts.args),
+           const_cast<char *const *>(opts.envp ? opts.envp : environ));
     throw ftpp::OSError(errno, "execve");
   } catch (ftpp::OSError const &e) {
     std::cerr << e.what() << std::endl;

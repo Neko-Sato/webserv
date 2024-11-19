@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/20 04:20:51 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/20 05:08:12 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,8 @@ public:
 
   struct options {
     char const *file;
-    char *const *args;
-    char *const *envp;
+    char const *const *args;
+    char const *const *envp;
     char const *cwd;
     int pipe[2];
   };

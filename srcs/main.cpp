@@ -64,7 +64,7 @@ int main() {
                         "from time import sleep; sleep(5); print('Bye!')",
                         NULL};
   options.file = "/bin/python";
-  options.args = const_cast<char *const *>(args);
+  options.args = args;
   options.cwd = NULL;
   options.envp = NULL;
   options.pipe[0] = -1;
