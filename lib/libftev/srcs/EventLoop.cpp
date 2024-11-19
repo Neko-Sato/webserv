@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/20 03:00:36 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/20 05:15:33 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 #include <EventLoop/BaseProcessWatcher.hpp>
 #include <EventLoop/BaseSignalWatcher.hpp>
 #include <EventLoop/BaseTimerWatcher.hpp>
-#include <selectors/Selector.hpp>
 #include <exceptions/OSError.hpp>
+#include <selectors/Selector.hpp>
 
 #include <cassert>
 #include <cstdlib>
@@ -25,10 +25,11 @@
 
 namespace ftev {
 
-ftpp::BaseSelector *EventLoop::default_selector_factory() {
-  return new ftpp::Selector;
+EventLoop::EventLoop()
+    : _selector(new ftpp::Selector), _time(0), _running(false),
+      _stop_flag(false), _signalpipe_watcher(NULL), _wait_watcher(NULL) {
+  _update_time();
 }
-
 EventLoop::~EventLoop() {
   while (!_timer_watchers.empty())
     _timer_watchers.begin()->second->cancel();

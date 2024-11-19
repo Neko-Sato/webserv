@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/20 04:46:10 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/20 05:15:01 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,7 @@ private:
   EventLoop &operator=(EventLoop const &rhs);
 
 public:
-  static ftpp::BaseSelector *default_selector_factory();
-
+  EventLoop();
   template <typename SelectorFactory>
   EventLoop(SelectorFactory selector_factory);
   ~EventLoop();
