@@ -49,7 +49,7 @@ void on_signaled(ftev::EventLoop::BaseProcessWatcher &watcher, int signum,
 
 int main() {
 
-  ftev::EventLoop loop(ftev::EventLoop::default_selector_factory);
+  ftev::EventLoop loop;
   ftev::ProcessWatcher<int> process_watcher(loop, on_exited, on_signaled, 0);
   ftev::TimerWatcher<int> timer_watcher(loop, on_timeout, 0);
   ftev::IOWatcher<int> io_watcher(loop, on_read, NULL, NULL, 0);

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/18 00:52:56 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/20 05:27:30 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,17 +45,19 @@ void PollSelector::modify(int fd, int events) {
 void PollSelector::select(Events &events, int timeout) const {
   std::size_t size = _fds.size();
   pollfd fds[size];
-  for (std::map<int, unsigned int>::const_iterator it = _fds.begin();
-       it != _fds.end(); it++) {
-    pollfd &fd = fds[it->first];
-    fd.fd = it->first;
-    fd.events = 0;
-    if (it->second & READ)
-      fd.events |= (POLLIN | POLLHUP);
-    if (it->second & WRITE)
-      fd.events |= POLLOUT;
-    if (it->second & ERROR)
-      fd.events |= POLLERR;
+  {
+    pollfd *fd = fds;
+    for (std::map<int, unsigned int>::const_iterator it = _fds.begin();
+         it != _fds.end(); it++, fd++) {
+      fd->fd = it->first;
+      fd->events = 0;
+      if (it->second & READ)
+        fd->events |= (POLLIN | POLLHUP);
+      if (it->second & WRITE)
+        fd->events |= POLLOUT;
+      if (it->second & ERROR)
+        fd->events |= POLLERR;
+    }
   }
   int nfds = poll(fds, size, timeout);
   if (__glibc_unlikely(nfds == -1))
