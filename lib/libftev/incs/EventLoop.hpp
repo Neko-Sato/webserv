@@ -6,26 +6,24 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 20:47:16 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/20 04:46:10 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <selectors/Selector.hpp>
+#include <selectors/BaseSelector.hpp>
 
 #include <csignal>
 #include <ctime>
 #include <list>
 #include <map>
-#include <memory>
-#include <set>
 
 namespace ftev {
 
 class EventLoop {
 private:
-  std::auto_ptr<ftpp::BaseSelector> _selector;
+  ftpp::BaseSelector *_selector;
   time_t _time;
   bool _running;
   bool _stop_flag;
@@ -39,17 +37,14 @@ private:
   EventLoop &operator=(EventLoop const &rhs);
 
 public:
-  static EventLoop default_loop;
-
-  typedef ftpp::BaseSelector *(*selector_factory_t)();
   static ftpp::BaseSelector *default_selector_factory();
 
-  EventLoop(selector_factory_t selector_factory = default_selector_factory);
+  template <typename SelectorFactory>
+  EventLoop(SelectorFactory selector_factory);
   ~EventLoop();
 
   void run();
   void stop();
-  void cleanup();
 
 public:
   class BaseWatcher;
@@ -65,14 +60,21 @@ private:
   typedef std::map<int, BaseIOWatcher *> IOWatchers;
   IOWatchers _io_watchers;
 
-  std::auto_ptr<BaseIOWatcher> _signal_io_watcher;
+  BaseIOWatcher *_signalpipe_watcher;
   std::map<int, sighandler_t> _old_sighandlers;
   typedef std::multimap<int, BaseSignalWatcher *> SignalWatchers;
   SignalWatchers _signal_watchers;
 
-  std::auto_ptr<BaseSignalWatcher> _wait_watcher;
-  typedef std::multimap<pid_t, BaseProcessWatcher *> ProcessWatchers;
+  BaseSignalWatcher *_wait_watcher;
+  typedef std::map<pid_t, BaseProcessWatcher *> ProcessWatchers;
   ProcessWatchers _process_watchers;
 };
+
+template <typename SelectorFactory>
+EventLoop::EventLoop(SelectorFactory selector_factory)
+    : _selector(selector_factory()), _time(0), _running(false),
+      _stop_flag(false), _signalpipe_watcher(NULL), _wait_watcher(NULL) {
+  _update_time();
+}
 
 } // namespace ftev

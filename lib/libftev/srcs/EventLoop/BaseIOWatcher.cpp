@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 22:48:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/18 00:52:56 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/20 04:47:11 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,13 @@
 namespace ftev {
 
 EventLoop::BaseIOWatcher::BaseIOWatcher(EventLoop &loop)
-    : EventLoop::BaseWatcher(loop), _is_active(false) {
+    : EventLoop::BaseWatcher(loop) {
 }
 
 EventLoop::BaseIOWatcher::~BaseIOWatcher() {
+  if (_is_active)
+    stop();
   assert(!_is_active);
-}
-
-bool EventLoop::BaseIOWatcher::is_active() const {
-  return _is_active;
 }
 
 void EventLoop::BaseIOWatcher::operator()(event_details const &ev) {
@@ -43,7 +41,10 @@ void EventLoop::BaseIOWatcher::operator()(event_details const &ev) {
 void EventLoop::BaseIOWatcher::start(int fd, int events) {
   assert(!_is_active);
   loop._selector->add(fd, events);
-  _it = loop._io_watchers.insert(std::make_pair(fd, this)).first;
+  std::pair<IOWatchers::iterator, bool> result =
+      loop._io_watchers.insert(std::make_pair(fd, this));
+  assert(result.second);
+  _it = result.first;
   _is_active = true;
 }
 

@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2024/11/17 04:06:18 by hshimizu         ###   ########.fr        #
+#    Updated: 2024/11/18 16:46:10 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,9 +39,9 @@ endif
 
 .PHONY: all bonus clean fclean re neko $(LIBFTEV) $(LIBFTPP)
 
-all: $(LIBFTEV) $(LIBFTPP) $(NAME)
+all: $(NAME)
 
-$(NAME): $(OBJS)
+$(NAME): $(OBJS) | $(LIBFTEV) $(LIBFTPP)
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 
 bonus: all
@@ -58,7 +58,8 @@ clean:
 fclean: clean
 	$(RM) $(NAME)
 
-re: fclean all
+re: fclean
+	$(MAKE)
 
 neko:
 	@echo "🐈 ﾆｬｰﾝ"

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 20:53:45 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/20 04:20:51 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,23 +22,33 @@ namespace ftev {
 
 class EventLoop::BaseProcessWatcher : public EventLoop::BaseWatcher {
 private:
-  bool _is_active;
+  using BaseWatcher::_is_active;
   ProcessWatchers::iterator _it;
 
+  void _activate();
   static void _on_sigchld(BaseSignalWatcher &watcher, int _);
 
 public:
   BaseProcessWatcher(EventLoop &loop);
   virtual ~BaseProcessWatcher();
-  bool is_active() const;
   void operator()(int status);
 
-  void start(pid_t pid);
+  struct options {
+    char const *file;
+    char *const *args;
+    char *const *envp;
+    char const *cwd;
+    int pipe[2];
+  };
+
+  void start(options const &opts);
   void kill(int signum = SIGKILL);
   void detach();
-  virtual void on_exit(int status) = 0;
+  virtual void on_exited(int status) = 0;
+  virtual void on_signaled(int signum) = 0;
 
-  static void activate(EventLoop &loop);
+private:
+  static pid_t _spawn(options const &opts);
 };
 
 } // namespace ftev

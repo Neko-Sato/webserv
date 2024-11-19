@@ -6,13 +6,14 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/18 00:52:56 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/20 04:24:29 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <exceptions/OSError.hpp>
 #include <selectors/EpollSelector.hpp>
 
+#include <fcntl.h>
 #include <sys/epoll.h>
 #include <unistd.h>
 
@@ -22,6 +23,16 @@ EpollSelector::EpollSelector() {
   _epfd = epoll_create(1);
   if (__glibc_unlikely(_epfd == -1))
     throw OSError(errno, "epoll_create");
+  try {
+    int flags = fcntl(_epfd, F_GETFD);
+    if (__glibc_unlikely(flags == -1))
+      throw ftpp::OSError(errno, "fcntl");
+    if (__glibc_unlikely(fcntl(_epfd, F_SETFD, flags | FD_CLOEXEC) == -1))
+      throw ftpp::OSError(errno, "fcntl");
+  } catch (OSError const &e) {
+    close(_epfd);
+    throw;
+  }
 }
 
 EpollSelector::~EpollSelector() {

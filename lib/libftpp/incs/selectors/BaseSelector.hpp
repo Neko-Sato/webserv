@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:20:10 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/18 00:52:57 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/20 04:09:04 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,11 @@ public:
 
   BaseSelector();
   virtual ~BaseSelector();
+
   virtual void add(int fd, int events) = 0;
   virtual void remove(int fd) = 0;
   virtual void modify(int fd, int events) = 0;
+
   typedef std::deque<event_details> Events;
   virtual void select(Events &events, int timeout) const = 0;
 

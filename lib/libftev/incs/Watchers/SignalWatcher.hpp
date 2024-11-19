@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/17 01:30:24 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 19:16:46 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/20 00:46:50 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,8 @@ public:
   }
 
   void on_signal() {
-    _on_signal(*this, _data);
+    if (_on_signal)
+      _on_signal(*this, _data);
   }
 };
 

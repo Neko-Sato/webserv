@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 00:31:00 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 20:54:08 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/20 03:42:02 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,19 +17,20 @@
 
 #include <cassert>
 #include <cstdlib>
+#include <fcntl.h>
 
 namespace ftev {
 
+int EventLoop::BaseSignalWatcher::_pipe[2] = {-1, -1};
+
 EventLoop::BaseSignalWatcher::BaseSignalWatcher(EventLoop &loop)
-    : EventLoop::BaseWatcher(loop), _is_active(false) {
+    : EventLoop::BaseWatcher(loop) {
 }
 
 EventLoop::BaseSignalWatcher::~BaseSignalWatcher() {
+  if (_is_active)
+    stop();
   assert(!_is_active);
-}
-
-bool EventLoop::BaseSignalWatcher::is_active() const {
-  return _is_active;
 }
 
 void EventLoop::BaseSignalWatcher::operator()() {
@@ -40,7 +41,7 @@ void EventLoop::BaseSignalWatcher::operator()() {
 
 void EventLoop::BaseSignalWatcher::start(int signum) {
   assert(!_is_active);
-  activate(loop);
+  _activate();
   if (loop._old_sighandlers.find(signum) == loop._old_sighandlers.end()) {
     sighandler_t old_handler = signal(signum, _signal_handler);
     if (__glibc_unlikely(old_handler == SIG_ERR))
@@ -75,34 +76,39 @@ void EventLoop::BaseSignalWatcher::_signal_pipe_on_read(BaseIOWatcher &watcher,
   int signum;
   ssize_t size = read(watcher.get_fd(), &signum, sizeof(signum));
   assert(size == sizeof(signum));
-  std::pair<SignalWatchers::iterator, SignalWatchers::iterator> range =
-      watcher.loop._signal_watchers.equal_range(signum);
-  for (SignalWatchers::iterator it = range.first; it != range.second; ++it)
+  for (SignalWatchers::iterator it = watcher.loop._signal_watchers.find(signum);
+       it != watcher.loop._signal_watchers.end() && it->first == signum; ++it)
     it->second->operator()();
 }
 
-int EventLoop::BaseSignalWatcher::_pipe[2] = {-1, -1};
-
-void EventLoop::BaseSignalWatcher::_signal_pipe_maybe_acquire() {
+void EventLoop::BaseSignalWatcher::_activate() {
   if (__glibc_unlikely(_pipe[0] == -1 || _pipe[1] == -1)) {
     if (__glibc_unlikely(pipe(_pipe) == -1))
       throw ftpp::OSError(errno, "pipe");
-    std::atexit(_signal_pipe_release);
+    int flags;
+    flags = fcntl(_pipe[0], F_GETFD);
+    if (__glibc_unlikely(flags == -1))
+      throw ftpp::OSError(errno, "fcntl");
+    if (__glibc_unlikely(fcntl(_pipe[0], F_SETFD, flags | FD_CLOEXEC) == -1))
+      throw ftpp::OSError(errno, "fcntl");
+    flags = fcntl(_pipe[1], F_GETFD);
+    if (__glibc_unlikely(flags == -1))
+      throw ftpp::OSError(errno, "fcntl");
+    if (__glibc_unlikely(fcntl(_pipe[1], F_SETFD, flags | FD_CLOEXEC) == -1))
+      throw ftpp::OSError(errno, "fcntl");
+    if (__glibc_unlikely(std::atexit(_pipe_release) == -1))
+      throw ftpp::OSError(errno, "atexit");
   }
+  if (__glibc_unlikely(!loop._signalpipe_watcher))
+    loop._signalpipe_watcher =
+        new IOWatcher<int>(loop, _signal_pipe_on_read, NULL, NULL, 0);
+  if (__glibc_unlikely(!loop._signalpipe_watcher->is_active()))
+    loop._signalpipe_watcher->start(_pipe[0], ftpp::BaseSelector::READ);
 }
 
-void EventLoop::BaseSignalWatcher::_signal_pipe_release() {
+void EventLoop::BaseSignalWatcher::_pipe_release() {
   close(_pipe[0]), close(_pipe[1]);
   _pipe[0] = _pipe[1] = -1;
-}
-
-void EventLoop::BaseSignalWatcher::activate(EventLoop &loop) {
-  _signal_pipe_maybe_acquire();
-  if (__glibc_unlikely(!loop._signal_io_watcher.get()))
-    loop._signal_io_watcher.reset(
-        new IOWatcher<int>(loop, _signal_pipe_on_read, NULL, NULL, 0));
-  if (__glibc_unlikely(!loop._signal_io_watcher->is_active()))
-    loop._signal_io_watcher->start(_pipe[0], ftpp::BaseSelector::READ);
 }
 
 } // namespace ftev

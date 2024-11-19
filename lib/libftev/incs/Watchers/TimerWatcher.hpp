@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/17 01:30:24 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 19:16:53 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/20 00:47:01 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,8 @@ public:
   }
 
   void on_timeout() {
-    _on_timeout(*this, _data);
+    if (_on_timeout)
+      _on_timeout(*this, _data);
   }
 };
 

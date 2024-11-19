@@ -29,40 +29,50 @@ void on_signal(ftev::EventLoop::BaseSignalWatcher &watcher, int _) {
   std::cout << "Signal received!" << std::endl;
 }
 
-void on_exit(ftev::EventLoop::BaseProcessWatcher &watcher, int status, int _) {
+void on_exited(ftev::EventLoop::BaseProcessWatcher &watcher, int status,
+               int _) {
   (void)_;
   (void)watcher;
   std::cout << "Process exited! " << status << std::endl;
   watcher.loop.stop();
 }
 
+void on_signaled(ftev::EventLoop::BaseProcessWatcher &watcher, int signum,
+                 int _) {
+  (void)_;
+  (void)watcher;
+  std::cout << "Process signaled! " << signum << std::endl;
+  watcher.loop.stop();
+}
+
 #include <unistd.h>
 
 int main() {
-  pid_t pid = fork();
-  if (pid == 0) {
-    char const *const argv[] = {
-        "python", "-c", "from time import sleep; sleep(2000); print('Bye!')",
-        NULL};
-    execve("/bin/python", const_cast<char *const *>(argv), environ);
-  }
-  std::cout << pid << std::endl;
-  ftev::EventLoop &loop = ftev::EventLoop::default_loop;
 
-  ftev::ProcessWatcher<int> process_watcher(loop, on_exit, 0);
+  ftev::EventLoop loop(ftev::EventLoop::default_selector_factory);
+  ftev::ProcessWatcher<int> process_watcher(loop, on_exited, on_signaled, 0);
   ftev::TimerWatcher<int> timer_watcher(loop, on_timeout, 0);
   ftev::IOWatcher<int> io_watcher(loop, on_read, NULL, NULL, 0);
   ftev::SignalWatcher<int> signal_watcher(loop, on_signal, 0);
 
-  int fd = open("./pipe", O_RDONLY);
+  int fd = open("./pipe", O_RDONLY | O_CLOEXEC);
   timer_watcher.start(1000);
   io_watcher.start(fd, ftpp::BaseSelector::READ);
   signal_watcher.start(SIGINT);
-  process_watcher.start(pid);
+  ftev::EventLoop::BaseProcessWatcher::options options;
+  char const *args[] = {"python", "-c",
+                        "from time import sleep; sleep(5); print('Bye!')",
+                        NULL};
+  options.file = "/bin/python";
+  options.args = const_cast<char *const *>(args);
+  options.cwd = NULL;
+  options.envp = NULL;
+  options.pipe[0] = -1;
+  options.pipe[1] = -1;
+  process_watcher.start(options);
   loop.run();
   io_watcher.stop();
   close(fd);
-  std::cerr << "shuuryou " << std::endl;
-  loop.cleanup();
+  std::cerr << "shuuryou " << fd << std::endl;
   return 0;
 }

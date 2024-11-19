@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 20:44:57 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/20 02:39:18 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,12 @@ namespace ftev {
 
 class EventLoop::BaseTimerWatcher : public EventLoop::BaseWatcher {
 private:
-  bool _is_active;
+  using BaseWatcher::_is_active;
   TimerWatchers::iterator _it;
 
 public:
   BaseTimerWatcher(EventLoop &loop);
   virtual ~BaseTimerWatcher();
-  bool is_active() const;
   void operator()();
 
   void start(time_t timeout);

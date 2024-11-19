@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 20:23:46 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/20 03:00:36 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <EventLoop/BaseProcessWatcher.hpp>
 #include <EventLoop/BaseSignalWatcher.hpp>
 #include <EventLoop/BaseTimerWatcher.hpp>
+#include <selectors/Selector.hpp>
 #include <exceptions/OSError.hpp>
 
 #include <cassert>
@@ -24,19 +25,22 @@
 
 namespace ftev {
 
-EventLoop EventLoop::default_loop;
-
 ftpp::BaseSelector *EventLoop::default_selector_factory() {
-  return new ftpp::Selector();
-}
-
-EventLoop::EventLoop(selector_factory_t selector_factory)
-    : _selector(selector_factory()), _time(0), _running(false),
-      _stop_flag(true) {
-  _update_time();
+  return new ftpp::Selector;
 }
 
 EventLoop::~EventLoop() {
+  while (!_timer_watchers.empty())
+    _timer_watchers.begin()->second->cancel();
+  while (!_io_watchers.empty())
+    _io_watchers.begin()->second->stop();
+  while (!_signal_watchers.empty())
+    _signal_watchers.begin()->second->stop();
+  while (!_process_watchers.empty())
+    _process_watchers.begin()->second->detach();
+  delete _signalpipe_watcher;
+  delete _wait_watcher;
+  delete _selector;
 }
 
 void EventLoop::_update_time() {
@@ -59,10 +63,12 @@ int EventLoop::_backend_timeout() {
 
 void EventLoop::_run_timer() {
   _update_time();
-  TimerWatchers tmp(_timer_watchers.begin(),
-                    _timer_watchers.lower_bound(_time));
-  for (TimerWatchers::iterator it = tmp.begin(); it != tmp.end(); ++it)
+  for (;;) {
+    TimerWatchers::iterator it = _timer_watchers.begin();
+    if (it == _timer_watchers.end() || _time < it->first)
+      break;
     it->second->operator()();
+  }
 }
 
 void EventLoop::operator++() {
@@ -80,9 +86,12 @@ void EventLoop::operator++() {
         throw;
       }
     }
-  } while (0);
-  for (Events::iterator it = events.begin(); it != events.end(); ++it)
-    _io_watchers[it->fd]->operator()(*it);
+  } while (false);
+  for (Events::iterator it = events.begin(); it != events.end(); ++it) {
+    IOWatchers::iterator watcher = _io_watchers.find(it->fd);
+    if (watcher != _io_watchers.end())
+      watcher->second->operator()(*it);
+  }
   _run_timer();
   _running = false;
 }
@@ -97,17 +106,6 @@ void EventLoop::run() {
 
 void EventLoop::stop() {
   _stop_flag = true;
-}
-
-void EventLoop::cleanup() {
-  while (!_timer_watchers.empty())
-    _timer_watchers.begin()->second->cancel();
-  while (!_io_watchers.empty())
-    _io_watchers.begin()->second->stop();
-  while (!_signal_watchers.empty())
-    _signal_watchers.begin()->second->stop();
-  while (!_process_watchers.empty())
-    _process_watchers.begin()->second->detach();
 }
 
 } // namespace ftev
