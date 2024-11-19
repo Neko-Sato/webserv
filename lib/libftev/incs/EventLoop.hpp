@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/20 05:15:01 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/20 05:16:12 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,6 @@ private:
 
 public:
   EventLoop();
-  template <typename SelectorFactory>
-  EventLoop(SelectorFactory selector_factory);
   ~EventLoop();
 
   void run();
@@ -68,12 +66,5 @@ private:
   typedef std::map<pid_t, BaseProcessWatcher *> ProcessWatchers;
   ProcessWatchers _process_watchers;
 };
-
-template <typename SelectorFactory>
-EventLoop::EventLoop(SelectorFactory selector_factory)
-    : _selector(selector_factory()), _time(0), _running(false),
-      _stop_flag(false), _signalpipe_watcher(NULL), _wait_watcher(NULL) {
-  _update_time();
-}
 
 } // namespace ftev
