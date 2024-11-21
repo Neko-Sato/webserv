@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 18:34:59 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/21 17:25:45 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,10 @@
 #include <selectors/BaseSelector.hpp>
 
 namespace ftpp {
+
+unsigned int const BaseSelector::READ = 1;
+unsigned int const BaseSelector::WRITE = 2;
+unsigned int const BaseSelector::EXCEPT = 4;
 
 BaseSelector::BaseSelector() {
 }

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:20:10 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/20 04:09:04 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/21 17:25:31 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,10 @@ private:
   BaseSelector &operator=(BaseSelector const &rhs);
 
 public:
-  static const unsigned int READ = 1;
-  static const unsigned int WRITE = 2;
-  static const unsigned int ERROR = 4;
+  static unsigned int const READ;
+  static unsigned int const WRITE;
+  static unsigned int const EXCEPT;
+
   struct event_details {
     int fd;
     unsigned int events;

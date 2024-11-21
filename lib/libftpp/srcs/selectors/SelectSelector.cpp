@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 23:35:50 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/18 00:52:56 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/21 18:08:43 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,23 +30,20 @@ void SelectSelector::add(int fd, int events) {
 
 void SelectSelector::remove(int fd) {
   std::map<int, unsigned int>::iterator it = _fds.find(fd);
-  if (it != _fds.end())
-    _fds.erase(it);
-  else
+  if (it == _fds.end())
     throw NotRegisteredError();
+  _fds.erase(it);
 }
 
 void SelectSelector::modify(int fd, int events) {
   std::map<int, unsigned int>::iterator it = _fds.find(fd);
-  if (it != _fds.end())
-    it->second = events;
-  else
+  if (it == _fds.end())
     throw NotRegisteredError();
+  it->second = events;
 }
 
 void SelectSelector::select(Events &events, int timeout) const {
   fd_set readfds, writefds, exceptfds;
-  struct timeval _timeout = {};
   int maxfd = 0;
   FD_ZERO(&readfds);
   FD_ZERO(&writefds);
@@ -59,14 +56,13 @@ void SelectSelector::select(Events &events, int timeout) const {
       FD_SET(it->first, &readfds);
     if (it->second & WRITE)
       FD_SET(it->first, &writefds);
-    if (it->second & ERROR)
-      FD_SET(it->first, &exceptfds);
+    FD_SET(it->first, &exceptfds);
   }
-  if (timeout >= 0) {
-    _timeout.tv_sec = timeout / 1000;
-    _timeout.tv_usec = (timeout % 1000) * 1000;
-  }
-  int nfds = ::select(maxfd + 1, &readfds, &writefds, &exceptfds, &_timeout);
+  int nfds =
+      ::select(maxfd + 1, &readfds, &writefds, &exceptfds,
+               timeout < 0 ? NULL
+                           : &(timeval){.tv_sec = timeout / 1000,
+                                        .tv_usec = (timeout % 1000) * 1000});
   if (__glibc_unlikely(nfds == -1))
     throw OSError(errno, "select");
   events.clear();
@@ -82,7 +78,7 @@ void SelectSelector::select(Events &events, int timeout) const {
     if (FD_ISSET(it->first, &writefds))
       tmp.events |= WRITE;
     if (FD_ISSET(it->first, &exceptfds))
-      tmp.events |= ERROR;
+      tmp.events |= EXCEPT;
     if (tmp.events)
       events.push_back(tmp);
   }

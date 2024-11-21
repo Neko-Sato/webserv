@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/20 05:27:30 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/21 17:34:09 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,18 +28,16 @@ void PollSelector::add(int fd, int events) {
 
 void PollSelector::remove(int fd) {
   std::map<int, unsigned int>::iterator it = _fds.find(fd);
-  if (it != _fds.end())
-    _fds.erase(it);
-  else
+  if (it == _fds.end())
     throw NotRegisteredError();
+  _fds.erase(it);
 }
 
 void PollSelector::modify(int fd, int events) {
   std::map<int, unsigned int>::iterator it = _fds.find(fd);
-  if (it != _fds.end())
-    it->second = events;
-  else
+  if (it == _fds.end())
     throw NotRegisteredError();
+  it->second = events;
 }
 
 void PollSelector::select(Events &events, int timeout) const {
@@ -50,13 +48,11 @@ void PollSelector::select(Events &events, int timeout) const {
     for (std::map<int, unsigned int>::const_iterator it = _fds.begin();
          it != _fds.end(); it++, fd++) {
       fd->fd = it->first;
-      fd->events = 0;
+      fd->events = POLLERR | POLLHUP;
       if (it->second & READ)
-        fd->events |= (POLLIN | POLLHUP);
+        fd->events |= POLLIN;
       if (it->second & WRITE)
         fd->events |= POLLOUT;
-      if (it->second & ERROR)
-        fd->events |= POLLERR;
     }
   }
   int nfds = poll(fds, size, timeout);
@@ -69,12 +65,12 @@ void PollSelector::select(Events &events, int timeout) const {
     event_details tmp;
     tmp.fd = fds[i].fd;
     tmp.events = 0;
-    if (fds[i].revents & (POLLIN | POLLHUP))
+    if (fds[i].revents & POLLIN)
       tmp.events |= READ;
     if (fds[i].revents & POLLOUT)
       tmp.events |= WRITE;
-    if (fds[i].revents & POLLERR)
-      tmp.events |= ERROR;
+    if (fds[i].revents & (POLLERR | POLLHUP))
+      tmp.events |= EXCEPT;
     events.push_back(tmp);
   }
 }
