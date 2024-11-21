@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 23:35:50 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/21 18:08:43 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/21 21:52:47 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,11 +58,15 @@ void SelectSelector::select(Events &events, int timeout) const {
       FD_SET(it->first, &writefds);
     FD_SET(it->first, &exceptfds);
   }
-  int nfds =
-      ::select(maxfd + 1, &readfds, &writefds, &exceptfds,
-               timeout < 0 ? NULL
-                           : &(timeval){.tv_sec = timeout / 1000,
-                                        .tv_usec = (timeout % 1000) * 1000});
+  int nfds;
+  if (timeout < 0)
+    nfds = ::select(maxfd + 1, &readfds, &writefds, &exceptfds, NULL);
+  else {
+    timeval _timeout;
+    _timeout.tv_sec = timeout / 1000;
+    _timeout.tv_usec = (timeout % 1000) * 1000;
+    nfds = ::select(maxfd + 1, &readfds, &writefds, &exceptfds, &_timeout);
+  }
   if (__glibc_unlikely(nfds == -1))
     throw OSError(errno, "select");
   events.clear();

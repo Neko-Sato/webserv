@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 22:09:31 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/20 03:51:03 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/21 21:44:51 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ public:
 
   virtual void on_read() = 0;
   virtual void on_write() = 0;
-  virtual void on_error() = 0;
+  virtual void on_except() = 0;
 };
 
 } // namespace ftev

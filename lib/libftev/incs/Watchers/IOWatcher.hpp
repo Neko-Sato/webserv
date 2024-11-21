@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/17 01:30:24 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/17 19:16:23 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/21 21:45:23 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,14 +21,14 @@ public:
   typedef void (*callback)(BaseIOWatcher &watcher, T data);
 
 private:
-  callback _on_read, _on_write, _on_error;
+  callback _on_read, _on_write, _on_except;
   T _data;
 
 public:
   IOWatcher(EventLoop &loop, callback on_read, callback on_write,
-            callback on_error, T data)
+            callback on_except, T data)
       : BaseIOWatcher(loop), _on_read(on_read), _on_write(on_write),
-        _on_error(on_error), _data(data) {
+        _on_except(on_except), _data(data) {
   }
 
   void on_read() {
@@ -41,9 +41,9 @@ public:
       _on_write(*this, _data);
   }
 
-  void on_error() {
-    if (_on_error)
-      _on_error(*this, _data);
+  void on_except() {
+    if (_on_except)
+      _on_except(*this, _data);
   }
 };
 

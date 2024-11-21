@@ -70,6 +70,7 @@ int main() {
   options.pipe[0] = -1;
   options.pipe[1] = -1;
   process_watcher.start(options);
+  std::cerr << "kaishi" << fd << std::endl;
   loop.run();
   io_watcher.stop();
   close(fd);
