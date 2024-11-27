@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/28 02:38:55 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/28 02:47:22 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,13 +47,6 @@ void BaseSelector::modify(int fd, event_t events) {
 
 BaseSelector::Mapping const &BaseSelector::get_map() const {
   return _fds;
-}
-
-BaseSelector::event_t const &BaseSelector::operator[](int fd) const {
-  Mapping::const_iterator it = _fds.find(fd);
-  if (it == _fds.end())
-    throw NotRegisteredError();
-  return it->second;
 }
 
 char const *BaseSelector::RegisteredError::what() const throw() {
