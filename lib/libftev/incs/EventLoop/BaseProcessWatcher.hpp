@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/20 05:08:12 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/24 04:32:31 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,15 @@ private:
   using BaseWatcher::_is_active;
   ProcessWatchers::iterator _it;
 
+  class WaitWatcher : public BaseSignalWatcher {
+  public:
+    WaitWatcher(EventLoop &loop);
+    ~WaitWatcher();
+
+    void on_signal();
+  };
+
   void _activate();
-  static void _on_sigchld(BaseSignalWatcher &watcher, int _);
 
 public:
   BaseProcessWatcher(EventLoop &loop);

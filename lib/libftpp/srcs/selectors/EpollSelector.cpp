@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/21 17:28:18 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/28 01:58:40 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,29 +19,35 @@
 
 namespace ftpp {
 
-EpollSelector::EpollSelector() {
-  _epfd = epoll_create(1);
-  if (__glibc_unlikely(_epfd == -1))
+int const EpollSelector::max_events = 1024;
+
+int EpollSelector::_create_epollfd() {
+  int epfd = epoll_create(1);
+  if (__glibc_unlikely(epfd == -1))
     throw OSError(errno, "epoll_create");
   try {
-    int flags = fcntl(_epfd, F_GETFD);
+    int flags = fcntl(epfd, F_GETFD);
     if (__glibc_unlikely(flags == -1))
       throw ftpp::OSError(errno, "fcntl");
-    if (__glibc_unlikely(fcntl(_epfd, F_SETFD, flags | FD_CLOEXEC) == -1))
+    if (__glibc_unlikely(fcntl(epfd, F_SETFD, flags | FD_CLOEXEC) == -1))
       throw ftpp::OSError(errno, "fcntl");
   } catch (OSError const &e) {
-    close(_epfd);
+    close(epfd);
     throw;
   }
+  return epfd;
+}
+
+EpollSelector::EpollSelector() : _epfd(_create_epollfd()) {
 }
 
 EpollSelector::~EpollSelector() {
   close(_epfd);
 }
 
-void EpollSelector::add(int fd, int events) {
+void EpollSelector::add(int fd, event_t events) {
   try {
-    struct epoll_event ev;
+    epoll_event ev;
     ev.events = 0;
     if (events & READ)
       ev.events |= EPOLLIN;
@@ -58,6 +64,7 @@ void EpollSelector::add(int fd, int events) {
       throw;
     }
   }
+  _fds[fd] = events;
 }
 
 void EpollSelector::remove(int fd) {
@@ -72,11 +79,12 @@ void EpollSelector::remove(int fd) {
       throw;
     }
   }
+  _fds.erase(fd);
 }
 
-void EpollSelector::modify(int fd, int events) {
+void EpollSelector::modify(int fd, event_t events) {
   try {
-    struct epoll_event ev;
+    epoll_event ev;
     ev.events = 0;
     if (events & READ)
       ev.events |= EPOLLIN;
@@ -93,6 +101,7 @@ void EpollSelector::modify(int fd, int events) {
       throw;
     }
   }
+  _fds[fd] = events;
 }
 
 void EpollSelector::select(Events &events, int timeout) const {
@@ -100,7 +109,6 @@ void EpollSelector::select(Events &events, int timeout) const {
   int nfds = epoll_wait(_epfd, ev, max_events, timeout);
   if (__glibc_unlikely(nfds == -1))
     throw OSError(errno, "epoll_wait");
-  events.clear();
   for (int i = 0; i < nfds; i++) {
     event_details tmp;
     tmp.fd = ev[i].data.fd;
@@ -111,7 +119,7 @@ void EpollSelector::select(Events &events, int timeout) const {
       tmp.events |= WRITE;
     if (ev[i].events & (EPOLLERR | EPOLLHUP))
       tmp.events |= EXCEPT;
-    events.push_back(tmp);
+    events.push(tmp);
   }
 }
 

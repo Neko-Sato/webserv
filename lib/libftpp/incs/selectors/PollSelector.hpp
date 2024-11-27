@@ -6,28 +6,24 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/14 00:18:31 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/15 22:43:32 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/28 01:23:50 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <map>
-#include <poll.h>
 #include <selectors/BaseSelector.hpp>
 
 namespace ftpp {
 
 class PollSelector : public BaseSelector {
 private:
-  std::map<int, unsigned int> _fds;
+  using BaseSelector::_fds;
 
 public:
   PollSelector();
   ~PollSelector();
-  void add(int fd, int events);
-  void remove(int fd);
-  void modify(int fd, int events);
+
   void select(Events &events, int timeout) const;
 };
 

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 00:22:29 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/19 22:26:35 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/24 04:22:22 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,14 +24,21 @@ class EventLoop::BaseSignalWatcher : public EventLoop::BaseWatcher {
 private:
   using BaseWatcher::_is_active;
   SignalWatchers::iterator _it;
+  sighandler_t _old_handler;
 
-  static int _pipe[2];
-  static void _pipe_release();
+  class SignalpipeWatcher : public BaseIOWatcher {
+  public:
+    SignalpipeWatcher(EventLoop &loop);
+    ~SignalpipeWatcher();
+
+    void on_read();
+    void on_write();
+    void on_except();
+  };
 
   void _activate();
 
   static void _signal_handler(int signum);
-  static void _signal_pipe_on_read(BaseIOWatcher &watcher, int _);
 
 public:
   BaseSignalWatcher(EventLoop &loop);

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/20 05:16:12 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/28 01:34:02 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,21 @@
 
 namespace ftev {
 
+/*
+    [ unithread event loop ]
+
+    I am a perfectionist.
+    But this assignment hates multi-threading.
+    So I can't use functions to combat that.
+    Damn.
+    Please don't use multi-threading,
+    although it won't happen...
+    When there are multiple event loops,
+    the signal watcher cannot be created properly with just the signal
+   function. Impossible! That's why the eventloop has to be a singleton. I'll
+   keep the constructor secret, so use the default loop.
+*/
+
 class EventLoop {
 private:
   ftpp::BaseSelector *_selector;
@@ -29,16 +44,18 @@ private:
   bool _stop_flag;
 
   void _update_time();
-  int _backend_timeout();
+  int _backend_timeout() const;
   void _run_timer();
   void operator++();
+
+  ~EventLoop();
+  EventLoop();
 
   EventLoop(EventLoop const &rhs);
   EventLoop &operator=(EventLoop const &rhs);
 
 public:
-  EventLoop();
-  ~EventLoop();
+  static EventLoop default_loop;
 
   void run();
   void stop();
@@ -57,10 +74,11 @@ private:
   typedef std::map<int, BaseIOWatcher *> IOWatchers;
   IOWatchers _io_watchers;
 
+  static int _signalpipe[2]; /* In truth, this is a non-static class member.*/
   BaseIOWatcher *_signalpipe_watcher;
-  std::map<int, sighandler_t> _old_sighandlers;
-  typedef std::multimap<int, BaseSignalWatcher *> SignalWatchers;
-  SignalWatchers _signal_watchers;
+  typedef std::map<int, BaseSignalWatcher *> SignalWatchers;
+  SignalWatchers _signal_watchers; /* I want to make this guy static and common
+                                      to all eventloops. Really. */
 
   BaseSignalWatcher *_wait_watcher;
   typedef std::map<pid_t, BaseProcessWatcher *> ProcessWatchers;

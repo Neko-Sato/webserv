@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 22:48:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/21 21:45:47 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/28 01:58:40 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,7 @@
 
 namespace ftev {
 
-EventLoop::BaseIOWatcher::BaseIOWatcher(EventLoop &loop)
-    : EventLoop::BaseWatcher(loop) {
+EventLoop::BaseIOWatcher::BaseIOWatcher(EventLoop &loop) : BaseWatcher(loop) {
 }
 
 EventLoop::BaseIOWatcher::~BaseIOWatcher() {
@@ -38,17 +37,22 @@ void EventLoop::BaseIOWatcher::operator()(event_details const &ev) {
     on_except();
 }
 
-void EventLoop::BaseIOWatcher::start(int fd, int events) {
+void EventLoop::BaseIOWatcher::start(int fd, event_t events) {
   assert(!_is_active);
-  loop._selector->add(fd, events);
   std::pair<IOWatchers::iterator, bool> result =
       loop._io_watchers.insert(std::make_pair(fd, this));
   assert(result.second);
   _it = result.first;
+  try {
+    loop._selector->add(fd, events);
+  } catch (...) {
+    loop._io_watchers.erase(_it);
+    throw;
+  }
   _is_active = true;
 }
 
-void EventLoop::BaseIOWatcher::modify(int events) {
+void EventLoop::BaseIOWatcher::modify(event_t events) {
   assert(_is_active);
   loop._selector->modify(_it->first, events);
 }
@@ -58,11 +62,6 @@ void EventLoop::BaseIOWatcher::stop() {
   loop._selector->remove(_it->first);
   loop._io_watchers.erase(_it);
   _is_active = false;
-}
-
-int EventLoop::BaseIOWatcher::get_fd() const {
-  assert(_is_active);
-  return _it->first;
 }
 
 } // namespace ftev
