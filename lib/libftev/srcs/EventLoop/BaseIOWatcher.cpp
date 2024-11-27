@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 22:48:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/28 01:58:40 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/28 04:03:55 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,11 @@ void EventLoop::BaseIOWatcher::stop() {
   loop._selector->remove(_it->first);
   loop._io_watchers.erase(_it);
   _is_active = false;
+}
+
+EventLoop::BaseIOWatcher::event_t EventLoop::BaseIOWatcher::get_events() const {
+  assert(_is_active);
+  return loop._selector->get_map().find(_it->first).second;
 }
 
 } // namespace ftev
