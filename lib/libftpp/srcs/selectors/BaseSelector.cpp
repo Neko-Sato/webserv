@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/28 02:11:21 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/28 02:38:55 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ BaseSelector::~BaseSelector() {
 }
 
 void BaseSelector::add(int fd, event_t events) {
-  if (!_fds.insert(std::make_pair(fd, events)).second)
+  if (!_fds.insert(std::make_pair(fd, events & READ & WRITE)).second)
     throw RegisteredError();
 }
 
@@ -42,7 +42,7 @@ void BaseSelector::modify(int fd, event_t events) {
   Mapping::iterator it = _fds.find(fd);
   if (it == _fds.end())
     throw NotRegisteredError();
-  it->second = events;
+  it->second = events & READ & WRITE;
 }
 
 BaseSelector::Mapping const &BaseSelector::get_map() const {
