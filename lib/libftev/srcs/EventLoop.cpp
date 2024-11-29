@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/28 01:51:31 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/30 07:29:09 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ void EventLoop::operator++() {
       }
     }
   }
-  
+
   while (!events.empty()) {
     event_details const &details = events.front();
     IOWatchers::iterator watcher = _io_watchers.find(details.fd);
@@ -119,10 +119,10 @@ void EventLoop::run() {
   assert(!_running);
   _stop_flag = false;
   _run_timer();
-  for (;
-       __glibc_likely(!_stop_flag ||
-                      (_timer_watchers.empty() && _io_watchers.empty() &&
-                       _signal_watchers.empty() && _process_watchers.empty()));
+  for (; __glibc_likely(
+           !(_stop_flag ||
+             (_timer_watchers.empty() && _io_watchers.empty() &&
+              _signal_watchers.empty() && _process_watchers.empty())));
        operator++())
     ;
 }
