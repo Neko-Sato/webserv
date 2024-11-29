@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 03:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/30 07:43:59 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/30 07:57:28 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,10 @@
 
 #include <sys/socket.h>
 #include <unistd.h>
+
+#if not defined(FT_SUBJECT_NOT_COMPLIANT)
+#include <stdexcept>
+#endif
 
 namespace ftpp {
 
@@ -66,10 +70,10 @@ int Socket::accept(sockaddr *addr, socklen_t *addrlen) {
 std::size_t Socket::write(void const *buf, std::size_t len) {
   ssize_t ret = ::write(_sockfd, buf, len);
   if (__glibc_unlikely(ret == -1))
-#if not defined(FT_SUBJECT_COMPLIANT)
+#if defined(FT_SUBJECT_NOT_COMPLIANT)
     throw OSError(errno, "write");
 #else
-    throw OSError(-1, "write");
+    throw std::runtime_error("write: No access to error details");
 #endif
   return ret;
 }
@@ -77,10 +81,10 @@ std::size_t Socket::write(void const *buf, std::size_t len) {
 std::size_t Socket::read(void *buf, std::size_t len) {
   ssize_t ret = ::read(_sockfd, buf, len);
   if (__glibc_unlikely(ret == -1))
-#if not defined(FT_SUBJECT_COMPLIANT)
+#if defined(FT_SUBJECT_NOT_COMPLIANT)
     throw OSError(errno, "read");
 #else
-    throw OSError(-1, "read");
+    throw std::runtime_error("read: No access to error details");
 #endif
   return ret;
 }
@@ -88,10 +92,10 @@ std::size_t Socket::read(void *buf, std::size_t len) {
 std::size_t Socket::send(void const *buf, std::size_t len, int flags) {
   ssize_t ret = ::send(_sockfd, buf, len, flags);
   if (__glibc_unlikely(ret == -1))
-#if not defined(FT_SUBJECT_COMPLIANT)
+#if defined(FT_SUBJECT_NOT_COMPLIANT)
     throw OSError(errno, "send");
 #else
-    throw OSError(-1, "send");
+    throw std::runtime_error("send: No access to error details");
 #endif
   return ret;
 }
@@ -99,15 +103,15 @@ std::size_t Socket::send(void const *buf, std::size_t len, int flags) {
 std::size_t Socket::recv(void *buf, std::size_t len, int flags) {
   ssize_t ret = ::recv(_sockfd, buf, len, flags);
   if (__glibc_unlikely(ret == -1))
-#if not defined(FT_SUBJECT_COMPLIANT)
+#if defined(FT_SUBJECT_NOT_COMPLIANT)
     throw OSError(errno, "recv");
 #else
-    throw OSError(-1, "recv");
+    throw std::runtime_error("recv: No access to error details");
 #endif
   return ret;
 }
 
-#if not defined(FT_SUBJECT_COMPLIANT)
+#if defined(FT_SUBJECT_NOT_COMPLIANT)
 std::size_t Socket::sendto(void const *buf, std::size_t len, int flags,
                            sockaddr const *dest_addr, socklen_t addrlen) {
   ssize_t ret = ::sendto(_sockfd, buf, len, flags, dest_addr, addrlen);

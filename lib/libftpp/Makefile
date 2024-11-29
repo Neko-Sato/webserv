@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2024/11/30 07:45:07 by hshimizu         ###   ########.fr        #
+#    Updated: 2024/11/30 07:55:48 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,7 +35,6 @@ CXXFLAGS	+= -g -fsanitize=address
 else
 CXXFLAGS	+= -O3
 endif
-CXXFLAGS	+= -DFT_SUBJECT_COMPLIANT
 
 .PHONY: all clean fclean re
 
