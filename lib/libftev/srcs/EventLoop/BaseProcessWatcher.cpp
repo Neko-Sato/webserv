@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 16:23:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/26 18:29:04 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/29 06:04:08 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 
 #include <cassert>
 #include <cstdlib>
+#include <iostream>
 #include <sys/wait.h>
 #include <unistd.h>
 

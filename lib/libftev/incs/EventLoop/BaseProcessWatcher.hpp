@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/24 04:32:31 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/30 02:59:32 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,10 @@ private:
 
   void _activate();
 
-public:
+protected:
   BaseProcessWatcher(EventLoop &loop);
+
+public:
   virtual ~BaseProcessWatcher();
   void operator()(int status);
 

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:20:10 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/28 02:47:45 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/30 03:00:15 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,9 @@ private:
 
 protected:
   Mapping _fds;
+  BaseSelector();
 
 public:
-  BaseSelector();
   virtual ~BaseSelector();
 
   virtual void add(int fd, event_t events);

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 22:09:31 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/28 03:58:05 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/30 02:59:19 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,10 @@ private:
 
   typedef ftpp::BaseSelector::event_details event_details;
 
-public:
+protected:
   BaseIOWatcher(EventLoop &loop);
+
+public:
   virtual ~BaseIOWatcher();
   void operator()(event_details const &ev);
 

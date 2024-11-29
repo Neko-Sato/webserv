@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/28 01:34:02 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/29 08:22:36 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,11 +74,10 @@ private:
   typedef std::map<int, BaseIOWatcher *> IOWatchers;
   IOWatchers _io_watchers;
 
-  static int _signalpipe[2]; /* In truth, this is a non-static class member.*/
+  static int _signalpipe[2];
   BaseIOWatcher *_signalpipe_watcher;
   typedef std::map<int, BaseSignalWatcher *> SignalWatchers;
-  SignalWatchers _signal_watchers; /* I want to make this guy static and common
-                                      to all eventloops. Really. */
+  SignalWatchers _signal_watchers;
 
   BaseSignalWatcher *_wait_watcher;
   typedef std::map<pid_t, BaseProcessWatcher *> ProcessWatchers;

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 00:22:29 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/24 04:22:22 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/30 02:59:40 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,10 @@ private:
 
   static void _signal_handler(int signum);
 
-public:
+protected:
   BaseSignalWatcher(EventLoop &loop);
+
+public:
   virtual ~BaseSignalWatcher();
   void operator()();
 

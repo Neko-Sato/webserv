@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/17 02:16:25 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/20 02:45:03 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/30 02:59:54 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,10 @@ public:
 protected:
   bool _is_active;
 
-public:
   BaseWatcher(EventLoop &loop);
   virtual ~BaseWatcher();
+
+public:
   bool is_active() const;
 };
 
