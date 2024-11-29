@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 03:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/30 06:24:31 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/11/30 07:43:59 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,28 +66,44 @@ int Socket::accept(sockaddr *addr, socklen_t *addrlen) {
 std::size_t Socket::write(void const *buf, std::size_t len) {
   ssize_t ret = ::write(_sockfd, buf, len);
   if (__glibc_unlikely(ret == -1))
+#if not defined(FT_SUBJECT_COMPLIANT)
     throw OSError(errno, "write");
+#else
+    throw OSError(-1, "write");
+#endif
   return ret;
 }
 
 std::size_t Socket::read(void *buf, std::size_t len) {
   ssize_t ret = ::read(_sockfd, buf, len);
   if (__glibc_unlikely(ret == -1))
+#if not defined(FT_SUBJECT_COMPLIANT)
     throw OSError(errno, "read");
+#else
+    throw OSError(-1, "read");
+#endif
   return ret;
 }
 
 std::size_t Socket::send(void const *buf, std::size_t len, int flags) {
   ssize_t ret = ::send(_sockfd, buf, len, flags);
   if (__glibc_unlikely(ret == -1))
+#if not defined(FT_SUBJECT_COMPLIANT)
     throw OSError(errno, "send");
+#else
+    throw OSError(-1, "send");
+#endif
   return ret;
 }
 
 std::size_t Socket::recv(void *buf, std::size_t len, int flags) {
   ssize_t ret = ::recv(_sockfd, buf, len, flags);
   if (__glibc_unlikely(ret == -1))
+#if not defined(FT_SUBJECT_COMPLIANT)
     throw OSError(errno, "recv");
+#else
+    throw OSError(-1, "recv");
+#endif
   return ret;
 }
 
