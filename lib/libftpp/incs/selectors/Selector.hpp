@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 21:12:03 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/01 12:49:55 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/01 13:11:50 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,8 @@ namespace ftpp {
 #if defined(__linux__)
 typedef EpollSelector Selector;
 #elif defined(__APPLE__) || defined(__FreeBSD__)
-typedef KqueueSelector Selector;
+// typedef KqueueSelector Selector;
+typedef PollSelector Selector;
 #else
 typedef PollSelector Selector;
 #endif
