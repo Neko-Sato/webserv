@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   EpollSelector.hpp                                  :+:      :+:    :+:   */
+/*   KqueueSelector.hpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 17:23:36 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/01 12:32:47 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/01 12:48:29 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,23 +14,23 @@
 
 #include <selectors/BaseSelector.hpp>
 
-#if defined(__linux__)
+#if defined(__APPLE__) || defined(__FreeBSD__)
 
 namespace ftpp {
 
-class EpollSelector : public BaseSelector {
+class KqueueSelector : public BaseSelector {
 public:
   static int const max_events;
 
 private:
   using BaseSelector::_fds;
-  int _epfd;
+  int _kq;
 
-  static int _create_epollfd();
+  static int _create_kqueue();
 
 public:
-  EpollSelector();
-  ~EpollSelector();
+  KqueueSelector();
+  ~KqueueSelector();
 
   void add(int fd, event_t events);
   void remove(int fd);

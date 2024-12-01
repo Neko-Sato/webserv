@@ -6,12 +6,14 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/28 01:58:40 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/01 12:31:59 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <exceptions/OSError.hpp>
 #include <selectors/EpollSelector.hpp>
+
+#if defined(__linux__)
 
 #include <fcntl.h>
 #include <sys/epoll.h>
@@ -83,6 +85,11 @@ void EpollSelector::remove(int fd) {
 }
 
 void EpollSelector::modify(int fd, event_t events) {
+  Mapping::iterator it = _fds.find(fd);
+  if (it == _fds.end())
+    throw NotRegisteredError();
+  if (it->second == events)
+    return;
   try {
     epoll_event ev;
     ev.events = 0;
@@ -101,7 +108,7 @@ void EpollSelector::modify(int fd, event_t events) {
       throw;
     }
   }
-  _fds[fd] = events;
+  it->second = events;
 }
 
 void EpollSelector::select(Events &events, int timeout) const {
@@ -124,3 +131,5 @@ void EpollSelector::select(Events &events, int timeout) const {
 }
 
 } // namespace ftpp
+
+#endif

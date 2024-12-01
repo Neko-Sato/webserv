@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 22:09:31 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/30 02:59:19 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/01 00:07:55 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,11 @@
 
 namespace ftev {
 
-class EventLoop::BaseIOWatcher : public EventLoop::BaseWatcher {
+class EventLoop::BaseIOWatcher : private EventLoop::BaseWatcher {
 public:
   typedef ftpp::BaseSelector::event_t event_t;
 
 private:
-  using BaseWatcher::_is_active;
   IOWatchers::iterator _it;
 
   typedef ftpp::BaseSelector::event_details event_details;
@@ -33,6 +32,7 @@ protected:
 public:
   virtual ~BaseIOWatcher();
   void operator()(event_details const &ev);
+  using BaseWatcher::is_active;
 
   void start(int fd, event_t events);
   void modify(event_t events);
