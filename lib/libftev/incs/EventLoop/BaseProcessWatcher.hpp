@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/01 00:07:41 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/01 13:05:22 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,9 @@
 
 namespace ftev {
 
-class EventLoop::BaseProcessWatcher : private EventLoop::BaseWatcher {
+class EventLoop::BaseProcessWatcher : public EventLoop::BaseWatcher {
 private:
+  using BaseWatcher::_is_active;
   ProcessWatchers::iterator _it;
 
   class WaitWatcher : public BaseSignalWatcher {
@@ -40,7 +41,6 @@ protected:
 public:
   virtual ~BaseProcessWatcher();
   void operator()(int status);
-  using BaseWatcher::is_active;
 
   struct options {
     char const *file;

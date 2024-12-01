@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 00:22:29 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/01 00:07:24 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/01 13:05:10 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,9 @@
 
 namespace ftev {
 
-class EventLoop::BaseSignalWatcher : private EventLoop::BaseWatcher {
+class EventLoop::BaseSignalWatcher : public EventLoop::BaseWatcher {
 private:
+  using BaseWatcher::_is_active;
   SignalWatchers::iterator _it;
   sighandler_t _old_handler;
 
@@ -29,7 +30,6 @@ private:
   public:
     SignalpipeWatcher(EventLoop &loop);
     ~SignalpipeWatcher();
-    using BaseWatcher::is_active;
 
     void on_read();
     void on_write();
