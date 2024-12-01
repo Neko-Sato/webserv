@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/01 12:31:59 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/02 03:11:29 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ EpollSelector::~EpollSelector() {
 }
 
 void EpollSelector::add(int fd, event_t events) {
+  events &= READ | WRITE;
   try {
     epoll_event ev;
     ev.events = 0;
@@ -85,11 +86,7 @@ void EpollSelector::remove(int fd) {
 }
 
 void EpollSelector::modify(int fd, event_t events) {
-  Mapping::iterator it = _fds.find(fd);
-  if (it == _fds.end())
-    throw NotRegisteredError();
-  if (it->second == events)
-    return;
+  events &= READ | WRITE;
   try {
     epoll_event ev;
     ev.events = 0;
@@ -108,7 +105,7 @@ void EpollSelector::modify(int fd, event_t events) {
       throw;
     }
   }
-  it->second = events;
+  _fds[fd] = events;
 }
 
 void EpollSelector::select(Events &events, int timeout) const {
