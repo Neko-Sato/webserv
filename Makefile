@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2024/11/30 07:55:43 by hshimizu         ###   ########.fr        #
+#    Updated: 2024/12/03 10:11:52 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,7 +32,7 @@ LDFLAGS				:= -L$(LIBFTEV) -L$(LIBFTPP)
 LIBS				:= -lftev -Wl,-rpath $(LIBFTEV) -lftpp -Wl,-rpath $(LIBFTPP)
 
 ifeq ($(DEBUG), 1)
-CXXFLAGS	+= -g -fsanitize=address
+CXXFLAGS	+= -g -fsanitize=address -D FT_SUBJECT_NOT_COMPLIANT
 else
 CXXFLAGS	+= -O3
 endif

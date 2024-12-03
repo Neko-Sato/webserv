@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/30 07:29:09 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/04 05:29:57 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ EventLoop::~EventLoop() {
   delete _signalpipe_watcher;
   delete _wait_watcher;
   delete _selector;
+  _delete_watchers();
   if (_signalpipe[0] != -1)
     close(_signalpipe[0]);
   if (_signalpipe[1] != -1)
@@ -85,14 +86,13 @@ void EventLoop::_run_timer() {
   }
 }
 
-void EventLoop::operator++() {
-  _running = true;
+void EventLoop::_run_io_poll(int timeout) {
   typedef ftpp::BaseSelector::Events Events;
   typedef ftpp::BaseSelector::event_details event_details;
   Events events;
   for (;;) {
     try {
-      _selector->select(events, _backend_timeout());
+      _selector->select(events, timeout);
       break;
     } catch (ftpp::OSError const &e) {
       switch (e.get_errno()) {
@@ -103,7 +103,6 @@ void EventLoop::operator++() {
       }
     }
   }
-
   while (!events.empty()) {
     event_details const &details = events.front();
     IOWatchers::iterator watcher = _io_watchers.find(details.fd);
@@ -111,7 +110,20 @@ void EventLoop::operator++() {
       watcher->second->operator()(details);
     events.pop();
   }
+}
+
+void EventLoop::_delete_watchers() {
+  while (!_deleting_watchers.empty()) {
+    delete _deleting_watchers.front();
+    _deleting_watchers.pop();
+  }
+}
+
+void EventLoop::operator++() {
+  _running = true;
+  _run_io_poll(_backend_timeout());
   _run_timer();
+  _delete_watchers();
   _running = false;
 }
 

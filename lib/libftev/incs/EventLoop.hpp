@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/29 08:22:36 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/04 05:35:03 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <ctime>
 #include <list>
 #include <map>
+#include <queue>
 
 namespace ftev {
 
@@ -37,6 +38,13 @@ namespace ftev {
 */
 
 class EventLoop {
+public:
+  class BaseWatcher;
+  class BaseTimerWatcher;
+  class BaseIOWatcher;
+  class BaseSignalWatcher;
+  class BaseProcessWatcher;
+
 private:
   ftpp::BaseSelector *_selector;
   time_t _time;
@@ -46,6 +54,8 @@ private:
   void _update_time();
   int _backend_timeout() const;
   void _run_timer();
+  void _run_io_poll(int timeout);
+  void _delete_watchers();
   void operator++();
 
   ~EventLoop();
@@ -60,14 +70,9 @@ public:
   void run();
   void stop();
 
-public:
-  class BaseWatcher;
-  class BaseTimerWatcher;
-  class BaseIOWatcher;
-  class BaseSignalWatcher;
-  class BaseProcessWatcher;
-
 private:
+  std::queue<BaseWatcher *> _pending_deletion_watchers;
+
   typedef std::multimap<time_t, BaseTimerWatcher *> TimerWatchers;
   TimerWatchers _timer_watchers;
 
