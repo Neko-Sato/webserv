@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 22:09:31 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/01 13:07:24 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/04 09:18:17 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,6 @@ private:
   using BaseWatcher::_is_active;
   IOWatchers::iterator _it;
 
-  typedef ftpp::BaseSelector::event_details event_details;
-
 protected:
   BaseIOWatcher(EventLoop &loop);
 
@@ -31,7 +29,7 @@ public:
   typedef ftpp::BaseSelector::event_t event_t;
 
   virtual ~BaseIOWatcher();
-  void operator()(event_details const &ev);
+  void operator()(event_t events);
 
   void start(int fd, event_t events);
   void modify(event_t events);

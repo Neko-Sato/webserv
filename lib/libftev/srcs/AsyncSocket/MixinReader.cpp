@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 23:59:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/03 10:14:19 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/05 04:22:58 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,10 @@ void MixinReader::on_read() {
     else
       stop();
     on_eof(_buffer);
-  } else {
-    _buffer.insert(_buffer.end(), chank, chank + size);
-    on_data(_buffer);
+    return;
   }
+  _buffer.insert(_buffer.end(), chank, chank + size);
+  on_data(_buffer);
 }
 
 } // namespace ftev

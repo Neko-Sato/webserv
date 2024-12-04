@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 22:48:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/30 07:22:34 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/04 09:18:57 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,12 @@ EventLoop::BaseIOWatcher::~BaseIOWatcher() {
   assert(!_is_active);
 }
 
-void EventLoop::BaseIOWatcher::operator()(event_details const &ev) {
-  if (_is_active && ev.events & ftpp::BaseSelector::READ)
+void EventLoop::BaseIOWatcher::operator()(event_t events) {
+  if (_is_active && events & ftpp::BaseSelector::READ)
     on_read();
-  if (_is_active && ev.events & ftpp::BaseSelector::WRITE)
+  if (_is_active && events & ftpp::BaseSelector::WRITE)
     on_write();
-  if (_is_active && ev.events & ftpp::BaseSelector::EXCEPT)
+  if (_is_active && events & ftpp::BaseSelector::EXCEPT)
     on_except();
 }
 

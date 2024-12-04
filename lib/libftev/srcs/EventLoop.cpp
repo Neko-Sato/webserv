@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/04 05:29:57 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/04 09:17:33 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,15 +107,15 @@ void EventLoop::_run_io_poll(int timeout) {
     event_details const &details = events.front();
     IOWatchers::iterator watcher = _io_watchers.find(details.fd);
     if (watcher != _io_watchers.end())
-      watcher->second->operator()(details);
+      watcher->second->operator()(details.events);
     events.pop();
   }
 }
 
 void EventLoop::_delete_watchers() {
-  while (!_deleting_watchers.empty()) {
-    delete _deleting_watchers.front();
-    _deleting_watchers.pop();
+  while (!_pending_deletion_watchers.empty()) {
+    delete _pending_deletion_watchers.front();
+    _pending_deletion_watchers.pop();
   }
 }
 
