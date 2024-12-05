@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/04 05:35:03 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/06 07:45:25 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include <list>
 #include <map>
 #include <queue>
+#include <set>
 
 namespace ftev {
 
@@ -55,7 +56,7 @@ private:
   int _backend_timeout() const;
   void _run_timer();
   void _run_io_poll(int timeout);
-  void _delete_watchers();
+  void _delete_pending_watchers();
   void operator++();
 
   ~EventLoop();
@@ -71,7 +72,11 @@ public:
   void stop();
 
 private:
-  std::queue<BaseWatcher *> _pending_deletion_watchers;
+  typedef std::queue<BaseWatcher *> PendingDeletionWatchers;
+  PendingDeletionWatchers _pending_deletion_watchers;
+
+  typedef std::set<BaseWatcher *> Watchers;
+  Watchers _watchers;
 
   typedef std::multimap<time_t, BaseTimerWatcher *> TimerWatchers;
   TimerWatchers _timer_watchers;

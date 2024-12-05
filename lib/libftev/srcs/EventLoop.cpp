@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/04 09:17:33 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/06 07:49:10 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,22 +36,19 @@ EventLoop::EventLoop()
 }
 
 EventLoop::~EventLoop() {
-  for (TimerWatchers::iterator it = _timer_watchers.begin();
-       it != _timer_watchers.end();)
-    it++->second->cancel();
-  for (IOWatchers::iterator it = _io_watchers.begin();
-       it != _io_watchers.end();)
-    it++->second->stop();
-  for (SignalWatchers::iterator it = _signal_watchers.begin();
-       it != _signal_watchers.end();)
-    it++->second->stop();
-  for (ProcessWatchers::iterator it = _process_watchers.begin();
-       it != _process_watchers.end();)
-    it++->second->detach();
   delete _signalpipe_watcher;
   delete _wait_watcher;
+  /*
+  The fact that destructor is called means that all watchers are released except
+  the dynamically allocated ones. This is because watchers are dependent on the
+  EventLoop and are never released after the loop.
+  If loop is dynamically allocated?
+  Why is it that watcher has a dependency on loop but loop is removed first?
+  That's a shitty code!
+  */
+  for (Watchers::iterator it = _watchers.begin(); it != _watchers.end();)
+    (*it++)->on_release();
   delete _selector;
-  _delete_watchers();
   if (_signalpipe[0] != -1)
     close(_signalpipe[0]);
   if (_signalpipe[1] != -1)
@@ -112,9 +109,9 @@ void EventLoop::_run_io_poll(int timeout) {
   }
 }
 
-void EventLoop::_delete_watchers() {
+void EventLoop::_delete_pending_watchers() {
   while (!_pending_deletion_watchers.empty()) {
-    delete _pending_deletion_watchers.front();
+    _pending_deletion_watchers.front()->on_release();
     _pending_deletion_watchers.pop();
   }
 }
@@ -123,7 +120,7 @@ void EventLoop::operator++() {
   _running = true;
   _run_io_poll(_backend_timeout());
   _run_timer();
-  _delete_watchers();
+  _delete_pending_watchers();
   _running = false;
 }
 
