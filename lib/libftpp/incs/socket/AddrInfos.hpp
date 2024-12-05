@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/06 03:43:17 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/06 05:16:11 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/06 07:01:20 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ private:
 
   class iterator {
   private:
-    addrinfo *_current;
+    addrinfo const *_current;
 
   public:
     iterator(addrinfo const *info = NULL);

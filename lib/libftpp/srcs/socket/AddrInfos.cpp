@@ -17,24 +17,24 @@
 
 namespace ftpp {
 
-AddrInfos::iterator::iterator(addrinfo const *info = NULL) : _current(info) {};
+AddrInfos::iterator::iterator(addrinfo const *info) : _current(info) {};
 AddrInfos::iterator::iterator(iterator const &rhs) : _current(rhs._current) {};
 
 AddrInfos::iterator::~iterator() {};
 
-iterator &AddrInfos::iterator::operator=(iterator const &rhs) {
+AddrInfos::iterator &AddrInfos::iterator::operator=(iterator const &rhs) {
   if (this != &rhs) {
     _current = rhs._current;
   }
   return *this;
 };
 
-iterator &AddrInfos::iterator::operator++() {
+AddrInfos::iterator &AddrInfos::iterator::operator++() {
   _current = _current->ai_next;
   return *this;
 };
 
-iterator AddrInfos::iterator::operator++(int) {
+AddrInfos::iterator AddrInfos::iterator::operator++(int) {
   iterator tmp(*this);
   _current = _current->ai_next;
   return tmp;
@@ -65,7 +65,7 @@ AddrInfos::Hints::Hints(int family, int socktype, int protocol, int flags) {
 };
 
 AddrInfos::Hints::Hints(Hints const &rhs) {
-  *static_cast<addrinfo *>(this) = static_cast<addrinfo const &>(rhs)
+  *static_cast<addrinfo *>(this) = static_cast<addrinfo const &>(rhs);
 };
 
 AddrInfos::Hints::~Hints() {};
@@ -88,8 +88,8 @@ AddrInfos::AddrInfos(char const *name, char const *service) {
 
 AddrInfos::AddrInfos(char const *name, char const *service,
                      Hints const &hints) {
-  if (__glibc_unlikely(::getaddrinfo(name, service, hints->get_addrinfo(),
-                                     &_addrinfo) == -1))
+  if (__glibc_unlikely(
+          ::getaddrinfo(name, service, hints.get_addrinfo(), &_addrinfo) == -1))
     throw OSError(errno, "getaddrinfo");
 };
 
@@ -97,11 +97,11 @@ AddrInfos::~AddrInfos() {
   freeaddrinfo(_addrinfo);
 };
 
-iterator AddrInfos::begin() const {
+AddrInfos::iterator AddrInfos::begin() const {
   return iterator(_addrinfo);
 };
 
-iterator AddrInfos::end() const {
+AddrInfos::iterator AddrInfos::end() const {
   return iterator(NULL);
 };
 
