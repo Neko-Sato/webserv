@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 23:59:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/02 07:37:17 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/05 04:51:23 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,8 @@ void MixinWriter::on_write() {
 }
 
 void MixinWriter::write(char const *buffer, size_t size) {
+  if (!size)
+    return;
   _draining = false;
   _buffer.insert(_buffer.end(), buffer, buffer + size);
   if (is_active()) {

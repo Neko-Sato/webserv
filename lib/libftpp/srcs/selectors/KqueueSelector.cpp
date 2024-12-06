@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/01 12:48:31 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/06 09:20:45 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 #if defined(__APPLE__) || defined(__FreeBSD__)
 
 #include <stdexcept>
-
 #include <sys/event.h>
 #include <unistd.h>
 

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/28 01:58:40 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/06 08:58:55 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void PollSelector::select(Events &events, int timeout) const {
   pollfd fds[size];
   {
     pollfd *fd = fds;
-    for (std::map<int, event_t>::const_iterator it = _fds.begin();
+    for (Mapping::const_iterator it = _fds.begin();
          it != _fds.end(); it++, fd++) {
       fd->fd = it->first;
       fd->events = POLLERR | POLLHUP;

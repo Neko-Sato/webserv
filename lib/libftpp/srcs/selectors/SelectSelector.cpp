@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 23:35:50 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/28 01:58:40 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/06 08:58:55 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void SelectSelector::select(Events &events, int timeout) const {
   FD_ZERO(&readfds);
   FD_ZERO(&writefds);
   FD_ZERO(&exceptfds);
-  for (std::map<int, event_t>::const_iterator it = _fds.begin();
+  for (Mapping::const_iterator it = _fds.begin();
        it != _fds.end(); it++) {
     if (maxfd < it->first)
       maxfd = it->first;
@@ -50,7 +50,7 @@ void SelectSelector::select(Events &events, int timeout) const {
   }
   if (__glibc_unlikely(nfds == -1))
     throw OSError(errno, "select");
-  for (std::map<int, event_t>::const_iterator it = _fds.begin();
+  for (Mapping::const_iterator it = _fds.begin();
        nfds && it != _fds.end(); it++) {
     event_details tmp;
     tmp.fd = it->first;
