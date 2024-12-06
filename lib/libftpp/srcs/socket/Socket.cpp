@@ -6,16 +6,16 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 03:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/07 08:05:57 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/07 08:15:52 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <exceptions/OSError.hpp>
 #include <socket/Socket.hpp>
 
+#include <stdexcept>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <stdexcept>
 
 namespace ftpp {
 
@@ -136,6 +136,24 @@ void Socket::close() {
   if (__glibc_unlikely(::close(_sockfd) == -1))
     throw OSError(errno, "close");
   _sockfd = -1;
+}
+
+void Socket::getsockname(sockaddr *addr, socklen_t *addrlen) {
+#if defined(FT_SUBJECT_NOT_COMPLIANT)
+  if (__glibc_unlikely(::getsockname(_sockfd, addr, addrlen) == -1))
+    throw OSError(errno, "getsockname");
+#else
+  throw std::runtime_error("getsockname: Forbidden Function");
+#endif
+}
+
+void Socket::getpeername(sockaddr *addr, socklen_t *addrlen) {
+#if defined(FT_SUBJECT_NOT_COMPLIANT)
+  if (__glibc_unlikely(::getpeername(_sockfd, addr, addrlen) == -1))
+    throw OSError(errno, "getpeername");
+#else
+  throw std::runtime_error("getpeername: Forbidden Function");
+#endif
 }
 
 void Socket::getsockopt(int level, int optname, void *optval,
