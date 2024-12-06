@@ -6,10 +6,11 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/06 03:43:17 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/06 07:01:20 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/06 10:26:38 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <cstddef>
 #include <netdb.h>
 
 namespace ftpp {
@@ -18,6 +19,7 @@ class AddrInfos {
 private:
   addrinfo *_addrinfo;
 
+public:
   class iterator {
   private:
     addrinfo const *_current;
@@ -31,11 +33,11 @@ private:
     iterator &operator++();
     iterator operator++(int);
     bool operator==(iterator const &rhs) const;
+    bool operator!=(iterator const &rhs) const;
     addrinfo const &operator*() const;
     addrinfo const *operator->() const;
   };
 
-public:
   struct Hints : private addrinfo {
   public:
     Hints();

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/01 13:43:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/06 07:54:58 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/06 10:25:02 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,16 +19,6 @@ BaseAsyncStreamConnection::BaseAsyncStreamConnection() {
 }
 
 BaseAsyncStreamConnection::~BaseAsyncStreamConnection() {
-}
-
-void BaseAsyncStreamConnection::close() {
-  if (is_active())
-    stop();
-  delete_later();
-}
-
-void BaseAsyncStreamConnection::on_release() {
-  delete this;
 }
 
 } // namespace ftev

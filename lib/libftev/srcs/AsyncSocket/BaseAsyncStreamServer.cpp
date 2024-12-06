@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/01 13:43:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/04 07:08:48 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/06 10:50:36 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,9 +44,6 @@ void BaseAsyncStreamServer::on_read() {
 }
 
 void BaseAsyncStreamServer::on_write() {
-}
-
-void BaseAsyncStreamServer::on_except() {
 }
 
 } // namespace ftev

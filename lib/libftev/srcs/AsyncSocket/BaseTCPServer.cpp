@@ -6,22 +6,18 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/04 07:11:15 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/06 09:47:26 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/06 10:42:42 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
-
-#include <AddrInfos.hpp>
 #include <AsyncSocket/BaseTCPServer.hpp>
+#include <socket/AddrInfos.hpp>
 
 #include <cstdio>
 
 namespace ftev {
 
-BaseTCPServer::BaseTCPServer(EventLoop &loop, char const *host, int port)
-    : loop(loop) {
-  _setup(host, port);
+BaseTCPServer::BaseTCPServer(EventLoop &loop) : loop(loop) {
 }
 
 BaseTCPServer::~BaseTCPServer() {
@@ -37,7 +33,8 @@ void BaseTCPServer::_setup(char const *host, int port) {
     ftpp::AddrInfos::Hints hints(AF_UNSPEC, SOCK_STREAM, 0, AI_PASSIVE);
     ftpp::AddrInfos info(host, service, hints);
     for (ftpp::AddrInfos::iterator it = info.begin(); it != info.end(); ++it) {
-      BaseAsyncStreamServer *server = create_server();
+      BaseAsyncStreamServer *server =
+          create_server(it->ai_family, it->ai_socktype, it->ai_protocol);
       try {
         server->bind(it->ai_addr, it->ai_addrlen);
         _servers.push_back(server);

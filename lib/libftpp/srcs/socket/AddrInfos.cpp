@@ -44,6 +44,10 @@ bool AddrInfos::iterator::operator==(iterator const &rhs) const {
   return _current == rhs._current;
 };
 
+bool AddrInfos::iterator::operator!=(iterator const &rhs) const {
+  return _current != rhs._current;
+};
+
 addrinfo const &AddrInfos::iterator::operator*() const {
   return *_current;
 };
