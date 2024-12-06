@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 03:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/07 08:03:09 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/07 08:05:57 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,23 +108,29 @@ std::size_t Socket::recv(void *buf, std::size_t len, int flags) {
   return ret;
 }
 
-#if defined(FT_SUBJECT_NOT_COMPLIANT)
 std::size_t Socket::sendto(void const *buf, std::size_t len, int flags,
                            sockaddr const *dest_addr, socklen_t addrlen) {
+#if defined(FT_SUBJECT_NOT_COMPLIANT)
   ssize_t ret = ::sendto(_sockfd, buf, len, flags, dest_addr, addrlen);
   if (__glibc_unlikely(ret == -1))
     throw OSError(errno, "sendto");
   return ret;
+#else
+  throw std::runtime_error("sendto: Forbidden Function");
+#endif
 }
 
 std::size_t Socket::recvfrom(void *buf, std::size_t len, int flags,
                              sockaddr *src_addr, socklen_t *addrlen) {
+#if defined(FT_SUBJECT_NOT_COMPLIANT)
   ssize_t ret = ::recvfrom(_sockfd, buf, len, flags, src_addr, addrlen);
   if (__glibc_unlikely(ret == -1))
     throw OSError(errno, "recvfrom");
   return ret;
-}
+#else
+  throw std::runtime_error("recvfrom: Forbidden Function");
 #endif
+}
 
 void Socket::close() {
   if (__glibc_unlikely(::close(_sockfd) == -1))

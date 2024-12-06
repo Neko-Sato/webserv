@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 03:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/30 06:24:45 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/07 08:06:17 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,13 +41,10 @@ public:
   std::size_t read(void *buf, std::size_t len);
   std::size_t send(void const *buf, std::size_t len, int flags);
   std::size_t recv(void *buf, std::size_t len, int flags);
-#if not defined(FT_SUBJECT_COMPLIANT)
   std::size_t sendto(void const *buf, std::size_t len, int flags,
                      sockaddr const *dest_addr, socklen_t addrlen);
   std::size_t recvfrom(void *buf, std::size_t len, int flags,
                        sockaddr *src_addr, socklen_t *addrlen);
-#endif
-
   void close();
 
   void getsockopt(int level, int optname, void *optval, socklen_t *optlen);
