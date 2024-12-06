@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 03:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/07 08:00:15 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/07 08:03:09 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,7 @@
 
 #include <sys/socket.h>
 #include <unistd.h>
-#if not defined(FT_SUBJECT_NOT_COMPLIANT)
 #include <stdexcept>
-#endif
 
 namespace ftpp {
 
