@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 03:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/06 09:21:11 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/07 08:00:15 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,9 +136,13 @@ void Socket::close() {
 
 void Socket::getsockopt(int level, int optname, void *optval,
                         socklen_t *optlen) {
+#if defined(FT_SUBJECT_NOT_COMPLIANT)
   if (__glibc_unlikely(::getsockopt(_sockfd, level, optname, optval, optlen) ==
                        -1))
     throw OSError(errno, "getsockopt");
+#else
+  throw std::runtime_error("getsockopt: Forbidden Function");
+#endif
 }
 
 void Socket::setsockopt(int level, int optname, void const *optval,
