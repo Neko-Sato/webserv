@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/04 07:11:15 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/06 10:49:25 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/07 08:44:12 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,9 @@ protected:
 public:
   virtual ~BaseTCPServer();
 
+  void start(); // If this fails, it should be terminated without any retries.
   virtual BaseAsyncStreamServer *create_server(int domain, int type,
                                                int protocol) = 0;
-  void start();
 };
 
 } // namespace ftev
