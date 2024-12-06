@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2024/12/03 10:11:52 by hshimizu         ###   ########.fr        #
+#    Updated: 2024/12/07 08:49:46 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,9 +16,9 @@ DIR					:= .
 INCS_DIR			:= $(DIR)/incs
 SRCS_DIR			:= $(DIR)/srcs
 OUT_DIR				:= $(DIR)/out
-LIBFTEV				:= $(DIR)/lib/libftev
+LIBFTEV				:= $(DIR)/libs/libftev
 LIBFTEV_INCS_DIR	:= $(LIBFTEV)/incs
-LIBFTPP				:= $(DIR)/lib/libftpp
+LIBFTPP				:= $(DIR)/libs/libftpp
 LIBFTPP_INCS_DIR	:= $(LIBFTPP)/incs
 
 SRCS				:= $(shell find $(SRCS_DIR) -name "*.cpp")
