@@ -48,13 +48,8 @@ void EchoServer::Server::on_accept(int sockfd, sockaddr const *addr) {
 }
 
 void EchoServer::Server::on_except() {
-  int error = 0;
-  socklen_t len = sizeof(error);
-  _socket.getsockopt(SOL_SOCKET, SO_ERROR, &error, &len);
-  if (error) {
-    std::cerr << "Server Error: " << strerror(error) << std::endl;
-    loop.stop();
-  }
+  std::cerr << "Server Error" << std::endl;
+  loop.stop();
 }
 
 EchoServer::Connection::Connection(ftev::EventLoop &loop, int connfd)
@@ -83,14 +78,9 @@ void EchoServer::Connection::on_drain() {
 }
 
 void EchoServer::Connection::on_except() {
-  int error = 0;
-  socklen_t len = sizeof(error);
-  _socket.getsockopt(SOL_SOCKET, SO_ERROR, &error, &len);
-  if (error) {
-    std::cerr << "Connection Error: " << strerror(error) << std::endl;
-    stop();
-    delete_later();
-  }
+  std::cerr << "Connection Error" << std::endl;
+  stop();
+  delete_later();
 }
 
 void EchoServer::Connection::on_release() {
