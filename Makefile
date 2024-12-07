@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2024/12/07 08:49:46 by hshimizu         ###   ########.fr        #
+#    Updated: 2024/12/07 09:08:06 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,6 +25,7 @@ SRCS				:= $(shell find $(SRCS_DIR) -name "*.cpp")
 OBJS				:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=.o))
 DEPS				:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=.d))
 
+CXX					:= c++
 CXXFLAGS			:= -Wall -Wextra -Werror
 CXXFLAGS			+= -std=c++98
 IDFLAGS				:= -I$(INCS_DIR) -I$(LIBFTEV_INCS_DIR) -I$(LIBFTPP_INCS_DIR)

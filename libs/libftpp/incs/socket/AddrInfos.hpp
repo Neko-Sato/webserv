@@ -6,11 +6,12 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/06 03:43:17 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/06 10:26:38 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/07 21:29:27 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <cstddef>
+#include <exception>
 #include <netdb.h>
 
 namespace ftpp {
@@ -18,6 +19,9 @@ namespace ftpp {
 class AddrInfos {
 private:
   addrinfo *_addrinfo;
+
+  static addrinfo *_getaddrinfo(char const *name, char const *service,
+                                addrinfo const *hints = NULL);
 
 public:
   class iterator {
@@ -52,6 +56,21 @@ public:
     using addrinfo::ai_socktype;
 
     addrinfo const *get_addrinfo() const;
+  };
+
+  class GAIError : public std::exception {
+  private:
+    int _errno;
+    std::string _s;
+
+  public:
+    GAIError(int __errno);
+    GAIError(GAIError const &rhs);
+    ~GAIError() throw();
+    GAIError &operator=(GAIError const &rhs);
+
+    int get_errno() const;
+    char const *what() const throw();
   };
 
   AddrInfos(char const *name, char const *service);

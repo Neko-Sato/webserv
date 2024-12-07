@@ -85,17 +85,45 @@ addrinfo const *AddrInfos::Hints::get_addrinfo() const {
   return static_cast<addrinfo const *>(this);
 };
 
-AddrInfos::AddrInfos(char const *name, char const *service) {
-  if (__glibc_unlikely(::getaddrinfo(name, service, NULL, &_addrinfo) == -1))
-    throw OSError(errno, "getaddrinfo");
+AddrInfos::GAIError::GAIError(int __errno)
+    : _errno(__errno),
+      _s(std::string("getaddrinfo: ") + gai_strerror(_errno)) {};
+
+AddrInfos::GAIError::GAIError(GAIError const &rhs)
+    : _errno(rhs._errno), _s(rhs._s) {};
+
+AddrInfos::GAIError::~GAIError() throw() {};
+
+AddrInfos::GAIError &AddrInfos::GAIError::operator=(GAIError const &rhs) {
+  if (this != &rhs) {
+    _errno = rhs._errno;
+    _s = rhs._s;
+  }
+  return *this;
 };
 
-AddrInfos::AddrInfos(char const *name, char const *service,
-                     Hints const &hints) {
-  if (__glibc_unlikely(
-          ::getaddrinfo(name, service, hints.get_addrinfo(), &_addrinfo) == -1))
-    throw OSError(errno, "getaddrinfo");
+int AddrInfos::GAIError::get_errno() const {
+  return _errno;
 };
+
+char const *AddrInfos::GAIError::what() const throw() {
+  return _s.c_str();
+};
+
+addrinfo *AddrInfos::_getaddrinfo(char const *name, char const *service,
+                                  addrinfo const *hints) {
+  addrinfo *res;
+  int err = ::getaddrinfo(name, service, hints, &res);
+  if (__glibc_unlikely(err != 0))
+    throw GAIError(err);
+  return res;
+}
+
+AddrInfos::AddrInfos(char const *name, char const *service)
+    : _addrinfo(_getaddrinfo(name, service)) {};
+
+AddrInfos::AddrInfos(char const *name, char const *service, Hints const &hints)
+    : _addrinfo(_getaddrinfo(name, service, hints.get_addrinfo())) {};
 
 AddrInfos::~AddrInfos() {
   freeaddrinfo(_addrinfo);

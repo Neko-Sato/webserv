@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 08:18:49 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/06 10:48:01 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/07 20:30:15 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ public:
 int main() {
   ftev::EventLoop &loop = ftev::EventLoop::default_loop;
   Stopper stopper(loop);
-  EchoServer server(loop, "0.0.0.0", 8080);
+  EchoServer server(loop, "::", 8080);
   server.start();
   loop.run();
   std::cout << "Goodbye!" << std::endl;
