@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 16:23:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/06 09:19:32 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/11 00:00:28 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ void EventLoop::BaseProcessWatcher::WaitWatcher::on_signal() {
     ProcessWatchers::iterator it = loop._process_watchers.find(pid);
     if (it == loop._process_watchers.end())
       continue;
-    it->second->operator()(status);
+    (*it->second)(status);
   }
 }
 

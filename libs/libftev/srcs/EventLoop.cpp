@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/06 09:18:59 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/11 00:05:19 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ void EventLoop::_run_timer() {
     TimerWatchers::iterator it = _timer_watchers.begin();
     if (it == _timer_watchers.end() || _time < it->first)
       break;
-    it->second->operator()();
+    (*it->second)();
   }
 }
 
@@ -105,15 +105,8 @@ void EventLoop::_run_io_poll(int timeout) {
     event_details const &details = events.front();
     IOWatchers::iterator watcher = _io_watchers.find(details.fd);
     if (watcher != _io_watchers.end())
-      watcher->second->operator()(details.events);
+      (*watcher->second)(details.events);
     events.pop();
-  }
-}
-
-void EventLoop::_delete_pending_watchers() {
-  while (!_pending_deletion_watchers.empty()) {
-    _pending_deletion_watchers.front()->on_release();
-    _pending_deletion_watchers.pop();
   }
 }
 
@@ -121,7 +114,10 @@ void EventLoop::operator++() {
   _running = true;
   _run_io_poll(_backend_timeout());
   _run_timer();
-  _delete_pending_watchers();
+  while (!_pending_deletion_watchers.empty()) {
+    _pending_deletion_watchers.front()->on_release();
+    _pending_deletion_watchers.pop();
+  }
   _running = false;
 }
 

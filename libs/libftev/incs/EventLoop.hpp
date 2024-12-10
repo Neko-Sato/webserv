@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/06 07:45:25 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/11 00:06:02 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ private:
   int _backend_timeout() const;
   void _run_timer();
   void _run_io_poll(int timeout);
-  void _delete_pending_watchers();
   void operator++();
 
   ~EventLoop();

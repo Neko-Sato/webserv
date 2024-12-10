@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 00:31:00 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/06 09:19:53 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/11 00:00:57 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ void EventLoop::BaseSignalWatcher::SignalpipeWatcher::on_read() {
   assert(size == sizeof(signum));
   SignalWatchers::iterator it = loop._signal_watchers.find(signum);
   if (it != loop._signal_watchers.end())
-    it->second->operator()();
+    (*it->second)();
 }
 
 void EventLoop::BaseSignalWatcher::SignalpipeWatcher::on_write() {
