@@ -6,10 +6,11 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/06 03:43:17 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/07 21:29:27 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/11 00:08:12 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <string>
 #include <cstddef>
 #include <exception>
 #include <netdb.h>
