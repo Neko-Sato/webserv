@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 23:19:16 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/18 04:26:35 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/18 04:58:42 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,9 @@ Json::Json(JsonValue *value) : _value(value) {
 }
 
 Json::Json(JsonValue const &value) : _value(value.copy()) {
+}
+
+Json::Json(Json const &rhs) : _value(rhs._value->copy()) {
 }
 
 Json::~Json() {
