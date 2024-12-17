@@ -6,12 +6,14 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 22:48:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/06 07:44:42 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/12 15:32:38 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <EventLoop.hpp>
 #include <EventLoop/BaseWatcher.hpp>
+
+#include <cassert>
 
 namespace ftev {
 
@@ -21,6 +23,7 @@ EventLoop::BaseWatcher::BaseWatcher(EventLoop &loop)
 }
 
 EventLoop::BaseWatcher::~BaseWatcher() {
+  assert(!_is_active);
   loop._watchers.erase(this);
 }
 

@@ -6,11 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 23:59:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/06 10:22:35 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/12 15:40:20 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <AsyncSocket/MixinWriter.hpp>
+
+#include <cassert>
 
 namespace ftev {
 
@@ -29,15 +31,17 @@ void MixinWriter::on_write() {
       modify(event);
     else
       stop();
-    if (_draining)
+    if (_draining) {
       on_drain();
+      _draining = false;
+    }
   }
 }
 
 void MixinWriter::write(char const *buffer, size_t size) {
+  assert(!_draining);
   if (!size)
     return;
-  _draining = false;
   _buffer.insert(_buffer.end(), buffer, buffer + size);
   if (is_active()) {
     event_t event = get_events();
@@ -48,9 +52,11 @@ void MixinWriter::write(char const *buffer, size_t size) {
 }
 
 void MixinWriter::drain() {
-  _draining = true;
+  assert(!_draining);
   if (_buffer.empty())
     on_drain();
+  else
+    _draining = true;
 }
 
 } // namespace ftev

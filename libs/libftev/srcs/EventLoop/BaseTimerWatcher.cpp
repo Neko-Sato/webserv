@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 05:31:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/26 13:37:08 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/12 15:36:20 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,6 @@ EventLoop::BaseTimerWatcher::BaseTimerWatcher(EventLoop &loop)
 }
 
 EventLoop::BaseTimerWatcher::~BaseTimerWatcher() {
-  if (_is_active)
-    cancel();
-  assert(!_is_active);
 }
 
 void EventLoop::BaseTimerWatcher::operator()() {

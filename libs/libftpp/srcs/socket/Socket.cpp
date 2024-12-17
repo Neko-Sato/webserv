@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 03:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/07 08:15:52 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/18 04:40:48 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,11 @@ std::size_t Socket::sendto(void const *buf, std::size_t len, int flags,
     throw OSError(errno, "sendto");
   return ret;
 #else
+  (void)buf;
+  (void)len;
+  (void)flags;
+  (void)dest_addr;
+  (void)addrlen;
   throw std::runtime_error("sendto: Forbidden Function");
 #endif
 }
@@ -128,6 +133,11 @@ std::size_t Socket::recvfrom(void *buf, std::size_t len, int flags,
     throw OSError(errno, "recvfrom");
   return ret;
 #else
+  (void)buf;
+  (void)len;
+  (void)flags;
+  (void)src_addr;
+  (void)addrlen;
   throw std::runtime_error("recvfrom: Forbidden Function");
 #endif
 }
@@ -143,6 +153,8 @@ void Socket::getsockname(sockaddr *addr, socklen_t *addrlen) {
   if (__glibc_unlikely(::getsockname(_sockfd, addr, addrlen) == -1))
     throw OSError(errno, "getsockname");
 #else
+  (void)addr;
+  (void)addrlen;
   throw std::runtime_error("getsockname: Forbidden Function");
 #endif
 }
@@ -152,6 +164,8 @@ void Socket::getpeername(sockaddr *addr, socklen_t *addrlen) {
   if (__glibc_unlikely(::getpeername(_sockfd, addr, addrlen) == -1))
     throw OSError(errno, "getpeername");
 #else
+  (void)addr;
+  (void)addrlen;
   throw std::runtime_error("getpeername: Forbidden Function");
 #endif
 }
@@ -163,6 +177,10 @@ void Socket::getsockopt(int level, int optname, void *optval,
                        -1))
     throw OSError(errno, "getsockopt");
 #else
+  (void)level;
+  (void)optname;
+  (void)optval;
+  (void)optlen;
   throw std::runtime_error("getsockopt: Forbidden Function");
 #endif
 }

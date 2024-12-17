@@ -1,37 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   OSError.hpp                                        :+:      :+:    :+:   */
+/*   JsonArray.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/09 17:37:23 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/17 20:43:23 by hshimizu         ###   ########.fr       */
+/*   Created: 2024/12/18 00:11:12 by hshimizu          #+#    #+#             */
+/*   Updated: 2024/12/18 04:20:28 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <cerrno>
-#include <exception>
-#include <string>
+#include <Json.hpp>
+#include <JsonValue.hpp>
 
-namespace ftpp {
+#include <vector>
 
-class OSError : public std::exception {
-private:
-  int _errno;
-  std::string _s;
+namespace ftjson {
 
+class JsonArray : public JsonValue {
 public:
-  OSError();
-  OSError(int __errno, std::string const &s = "OSError");
-  OSError(OSError const &rhs);
-  ~OSError() throw();
-  OSError &operator=(OSError const &rhs);
+  JsonArray();
+  JsonArray(JsonArray const &rhs);
+  ~JsonArray();
+  JsonArray &operator=(JsonArray const &rhs);
 
-  int get_errno() const;
-  char const *what() const throw();
+  std::vector<Json> value;
+
+  type getType() const;
+  JsonValue *copy() const;
 };
 
-} // namespace ftpp
+} // namespace ftjson

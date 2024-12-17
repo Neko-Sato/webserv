@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 00:31:00 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/11 00:00:57 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/12 15:43:11 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,6 @@ EventLoop::BaseSignalWatcher::BaseSignalWatcher(EventLoop &loop)
 }
 
 EventLoop::BaseSignalWatcher::~BaseSignalWatcher() {
-  if (_is_active)
-    stop();
-  assert(!_is_active);
 }
 
 void EventLoop::BaseSignalWatcher::operator()() {
@@ -77,6 +74,8 @@ EventLoop::BaseSignalWatcher::SignalpipeWatcher::SignalpipeWatcher(
 }
 
 EventLoop::BaseSignalWatcher::SignalpipeWatcher::~SignalpipeWatcher() {
+  if (is_active())
+    stop();
 }
 
 void EventLoop::BaseSignalWatcher::SignalpipeWatcher::on_read() {
