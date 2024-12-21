@@ -6,38 +6,49 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2024/12/18 04:49:14 by hshimizu         ###   ########.fr        #
+#    Updated: 2024/12/21 21:30:44 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME				:= webserv
+NAME						:= webserv
 
-DIR					:= .
-INCS_DIR			:= $(DIR)/incs
-SRCS_DIR			:= $(DIR)/srcs
-OUT_DIR				:= $(DIR)/out
-LIBFTEV				:= $(DIR)/libs/libftev
-LIBFTEV_INCS_DIR	:= $(LIBFTEV)/incs
-LIBFTPP				:= $(DIR)/libs/libftpp
-LIBFTPP_INCS_DIR	:= $(LIBFTPP)/incs
-LIBFTJSON			:= $(DIR)/libs/libftjson
-LIBFTJSON_INCS_DIR	:= $(LIBFTJSON)/incs
+DIR							:= .
+INCS_DIR					:= $(DIR)/incs
+SRCS_DIR					:= $(DIR)/srcs
+LIBS_DIR					:= $(DIR)/libs
+OUT_DIR						:= $(DIR)/out
 
-SRCS				:= $(shell find $(SRCS_DIR) -name "*.cpp")
-OBJS				:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=.o))
-DEPS				:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=.d))
+LIBFTEV						:= $(LIBS_DIR)/libftev
+LIBFTPP						:= $(LIBS_DIR)/libftpp
+LIBFTJSON					:= $(LIBS_DIR)/libftjson
 
-CXX					:= c++
-CXXFLAGS			:= -Wall -Wextra -Werror
-CXXFLAGS			+= -std=c++98
-IDFLAGS				:= -I$(INCS_DIR) -I$(LIBFTEV_INCS_DIR) -I$(LIBFTPP_INCS_DIR) -I$(LIBFTJSON_INCS_DIR)
-LDFLAGS				:= -L$(LIBFTEV) -L$(LIBFTPP) -L$(LIBFTJSON)
-LIBS				:= -lftev -Wl,-rpath $(LIBFTEV) -lftpp -Wl,-rpath $(LIBFTPP) -lftjson -Wl,-rpath $(LIBFTJSON)
+export CPLUS_INCLUDE_PATH	:= $(CPLUS_INCLUDE_PATH):$(CURDIR)/$(LIBFTEV)
+export CPLUS_INCLUDE_PATH	:= $(CPLUS_INCLUDE_PATH):$(CURDIR)/$(LIBFTPP)
+export CPLUS_INCLUDE_PATH	:= $(CPLUS_INCLUDE_PATH):$(CURDIR)/$(LIBFTJSON)
+
+export LD_RUN_PATH			:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTEV)
+export LD_RUN_PATH			:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTPP)
+export LD_RUN_PATH			:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTJSON)
+
+export LIBRARY_PATH			:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTEV)
+export LIBRARY_PATH			:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTPP)
+export LIBRARY_PATH			:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTJSON)
+
+SRCS						:= $(shell find $(SRCS_DIR) -name "*.cpp")
+OBJS						:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=.o))
+DEPS						:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=.d))
+
+CXX							:= c++
+CXXFLAGS					:= -Wall -Wextra -Werror
+CXXFLAGS					+= -std=c++98
+IDFLAGS						:= -I$(INCS_DIR)
+LDFLAGS						:=
+LIBS						:= -lftev -lftpp -lftjson
 
 ifeq ($(DEBUG), 1)
-CXXFLAGS	+= -g -fsanitize=address -D FT_SUBJECT_NOT_COMPLIANT
+CXXFLAGS					+= -g -fsanitize=address -D FT_SUBJECT_NOT_COMPLIANT
 else
-CXXFLAGS	+= -O3
+CXXFLAGS					+= -O3
 endif
 
 .PHONY: all bonus clean fclean re neko $(LIBFTEV) $(LIBFTPP) $(LIBFTJSON)
@@ -59,11 +70,13 @@ clean:
 	@$(MAKE) -C $(LIBFTJSON) fclean
 	$(RM) -r $(OUT_DIR)
 
-fclean: clean
+fclean:
+	@$(MAKE) clean
 	$(RM) $(NAME)
 
-re: fclean
-	$(MAKE)
+re:
+	@$(MAKE) fclean
+	@$(MAKE)
 
 neko:
 	@echo "🐈 ﾆｬｰﾝ"
@@ -72,10 +85,7 @@ $(LIBFTPP):
 	@$(MAKE) -C $@
 
 $(LIBFTEV): $(LIBFTPP)
-	@CPLUS_INCLUDE_PATH="$(CPLUS_INCLUDE_PATH):$(CURDIR)/$(LIBFTPP_INCS_DIR)" \
-	LD_RUN_PATH="$(LD_RUN_PATH):$(CURDIR)/$(LIBFTPP)" \
-	LIBRARY_PATH="$(LIBRARY_PATH):$(CURDIR)/$(LIBFTPP)" \
-	$(MAKE) -C $@
+	@$(MAKE) -C $@
 
 $(LIBFTJSON):
 	@$(MAKE) -C $@

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   JsonDecimal.hpp                                    :+:      :+:    :+:   */
+/*   JsonNumber.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 00:11:12 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/18 04:20:28 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/19 02:53:00 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,12 @@
 
 namespace ftjson {
 
-class JsonDecimal : public JsonValue {
+class JsonNumber : public JsonValue {
 public:
-  JsonDecimal(double value = .0);
-  JsonDecimal(JsonDecimal const &rhs);
-  ~JsonDecimal();
-  JsonDecimal &operator=(JsonDecimal const &rhs);
+  JsonNumber(double value = .0);
+  JsonNumber(JsonNumber const &rhs);
+  ~JsonNumber();
+  JsonNumber &operator=(JsonNumber const &rhs);
 
   double value;
 

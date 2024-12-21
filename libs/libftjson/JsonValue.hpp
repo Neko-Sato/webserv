@@ -1,32 +1,42 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   JsonInteger.hpp                                    :+:      :+:    :+:   */
+/*   JsonValue.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/18 00:11:12 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/18 04:20:28 by hshimizu         ###   ########.fr       */
+/*   Created: 2024/12/17 22:21:27 by hshimizu          #+#    #+#             */
+/*   Updated: 2024/12/19 02:52:36 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <JsonValue.hpp>
+#include <istream>
+#include <ostream>
 
 namespace ftjson {
 
-class JsonInteger : public JsonValue {
+class JsonValue {
+protected:
+  JsonValue();
+  JsonValue(JsonValue const &rhs);
+  virtual JsonValue &operator=(JsonValue const &rhs);
+
 public:
-  JsonInteger(long value = 0);
-  JsonInteger(JsonInteger const &rhs);
-  ~JsonInteger();
-  JsonInteger &operator=(JsonInteger const &rhs);
+  virtual ~JsonValue();
 
-  long value;
+  enum type {
+    OBJECT,
+    ARRAY,
+    STRING,
+    NUMBER,
+    BOOLEAN,
+    _NULL,
+  };
 
-  type getType() const;
-  JsonValue *copy() const;
+  virtual type getType() const = 0;
+  virtual JsonValue *copy() const = 0;
 };
 
 } // namespace ftjson

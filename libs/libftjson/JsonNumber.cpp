@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   JsonDecimal.cpp                                    :+:      :+:    :+:   */
+/*   JsonNumber.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,33 +10,33 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <JsonDecimal.hpp>
+#include <JsonNumber.hpp>
 
 namespace ftjson {
 
-JsonDecimal::JsonDecimal(double value) : value(value) {
+JsonNumber::JsonNumber(double value) : value(value) {
 }
 
-JsonDecimal::JsonDecimal(JsonDecimal const &rhs)
+JsonNumber::JsonNumber(JsonNumber const &rhs)
     : JsonValue(rhs), value(rhs.value) {
 }
 
-JsonDecimal::~JsonDecimal() {
+JsonNumber::~JsonNumber() {
 }
 
-JsonDecimal &JsonDecimal::operator=(JsonDecimal const &rhs) {
+JsonNumber &JsonNumber::operator=(JsonNumber const &rhs) {
   if (this != &rhs) {
     value = rhs.value;
   }
   return *this;
 }
 
-JsonDecimal::type JsonDecimal::getType() const {
-  return INTEGER;
+JsonNumber::type JsonNumber::getType() const {
+  return NUMBER;
 }
 
-JsonValue *JsonDecimal::copy() const {
-  return new JsonDecimal(*this);
+JsonValue *JsonNumber::copy() const {
+  return new JsonNumber(*this);
 }
 
 } // namespace ftjson
