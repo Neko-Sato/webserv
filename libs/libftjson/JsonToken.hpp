@@ -1,43 +1,46 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   JsonLexer.hpp                                      :+:      :+:    :+:   */
+/*   JsonToken.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/19 02:25:31 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/22 04:47:53 by hshimizu         ###   ########.fr       */
+/*   Created: 2024/12/22 03:58:26 by hshimizu          #+#    #+#             */
+/*   Updated: 2024/12/22 04:29:09 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <JsonToken.hpp>
-
-#include <istream>
-#include <sstream>
+#include <string>
 
 namespace ftjson {
 
-class JsonLexer {
-private:
-  std::istream &_stream;
-  bool _error;
+struct JsonToken {
+  enum Type {
+    LEFT_BRACE,
+    RIGHT_BRACE,
+    LEFT_BRACKET,
+    RIGHT_BRACKET,
+    COMMA,
+    COLON,
+    STRING,
+    NUMBER,
+    TRUE,
+    FALSE,
+    _NULL,
+    END,
+    INVALID,
+  };
 
-  JsonLexer();
-  JsonLexer(JsonLexer const &rhs);
-  JsonLexer &operator=(JsonLexer const &rhs);
+  Type type;
+  std::string value;
 
-public:
-  JsonLexer(std::istream &stream);
-  ~JsonLexer();
-
-  JsonToken nextToken();
-
-private:
-  void _skip_space();
-  JsonToken _maybe_string();
-  JsonToken _maybe_number();
+  JsonToken();
+  JsonToken(Type type, std::string const &value = "");
+  JsonToken(JsonToken const &rhs);
+  ~JsonToken();
+  JsonToken &operator=(JsonToken const &rhs);
 };
 
 } // namespace ftjson

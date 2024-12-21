@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/02 03:11:29 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/22 06:56:39 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,8 @@ int EpollSelector::_create_epollfd() {
   return epfd;
 }
 
-EpollSelector::EpollSelector() : _epfd(_create_epollfd()) {
+EpollSelector::EpollSelector() {
+  _epfd = _create_epollfd();
 }
 
 EpollSelector::~EpollSelector() {

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/06 09:20:45 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/22 06:56:54 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,8 @@ int KqueueSelector::_create_kqueue() {
   return kq;
 }
 
-KqueueSelector::KqueueSelector() : _kq(_create_kqueue()) {
+KqueueSelector::KqueueSelector() {
+  _kq = _create_kqueue();
 }
 
 KqueueSelector::~KqueueSelector() {

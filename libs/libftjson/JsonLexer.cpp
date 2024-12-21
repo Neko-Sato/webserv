@@ -6,12 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/19 02:25:31 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/19 04:19:01 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/22 06:35:30 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <JsonLexer.hpp>
 
+#include <cctype>
 #include <cstring>
 
 namespace ftjson {
@@ -22,78 +23,124 @@ JsonLexer::JsonLexer(std::istream &stream) : _stream(stream), _error(false) {
 JsonLexer::~JsonLexer() {
 }
 
-JsonLexer::token JsonLexer::get(std::string &value) {
-  value.clear();
+JsonToken JsonLexer::nextToken() {
   if (_error)
-    return ERROR;
+    return JsonToken(JsonToken::INVALID);
   _skip_space();
   char c = _stream.peek();
-  if (c == -1)
-    return EOF;
-  if (c == ',')
-    return COMMA;
-  else if (c == ':')
-    return COLON;
-  else if (c == '{')
-    return OPEN_CURLYBRACE;
-  else if (c == '}')
-    return CLOSE_CURLYBRACE;
-  else if (c == '[')
-    return OPEN_SQUAREBRACKET;
-  else if (c == ']')
-    return CLOSE_SQUAREBRACKET;
-  if (c == '"')
-    return _maybe_string(value);
-  if (std::isdigit(c) || c == '-')
-    return _maybe_number(value);
+  switch (c) {
+  case -1:
+    return JsonToken(JsonToken::END);
+  case '{':
+    _stream.ignore();
+    return JsonToken(JsonToken::LEFT_BRACE);
+  case '}':
+    _stream.ignore();
+    return JsonToken(JsonToken::RIGHT_BRACE);
+  case '[':
+    _stream.ignore();
+    return JsonToken(JsonToken::LEFT_BRACKET);
+  case ']':
+    _stream.ignore();
+    return JsonToken(JsonToken::RIGHT_BRACKET);
+  case ',':
+    _stream.ignore();
+    return JsonToken(JsonToken::COMMA);
+  case ':':
+    _stream.ignore();
+    return JsonToken(JsonToken::COLON);
+  case '"':
+    return _maybe_string();
+  default:
+    if (std::isdigit(c) || c == '-')
+      return _maybe_number();
+    char tmp[8];
+    if (!_stream.read(tmp, 4))
+      goto invalid;
+    if (!std::strncmp(tmp, "true", 4))
+      return JsonToken(JsonToken::TRUE);
+    else if (!std::strncmp(tmp, "null", 4))
+      return JsonToken(JsonToken::_NULL);
+    if (!_stream.read(&tmp[4], 1))
+      goto invalid;
+    if (!std::strncmp(tmp, "false", 5))
+      return JsonToken(JsonToken::FALSE);
+  }
+invalid:
   _error = true;
-  return ERROR;
+  return JsonToken(JsonToken::INVALID);
 }
 
 void JsonLexer::_skip_space() {
-  while (_stream.peek() == ' ')
+  while (std::isspace(_stream.peek()))
     _stream.ignore();
 }
 
-JsonLexer::token JsonLexer::_maybe_string(std::string &value) {
-  value += _stream.get();
+JsonToken JsonLexer::_maybe_string() {
+  std::stringstream ss;
   bool flag = false;
-  for (char c; (c = _stream.get()) != -1;) {
-    value += c;
+  ss.put(_stream.get());
+  for (char c; (c = _stream.peek()) != -1;) {
+    if (!std::isprint(c))
+      goto invalid;
+    ss.put(_stream.get());
     if (!flag) {
       if (c == '\\') {
         flag = true;
         continue;
       }
       if (c == '"')
-        return STRING;
+        return JsonToken(JsonToken::STRING, ss.str());
     }
     flag = false;
   }
+invalid:
   _error = true;
-  return ERROR;
+  return JsonToken(JsonToken::INVALID);
 }
 
-JsonLexer::token JsonLexer::_maybe_number(std::string &value) {
-  unsigned int flag = 0;
-  char c;
-  c = _stream.get();
-  value += c;
-  if (c == '-') {
-    if (!std::isdigit(_stream.peek())) {
-      _error = true;
-      return ERROR;
+JsonToken JsonLexer::_maybe_number() {
+  std::stringstream ss;
+  if (_stream.peek() == '-') {
+    ss.put(_stream.get());
+    if (_stream.eof() || !std::isdigit(_stream.peek()))
+      goto invalid;
+  }
+  for (char c; (c = _stream.peek()) != -1;) {
+    if (!std::isdigit(c))
+      break;
+    ss.put(c);
+    _stream.ignore();
+    if (c == '0')
+      break;
+  }
+  if (_stream.peek() == '.') {
+    ss.put(_stream.get());
+    for (char c; (c = _stream.peek()) != -1; _stream.ignore()) {
+      if (!std::isdigit(c))
+        break;
+      ss.put(c);
     }
-    c = _stream.get();
-    value += c;
   }
-  if (c == '0') {
-    c = _stream.get();
-    value += c;
+  if (std::tolower(_stream.peek()) == 'e') {
+    ss.put(_stream.get());
+    if (std::memchr("+-", _stream.peek(), 2)) {
+      ss.put(_stream.get());
+      if (_stream.eof() || !std::isdigit(_stream.peek()))
+        goto invalid;
+    }
+    for (char c; (c = _stream.peek()) != -1; _stream.ignore()) {
+      if (!std::isdigit(c))
+        break;
+      ss.put(c);
+    }
+    if (std::isdigit(_stream.peek()))
+      goto invalid;
+    return JsonToken(JsonToken::NUMBER, ss.str());
   }
-  while (/* condition */) {
-    /* code */
-  }
+invalid:
+  _error = true;
+  return JsonToken(JsonToken::INVALID);
 }
 
 } // namespace ftjson

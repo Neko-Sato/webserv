@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 03:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/18 04:40:48 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/22 07:00:58 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@ int Socket::_create_socket(int domain, int type, int protocol) {
   return sockfd;
 }
 
-Socket::Socket(int domain, int type, int protocol)
-    : _sockfd(_create_socket(domain, type, protocol)) {
+Socket::Socket(int domain, int type, int protocol) {
+  _sockfd = _create_socket(domain, type, protocol);
 }
 
 Socket::Socket(int sockfd) : _sockfd(sockfd) {

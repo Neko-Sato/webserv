@@ -119,11 +119,14 @@ addrinfo *AddrInfos::_getaddrinfo(char const *name, char const *service,
   return res;
 }
 
-AddrInfos::AddrInfos(char const *name, char const *service)
-    : _addrinfo(_getaddrinfo(name, service)) {};
+AddrInfos::AddrInfos(char const *name, char const *service) {
+  _addrinfo = _getaddrinfo(name, service);
+};
 
-AddrInfos::AddrInfos(char const *name, char const *service, Hints const &hints)
-    : _addrinfo(_getaddrinfo(name, service, hints.get_addrinfo())) {};
+AddrInfos::AddrInfos(char const *name, char const *service,
+                     Hints const &hints) {
+  _addrinfo = _getaddrinfo(name, service, hints.get_addrinfo());
+};
 
 AddrInfos::~AddrInfos() {
   freeaddrinfo(_addrinfo);

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/11 00:05:19 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/22 06:58:31 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,9 @@ EventLoop EventLoop::default_loop;
 int EventLoop::_signalpipe[2] = {-1, -1};
 
 EventLoop::EventLoop()
-    : _selector(new ftpp::Selector), _time(0), _running(false),
-      _stop_flag(false), _signalpipe_watcher(NULL), _wait_watcher(NULL) {
+    : _time(0), _running(false), _stop_flag(false), _signalpipe_watcher(NULL),
+      _wait_watcher(NULL) {
+  _selector = new ftpp::Selector;
   _update_time();
 }
 
