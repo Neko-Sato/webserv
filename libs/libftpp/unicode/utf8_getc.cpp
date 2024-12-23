@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/24 00:11:19 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/24 02:36:26 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/24 03:42:42 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ std::istream &utf8_getc(std::istream &stream, std::string &result) {
       if (!utf8_isvalid(utf8, size)) {
         std::stringstream ss;
         for (std::size_t i = 0; i < static_cast<std::size_t>(size); ++i) {
-          ss << "\\x" << std::uppercase << std::hex << std::setw(2)
+          ss << "\\x" << std::nouppercase << std::hex << std::setw(2)
              << std::setfill('0') << (utf8[i] & 0xFF);
         }
         throw UnicodeError("Invalid UTF-8 sequence: " + ss.str());

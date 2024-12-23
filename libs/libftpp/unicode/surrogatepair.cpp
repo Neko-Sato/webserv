@@ -1,26 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utf8.hpp                                           :+:      :+:    :+:   */
+/*   surrogatepair.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/22 12:25:19 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/24 03:09:56 by hshimizu         ###   ########.fr       */
+/*   Created: 2024/12/24 04:52:17 by hshimizu          #+#    #+#             */
+/*   Updated: 2024/12/24 04:57:58 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
-
-#include <istream>
-#include <string>
+#include <unicode/UnicodeError.hpp>
+#include <unicode/surrogate.hpp>
 
 namespace ftpp {
 
-int utf8_length(int c);
-bool utf8_isvalid(char const *buffer, std::size_t size);
-std::string utf8_codepoint(unsigned int codepoint);
-
-std::istream &utf8_getc(std::istream &stream, std::string &result);
+unsigned int surrogatepair(unsigned int high, unsigned int low) {
+  if (!ishghtsurrogate(high) || !islowsurrogate(low))
+    throw UnicodeError("invalid surrogate pair");
+  return ((high & 0x3FF) << 10) + (low & 0x3FF) + 0x10000;
+}
 
 } // namespace ftpp
