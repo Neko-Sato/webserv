@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 23:59:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/02 07:36:43 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/23 20:57:31 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ namespace ftev {
 class MixinWriter : virtual public BaseAsyncSocket {
 private:
   std::vector<char> _buffer;
-  bool _draining;
+  bool _draining : 1;
 
 protected:
   MixinWriter();

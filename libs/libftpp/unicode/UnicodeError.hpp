@@ -1,41 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   JsonLexer.hpp                                      :+:      :+:    :+:   */
+/*   UnicodeError.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/19 02:25:31 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/24 00:45:05 by hshimizu         ###   ########.fr       */
+/*   Created: 2024/12/23 22:05:06 by hshimizu          #+#    #+#             */
+/*   Updated: 2024/12/24 00:33:49 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <JsonToken.hpp>
+#include <exception>
+#include <string>
 
-#include <istream>
+namespace ftpp {
 
-namespace ftjson {
-
-class JsonLexer {
+class UnicodeError : public std::exception {
 private:
-  std::istream &_stream;
-
-  JsonLexer();
-  JsonLexer(JsonLexer const &rhs);
-  JsonLexer &operator=(JsonLexer const &rhs);
+  std::string _s;
 
 public:
-  JsonLexer(std::istream &stream);
-  ~JsonLexer();
+  UnicodeError();
+  UnicodeError(std::string const &s);
+  UnicodeError(UnicodeError const &rhs);
+  ~UnicodeError() throw();
+  UnicodeError &operator=(UnicodeError const &rhs);
 
-  JsonToken nextToken();
-
-private:
-  void _skip_space();
-  JsonToken _maybe_string();
-  JsonToken _maybe_number();
+  char const *what() const throw();
 };
 
-} // namespace ftjson
+} // namespace ftpp

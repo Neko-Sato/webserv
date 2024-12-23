@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/11 00:06:02 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/23 20:57:26 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,8 @@ public:
 private:
   ftpp::BaseSelector *_selector;
   time_t _time;
-  bool _running;
-  bool _stop_flag;
+  bool _running : 1;
+  bool _stop_flag : 1;
 
   void _update_time();
   int _backend_timeout() const;

@@ -1,31 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   JsonError.hpp                                      :+:      :+:    :+:   */
+/*   utf8_length.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/18 00:15:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/24 02:07:43 by hshimizu         ###   ########.fr       */
+/*   Created: 2024/12/22 12:26:24 by hshimizu          #+#    #+#             */
+/*   Updated: 2024/12/24 00:21:48 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <exception>
-#include <string>
+namespace ftpp {
 
-namespace ftjson {
+int utf8_length(int c) {
+  if ((c & 0x80) == 0)
+    return 1;
+  if ((c & 0xE0) == 0xC0)
+    return 2;
+  if ((c & 0xF0) == 0xE0)
+    return 3;
+  if ((c & 0xF8) == 0xF0)
+    return 4;
+  return -1;
+}
 
-class JsonError : public std::exception {
-private:
-  std::string _msg;
-
-public:
-  JsonError(std::string const &msg = "unkown error");
-  JsonError(JsonError const &rhs);
-  ~JsonError() throw();
-  JsonError &operator=(JsonError const &rhs);
-
-  char const *what() const throw();
-};
-
-} // namespace ftjson
+} // namespace ftpp

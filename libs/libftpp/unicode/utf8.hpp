@@ -1,41 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   JsonLexer.hpp                                      :+:      :+:    :+:   */
+/*   utf8.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/19 02:25:31 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/24 00:45:05 by hshimizu         ###   ########.fr       */
+/*   Created: 2024/12/22 12:25:19 by hshimizu          #+#    #+#             */
+/*   Updated: 2024/12/24 02:35:15 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <JsonToken.hpp>
-
+#include <string>
 #include <istream>
 
-namespace ftjson {
+namespace ftpp {
 
-class JsonLexer {
-private:
-  std::istream &_stream;
+int utf8_length(int c);
+bool utf8_isvalid(char const *buffer, std::size_t size);
 
-  JsonLexer();
-  JsonLexer(JsonLexer const &rhs);
-  JsonLexer &operator=(JsonLexer const &rhs);
+std::istream &utf8_getc(std::istream &stream, std::string &result);
 
-public:
-  JsonLexer(std::istream &stream);
-  ~JsonLexer();
-
-  JsonToken nextToken();
-
-private:
-  void _skip_space();
-  JsonToken _maybe_string();
-  JsonToken _maybe_number();
-};
-
-} // namespace ftjson
+} // namespace ftpp

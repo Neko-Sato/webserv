@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/17 02:16:25 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/06 09:00:48 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/23 20:57:37 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ public:
   EventLoop &loop;
 
 protected:
-  bool _is_active;
+  bool _is_active : 1;
 
   BaseWatcher(EventLoop &loop);
 

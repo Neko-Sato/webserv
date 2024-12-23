@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2024/12/21 21:32:11 by hshimizu         ###   ########.fr        #
+#    Updated: 2024/12/22 13:42:28 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,7 +27,7 @@ CXXFLAGS	:= -Wall -Wextra -Werror
 CXXFLAGS	+= -std=c++98
 IDFLAGS		:= -I$(DIR)
 LDFLAGS		:=
-LIBS		:=
+LIBS		:= -lftpp
 
 ifeq ($(DEBUG), 1)
 CXXFLAGS	+= -g -fsanitize=address -D FT_SUBJECT_NOT_COMPLIANT
