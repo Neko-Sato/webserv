@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/23 22:04:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/24 00:33:29 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/25 04:32:00 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,8 @@
 
 namespace ftpp {
 
-UnicodeError::UnicodeError() : _s("UnicodeError") {};
-
 UnicodeError::UnicodeError(std::string const &s)
-    : _s(std::string("UnicodeError: ") + s) {};
+    : _s(std::string("UnicodeError") + s) {};
 
 UnicodeError::UnicodeError(UnicodeError const &rhs) : _s(rhs._s) {};
 

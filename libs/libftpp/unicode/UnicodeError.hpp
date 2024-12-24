@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/23 22:05:06 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/24 00:33:49 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/25 04:31:49 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,7 @@ private:
   std::string _s;
 
 public:
-  UnicodeError();
-  UnicodeError(std::string const &s);
+  UnicodeError(std::string const &s = "unkown");
   UnicodeError(UnicodeError const &rhs);
   ~UnicodeError() throw();
   UnicodeError &operator=(UnicodeError const &rhs);
