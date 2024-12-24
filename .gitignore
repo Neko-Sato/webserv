@@ -1,6 +1,6 @@
 .vscode/
 .tmp/
-out/
+.out/
 a.out
 *.a
 *.so
