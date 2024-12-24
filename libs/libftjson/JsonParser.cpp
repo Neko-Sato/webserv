@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 04:30:35 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/25 08:24:47 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/25 08:28:29 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -291,7 +291,7 @@ void JsonParser::_case_end() {
     _state.pop();
     break;
   default:
-    throw JsonError("unexpected token: end");
+    throw JsonError("unexpected end");
   }
 }
 
