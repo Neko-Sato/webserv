@@ -6,14 +6,14 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/06 03:43:17 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/11 00:08:12 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/25 04:23:12 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <string>
 #include <cstddef>
 #include <exception>
 #include <netdb.h>
+#include <string>
 
 namespace ftpp {
 
@@ -65,7 +65,7 @@ public:
     std::string _s;
 
   public:
-    GAIError(int __errno);
+    GAIError(int __errno = 0);
     GAIError(GAIError const &rhs);
     ~GAIError() throw();
     GAIError &operator=(GAIError const &rhs);

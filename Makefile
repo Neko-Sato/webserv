@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2024/12/21 21:30:44 by hshimizu         ###   ########.fr        #
+#    Updated: 2024/12/25 04:26:12 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ DIR							:= .
 INCS_DIR					:= $(DIR)/incs
 SRCS_DIR					:= $(DIR)/srcs
 LIBS_DIR					:= $(DIR)/libs
-OUT_DIR						:= $(DIR)/out
+OUT_DIR						:= $(DIR)/.out
 
 LIBFTEV						:= $(LIBS_DIR)/libftev
 LIBFTPP						:= $(LIBS_DIR)/libftpp
@@ -87,7 +87,7 @@ $(LIBFTPP):
 $(LIBFTEV): $(LIBFTPP)
 	@$(MAKE) -C $@
 
-$(LIBFTJSON):
+$(LIBFTJSON): $(LIBFTPP)
 	@$(MAKE) -C $@
 
 -include $(DEPS)

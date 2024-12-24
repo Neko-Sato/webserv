@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 17:37:23 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/17 20:42:58 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/25 04:25:31 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,6 @@
 #include <string>
 
 namespace ftpp {
-
-OSError::OSError() : _errno(0), _s("OSError") {
-}
 
 OSError::OSError(int __errno, std::string const &s)
     : _errno(__errno), _s(s + ": " + ::strerror(_errno)) {

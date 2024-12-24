@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2024/12/21 21:32:54 by hshimizu         ###   ########.fr        #
+#    Updated: 2024/12/25 04:26:49 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ NAME_A		:= $(addsuffix .a, $(NAME))
 NAME_SO		:= $(addsuffix .so, $(NAME))
 
 DIR			:= .
-OUT_DIR		:= $(DIR)/out
+OUT_DIR		:= $(DIR)/.out
 
 SRCS		:= $(shell find $(DIR) -name "*.cpp")
 OBJS		:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=.o))
