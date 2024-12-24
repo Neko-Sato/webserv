@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 23:19:16 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/18 04:58:42 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/25 08:13:03 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,14 +38,6 @@ Json &Json::operator=(Json const &rhs) {
     _value = tmp;
   }
   return *this;
-}
-
-JsonValue &Json::getValue() {
-  return *_value;
-}
-
-JsonValue const &Json::getValue() const {
-  return *_value;
 }
 
 } // namespace ftjson
