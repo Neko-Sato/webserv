@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 04:30:35 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/24 05:17:54 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/25 04:44:10 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,6 @@ namespace ftjson {
 class JsonParser {
 private:
   JsonLexer _lexer;
-
-  enum state {
-    OBJECT,
-    ARRAY,
-  };
-
-  std::stack<state> _state;
 
   JsonParser(std::istream &stream);
   ~JsonParser();

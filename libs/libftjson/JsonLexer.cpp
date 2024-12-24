@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/19 02:25:31 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/24 02:29:36 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/24 23:59:05 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ JsonToken JsonLexer::nextToken() {
       if (!std::memcmp(tmp, "true", 4))
         return JsonToken(JsonToken::TRUE);
       else if (!std::memcmp(tmp, "null", 4))
-        return JsonToken(JsonToken::_NULL);
+        return JsonToken(JsonToken::NULL_);
       if (!_stream.read(&tmp[4], 1))
         break;
       if (!std::memcmp(tmp, "false", 5))

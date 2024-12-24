@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 00:11:12 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/18 04:20:28 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/24 23:59:05 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ JsonNull &JsonNull::operator=(JsonNull const &rhs) {
 }
 
 JsonNull::type JsonNull::getType() const {
-  return _NULL;
+  return NULL_;
 }
 
 JsonValue *JsonNull::copy() const {

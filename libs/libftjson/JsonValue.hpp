@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 22:21:27 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/19 02:52:36 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/24 23:59:05 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ public:
     STRING,
     NUMBER,
     BOOLEAN,
-    _NULL,
+    NULL_,
   };
 
   virtual type getType() const = 0;

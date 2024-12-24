@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/22 03:58:26 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/22 04:29:09 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/25 04:19:00 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,8 @@
 
 namespace ftjson {
 
-struct JsonToken {
+class JsonToken {
+public:
   enum Type {
     LEFT_BRACE,
     RIGHT_BRACE,
@@ -28,19 +29,24 @@ struct JsonToken {
     NUMBER,
     TRUE,
     FALSE,
-    _NULL,
+    NULL_,
     END,
     INVALID,
   };
 
-  Type type;
-  std::string value;
+private:
+  Type _type;
+  std::string _value;
 
+public:
   JsonToken();
   JsonToken(Type type, std::string const &value = "");
   JsonToken(JsonToken const &rhs);
   ~JsonToken();
   JsonToken &operator=(JsonToken const &rhs);
+
+  Type getType() const;
+  std::string const &getValue() const;
 };
 
 } // namespace ftjson
