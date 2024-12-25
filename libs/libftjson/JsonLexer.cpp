@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/19 02:25:31 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/24 23:59:05 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/26 07:55:13 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ JsonToken JsonLexer::nextToken() {
       if (!std::memcmp(tmp, "false", 5))
         return JsonToken(JsonToken::FALSE);
     }
-    throw JsonError("Unexpected token");
+    throw JsonError("Unexpected character");
   } catch (...) {
     _stream.setstate(std::ios_base::failbit);
     throw;
