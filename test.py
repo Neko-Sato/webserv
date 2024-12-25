@@ -15,7 +15,7 @@ async def async_stdio() -> tuple[asyncio.StreamReader, asyncio.StreamWriter]:
 
 async def main():
   stdin, stdout = await async_stdio()
-  reader, writer = await asyncio.open_connection("localhost", 8080)
+  reader, writer = await asyncio.open_connection("0.0.0.0", 8080)
   async def display(reader: asyncio.StreamReader):
     while True:
       data = await reader.readline()

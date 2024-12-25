@@ -6,18 +6,15 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 04:30:35 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/25 08:28:29 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/26 07:22:37 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <JsonArray.hpp>
-#include <JsonBoolean.hpp>
+#include <Json.hpp>
 #include <JsonError.hpp>
-#include <JsonNumber.hpp>
-#include <JsonObject.hpp>
 #include <JsonParser.hpp>
-#include <JsonString.hpp>
 
+#include <Variant.hpp>
 #include <unicode/surrogate.hpp>
 #include <unicode/utf8.hpp>
 
@@ -35,7 +32,7 @@ JsonParser::JsonParser(std::istream &stream) : _lexer(stream) {
 JsonParser::~JsonParser() {
 }
 
-Json JsonParser::_parse() {
+ftpp::Variant JsonParser::_parse() {
   assert(_state.empty());
   assert(_tmp.empty());
   _state.push(STATE_VALUE);
@@ -82,7 +79,7 @@ Json JsonParser::_parse() {
     }
   }
   assert(_state.empty());
-  Json result = _tmp.top();
+  ftpp::Variant result = _tmp.top();
   _tmp.pop();
   assert(_tmp.empty());
   return result;
@@ -104,7 +101,7 @@ void JsonParser::_case_left_brace() {
     throw JsonError("unexpected token: {");
   }
   _state.push(STATE_OBJECT_KEY_OR_END);
-  _tmp.push(JsonObject());
+  _tmp.push(Object());
 }
 
 void JsonParser::_case_left_bracket() {
@@ -123,7 +120,7 @@ void JsonParser::_case_left_bracket() {
     throw JsonError("unexpected token: [");
   }
   _state.push(STATE_ARRAY_VALUE_OR_END);
-  _tmp.push(JsonArray());
+  _tmp.push(Array());
 }
 
 void JsonParser::_case_right_brace() {
@@ -135,11 +132,11 @@ void JsonParser::_case_right_brace() {
   default:
     throw JsonError("unexpected token: }");
   }
-  Json value = _tmp.top();
+  ftpp::Variant value = _tmp.top();
   _tmp.pop();
-  Json key = _tmp.top();
+  ftpp::Variant key = _tmp.top();
   _tmp.pop();
-  _tmp.top().as<JsonObject>().value[key.as<JsonString>().value] = value;
+  _tmp.top().as<Object>()[key.as<String>()] = value;
 }
 
 void JsonParser::_case_right_bracket() {
@@ -151,9 +148,9 @@ void JsonParser::_case_right_bracket() {
   default:
     throw JsonError("unexpected token: ]");
   }
-  Json value = _tmp.top();
+  ftpp::Variant value = _tmp.top();
   _tmp.pop();
-  _tmp.top().as<JsonArray>().value.push_back(value);
+  _tmp.top().as<Array>().push_back(value);
 }
 
 void JsonParser::_case_comma() {
@@ -161,19 +158,19 @@ void JsonParser::_case_comma() {
   case STATE_OBJECT_NEXT_OR_END:
     _state.top() = STATE_OBJECT_KEY;
     {
-      Json value = _tmp.top();
+      ftpp::Variant value = _tmp.top();
       _tmp.pop();
-      Json key = _tmp.top();
+      ftpp::Variant key = _tmp.top();
       _tmp.pop();
-      _tmp.top().as<JsonObject>().value[key.as<JsonString>().value] = value;
+      _tmp.top().as<Object>()[key.as<String>()] = value;
     }
     break;
   case STATE_ARRAY_NEXT_OR_END:
     _state.top() = STATE_ARRAY_VALUE;
     {
-      Json value = _tmp.top();
+      ftpp::Variant value = _tmp.top();
       _tmp.pop();
-      _tmp.top().as<JsonArray>().value.push_back(value);
+      _tmp.top().as<Array>().push_back(value);
     }
     break;
   default:
@@ -210,7 +207,7 @@ void JsonParser::_case_string(std::string const &value) {
   default:
     throw JsonError("unexpected token: string");
   }
-  _tmp.push(JsonString(_string_dequote(value)));
+  _tmp.push(_string_dequote(value));
 }
 
 void JsonParser::_case_number(std::string const &value) {
@@ -228,7 +225,7 @@ void JsonParser::_case_number(std::string const &value) {
   default:
     throw JsonError("unexpected token: number");
   }
-  _tmp.push(JsonNumber(std::strtod(value.c_str(), NULL)));
+  _tmp.push(std::strtod(value.c_str(), NULL));
 }
 
 void JsonParser::_case_true() {
@@ -246,7 +243,7 @@ void JsonParser::_case_true() {
   default:
     throw JsonError("unexpected token: true");
   }
-  _tmp.push(JsonBoolean(true));
+  _tmp.push(true);
 }
 
 void JsonParser::_case_false() {
@@ -264,7 +261,7 @@ void JsonParser::_case_false() {
   default:
     throw JsonError("unexpected token: false");
   }
-  _tmp.push(JsonBoolean(false));
+  _tmp.push(false);
 }
 
 void JsonParser::_case_null() {
@@ -282,7 +279,7 @@ void JsonParser::_case_null() {
   default:
     throw JsonError("unexpected token: null");
   }
-  _tmp.push(Json());
+  _tmp.push(Null());
 }
 
 void JsonParser::_case_end() {
@@ -361,12 +358,12 @@ std::string JsonParser::_string_dequote(std::string const &str) {
   return ss.str();
 }
 
-Json JsonParser::parse(char const *str) {
+ftpp::Variant JsonParser::parse(char const *str) {
   std::stringstream ss(str);
   return parse(ss);
 }
 
-Json JsonParser::parse(std::istream &stream) {
+ftpp::Variant JsonParser::parse(std::istream &stream) {
   return JsonParser(stream)._parse();
 }
 

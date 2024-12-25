@@ -6,39 +6,68 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 08:18:49 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/18 05:03:31 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/25 08:24:10 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "EchoServer.hpp"
-
-#include <EventLoop.hpp>
-#include <EventLoop/BaseSignalWatcher.hpp>
-
+#include <Json.hpp>
+#include <JsonArray.hpp>
+#include <JsonObject.hpp>
+#include <JsonParser.hpp>
+#include <JsonString.hpp>
+#include <fstream>
 #include <iostream>
 
-class Stopper : public ftev::EventLoop::BaseSignalWatcher {
-public:
-  Stopper(ftev::EventLoop &loop) : BaseSignalWatcher(loop) {
-    start(2);
-  };
-  ~Stopper() {
-    if (is_active())
-      stop();
-  };
-  void on_signal() {
-    loop.stop();
-  };
-};
-
 int main() {
-  ftev::EventLoop &loop = ftev::EventLoop::default_loop;
-  Stopper stopper(loop);
-  EchoServer server(loop, "::", 8081);
-  server.start();
-  loop.run();
-  std::cout << "Goodbye!" << std::endl;
+  std::ifstream ifs("./default.json");
+  ftjson::Json obj = ftjson::JsonParser::parse(ifs);
+  std::cout << obj.as<ftjson::JsonObject>()
+                   .value["servers"]
+                   .as<ftjson::JsonArray>()
+                   .value[0]
+                   .as<ftjson::JsonObject>()
+                   .value["server_name"]
+                   .as<ftjson::JsonArray>()
+                   .value[0]
+                   .as<ftjson::JsonString>()
+                   .value
+            << std::endl;
+  return 0;
 }
+
+/**/
+
+// #include "EchoServer.hpp"
+
+// #include <EventLoop.hpp>
+// #include <EventLoop/BaseSignalWatcher.hpp>
+
+// #include <iostream>
+
+// class Stopper : public ftev::EventLoop::BaseSignalWatcher {
+// public:
+//   Stopper(ftev::EventLoop &loop) : BaseSignalWatcher(loop) {
+//     start(SIGINT);
+//   };
+//   ~Stopper() {
+//     if (is_active())
+//       stop();
+//   };
+//   void on_signal() {
+//     loop.stop();
+//   };
+// };
+
+// int main() {
+//   ftev::EventLoop &loop = ftev::EventLoop::default_loop;
+//   Stopper stopper(loop);
+//   EchoServer server(loop, "0.0.0.0", 8080);
+//   server.start();
+//   loop.run();
+//   std::cout << "Goodbye!" << std::endl;
+// }
+
+/**/
 
 // #include "Webserv.hpp"
 

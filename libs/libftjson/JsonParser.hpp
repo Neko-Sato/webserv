@@ -6,12 +6,15 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 04:30:35 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/25 07:40:56 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/26 07:18:03 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <Json.hpp>
+#pragma once
+
 #include <JsonLexer.hpp>
+
+#include <Variant.hpp>
 
 #include <stack>
 
@@ -35,12 +38,12 @@ private:
   };
 
   std::stack<state> _state;
-  std::stack<Json> _tmp;
+  std::stack<ftpp::Variant> _tmp;
 
   JsonParser(std::istream &stream);
   ~JsonParser();
 
-  Json _parse();
+  ftpp::Variant _parse();
   void _case_left_brace();
   void _case_left_bracket();
   void _case_right_brace();
@@ -60,8 +63,8 @@ private:
   JsonParser &operator=(JsonParser const &rhs);
 
 public:
-  static Json parse(char const *str);
-  static Json parse(std::istream &stream);
+  static ftpp::Variant parse(char const *str);
+  static ftpp::Variant parse(std::istream &stream);
 };
 
 } // namespace ftjson
