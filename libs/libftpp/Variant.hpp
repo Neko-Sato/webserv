@@ -6,13 +6,14 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/26 06:43:04 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/26 07:51:35 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/26 07:57:04 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <typeinfo>
+#include <cstddef>
 
 namespace ftpp {
 

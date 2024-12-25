@@ -1,67 +1,59 @@
-// /* ************************************************************************** */
-// /*                                                                            */
-// /*                                                        :::      ::::::::   */
-// /*   Configs.hpp                                        :+:      :+:    :+:   */
-// /*                                                    +:+ +:+         +:+     */
-// /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
-// /*                                                +#+#+#+#+#+   +#+           */
-// /*   Created: 2024/11/30 08:30:48 by hshimizu          #+#    #+#             */
-// /*   Updated: 2024/12/17 16:23:21 by hshimizu         ###   ########.fr       */
-// /*                                                                            */
-// /* ************************************************************************** */
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Configs.hpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/30 08:30:48 by hshimizu          #+#    #+#             */
+/*   Updated: 2024/12/26 08:08:38 by hshimizu         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-// #pragma once
+#pragma once
 
-// #include <list>
-// #include <map>
-// #include <string>
-// #include <vector>
-// #include <fstream>
+#include <Json.hpp>
 
-// class Configs {
-// public:
-//   struct address {
-//     std::string host;
-//     int port;
-//   };
+#include <fstream>
+#include <list>
+#include <map>
+#include <string>
+#include <vector>
 
-//   struct location {
-//     std::vector<std::string> allow_methods;
-//     // redirect
-//     std::string root;
-//     bool autoindex;
-//     std::string index;
+class Configs {
+public:
+  struct address {
+    std::string host;
+    int port;
+  };
 
-//     std::string cgi_path;
-//     std::map<std::string, std::string> cgi_param;
-//   };
+  struct location {
+    std::vector<std::string> allow_methods;
+    // redirect
+    std::string root;
+    bool autoindex;
+    std::string index;
 
-//   struct server {
-//     std::vector<address> addresses;
-//     std::vector<std::string> server_names;
-//     std::map<int, std::string> error_pages;
-//     size_t client_max_body_size;
-//     std::map<std::string, location> locations;
-//   };
+    std::string cgi_path;
+    std::map<std::string, std::string> cgi_param;
+  };
 
-// private:
-//   std::list<server> _servers;
+  struct server {
+    std::vector<address> addresses;
+    std::vector<std::string> server_names;
+    std::map<int, std::string> error_pages;
+    size_t client_max_body_size;
+    std::map<std::string, location> locations;
+  };
 
-//   void _load(std::string &filename);
+private:
+  std::list<server> _servers;
 
-// public:
-//   Configs();
-//   Configs(std::string &filename);
-//   Configs(const Configs &rhs);
-//   Configs &operator=(const Configs &rhs);
-//   ~Configs();
-// };
-
-
-// class Parser {
-//   void load(std::string &filename) {
-//     std::ifstream ifs(filename.c_str(), std::ios::in);
-// 	ifs.
-
-//   }W
-// };
+public:
+  Configs();
+  Configs(std::string const &filename);
+  Configs(ftjson::Object const &config);
+  Configs(const Configs &rhs);
+  Configs &operator=(const Configs &rhs);
+  ~Configs();
+};

@@ -1,14 +1,15 @@
 {
   "servers": [
     {
-      "server_name": [
-        "server\uD83D\uDC081"
+      "server_names": [
+        "server0",
+        "server1"
       ],
       "listen": [
-        "8082",
+        8082,
         "localhost:8080"
       ],
-      "root": "./",
+      "client_max_body_size": "1m",
       "error_page": {
         "404": "/404.html",
         "500": "/50x.html",
@@ -18,12 +19,35 @@
       },
       "location": {
         "/": {
-          "root": "/usr/share/nginx/html",
+          "type": "static",
           "allow_methods": [
             "GET",
             "POST"
           ],
-          "return": "200 \"Hello World\n\""
+          "root": "/usr/share/nginx/html",
+          "autoindex": true,
+          "index": "index.html"
+        },
+        "/redirect": {
+          "type": "redirect",
+          "allow_methods": [
+            "GET"
+          ],
+          "code": 301,
+          "path": "http://www.google.com/"
+        },
+        "/cgi": {
+          "type": "cgi",
+          "allow_methods": [
+            "GET",
+            "POST"
+          ],
+          "cgi_path": "/usr/lib/cgi-bin",
+          "cgi_ext": ".cgi"
+        },
+        "/storage": {
+          "type": "storage",
+          "upload_path": "/usr/share/nginx/upload"
         }
       }
     },
@@ -32,27 +56,8 @@
         "server2"
       ],
       "listen": [
-        "8083",
         "localhost:8081"
-      ],
-      "root": "./",
-      "error_page": {
-        "404": "/404.html",
-        "500": "/50x.html",
-        "502": "/50x.html",
-        "503": "/50x.html",
-        "504": "/50x.html"
-      },
-      "location": {
-        "/": {
-          "root": "/usr/share/ngi\\u23432nx/html",
-          "allow_methods": [
-            "GET",
-            "POST"
-          ],
-          "return": "200 \"Hello World\n\""
-        }
-      }
+      ]
     }
   ]
 }
