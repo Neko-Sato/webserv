@@ -6,13 +6,14 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/26 06:43:04 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/26 07:27:39 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/26 07:39:54 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <cstddef>
+#include <typeinfo>
 
 namespace ftpp {
 
@@ -27,6 +28,7 @@ private:
   public:
     virtual ~BaseValue() {};
     virtual BaseValue *copy() const = 0;
+    virtual std::type_info const &type() const = 0;
   };
 
   template <typename T> class Value : public BaseValue {
@@ -52,6 +54,9 @@ private:
     };
     BaseValue *copy() const {
       return new Value(_value);
+    };
+    std::type_info const &type() const {
+      return typeid(T);
     };
   };
 
@@ -94,6 +99,10 @@ public:
 
   template <typename T> T const &as() const {
     return dynamic_cast<Value<T> const &>(*_value).get();
+  };
+
+  std::type_info const &type() const {
+    return _value ? _value->type() : typeid(void);
   };
 };
 
