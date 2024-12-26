@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/19 02:25:31 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/26 07:55:13 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/26 17:01:13 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,28 +86,25 @@ JsonToken JsonLexer::_maybe_string() {
   std::stringstream ss;
   bool escape = false;
   ss.put(_stream.get());
-  for (std::string tmp; ftpp::utf8_getc(_stream, tmp);) {
-    ss << tmp;
-    if (tmp.length() == 1) {
-      char const &c = tmp[0];
-      if (std::iscntrl(c))
-        throw JsonError("Bad control character in string literal");
-      if (!escape) {
-        if (c == '\\') {
-          escape = true;
-          continue;
-        }
-        if (c == '"')
-          return JsonToken(JsonToken::STRING, ss.str());
-      } else if (c == 'u') {
-        char tmp[4];
-        _stream.read(tmp, 4);
-        if (_stream.gcount() != 4 || !ftpp::all_of(tmp, tmp + 4, ::isxdigit))
-          throw JsonError("Bad Unicode escape");
-        ss.write(tmp, 4);
+  for (char c; (c = _stream.peek()) != -1;) {
+    ss.put(_stream.get());
+    if (std::iscntrl(c))
+      throw JsonError("Bad control character in string literal");
+    if (!escape) {
+      if (c == '\\') {
+        escape = true;
+        continue;
       }
-      escape = false;
+      if (c == '"')
+        return JsonToken(JsonToken::STRING, ss.str());
+    } else if (c == 'u') {
+      char tmp[4];
+      _stream.read(tmp, 4);
+      if (_stream.gcount() != 4 || !ftpp::all_of(tmp, tmp + 4, ::isxdigit))
+        throw JsonError("Bad Unicode escape");
+      ss.write(tmp, 4);
     }
+    escape = false;
   }
   throw JsonError("Unterminated string");
 }
