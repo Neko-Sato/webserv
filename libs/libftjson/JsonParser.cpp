@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 04:30:35 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/26 07:22:37 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/26 16:12:54 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -279,7 +279,7 @@ void JsonParser::_case_null() {
   default:
     throw JsonError("unexpected token: null");
   }
-  _tmp.push(Null());
+  _tmp.push(ftpp::Variant());
 }
 
 void JsonParser::_case_end() {
