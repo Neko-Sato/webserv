@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/26 06:43:04 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/26 07:45:26 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/26 16:11:23 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,10 @@ Variant &Variant::operator=(Variant const &rhs) {
 
 std::type_info const &Variant::type() const {
   return _value ? _value->type() : typeid(void);
+}
+
+bool Variant::isvalid() const {
+  return _value != NULL;
 }
 
 } // namespace ftpp

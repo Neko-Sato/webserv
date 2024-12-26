@@ -6,14 +6,14 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/26 06:43:04 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/26 07:57:04 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/26 16:10:52 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <typeinfo>
 #include <cstddef>
+#include <typeinfo>
 
 namespace ftpp {
 
@@ -59,7 +59,8 @@ public:
   template <typename T> T &as();
   template <typename T> T const &as() const;
   std::type_info const &type() const;
-  template <typename T> bool is() const;
+  template <typename T> bool isType() const;
+  bool isvalid() const;
 };
 
 template <typename T> Variant::Value<T>::Value() : _value() {
@@ -119,7 +120,7 @@ template <typename T> T const &Variant::as() const {
   return dynamic_cast<Value<T> const &>(*_value).get();
 }
 
-template <typename T> bool Variant::is() const {
+template <typename T> bool Variant::isType() const {
   return dynamic_cast<Value<T> const *>(_value) != NULL;
 }
 
