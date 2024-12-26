@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2024/12/26 08:10:24 by hshimizu         ###   ########.fr        #
+#    Updated: 2024/12/26 17:22:34 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -71,6 +71,7 @@ clean:
 	@$(MAKE) -C $(LIBFTPP) fclean
 	@$(MAKE) -C $(LIBFTJSON) fclean
 	$(RM) -r $(OUT_DIR)
+	@$(RM) tester cgi_tester
 
 fclean:
 	@$(MAKE) clean
@@ -91,5 +92,21 @@ $(LIBFTEV): $(LIBFTPP)
 
 $(LIBFTJSON): $(LIBFTPP)
 	@$(MAKE) -C $@
+
+tester:
+	@if [ "$(shell uname)" = "Darwin" ]; then \
+		wget -O $@ https://cdn.intra.42.fr/document/document/27562/tester; \
+	else \
+		wget -O $@ https://cdn.intra.42.fr/document/document/27565/ubuntu_tester; \
+	fi
+	@chmod +x $@
+
+cgi_tester:
+	@if [ "$(shell uname)" = "Darwin" ]; then \
+		wget -O $@ https://cdn.intra.42.fr/document/document/27564/cgi_tester; \
+	else \
+		wget -O $@ https://cdn.intra.42.fr/document/document/27563/ubuntu_cgi_tester; \
+	fi
+	@chmod +x $@
 
 -include $(DEPS)
