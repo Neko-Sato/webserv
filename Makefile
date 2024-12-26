@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2024/12/26 17:22:34 by hshimizu         ###   ########.fr        #
+#    Updated: 2024/12/26 17:34:44 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -53,7 +53,7 @@ else
 CXXFLAGS					+= -O3
 endif
 
-.PHONY: all bonus clean fclean re neko $(LIBFTEV) $(LIBFTPP) $(LIBFTJSON)
+.PHONY: all bonus clean fclean re neko author $(LIBFTEV) $(LIBFTPP) $(LIBFTJSON)
 
 all: $(NAME)
 
@@ -108,5 +108,10 @@ cgi_tester:
 		wget -O $@ https://cdn.intra.42.fr/document/document/27563/ubuntu_cgi_tester; \
 	fi
 	@chmod +x $@
+
+author:
+	@echo "Made by hshimizu."
+	@echo "github\t: https://github.com/Neko-Sato"
+	@echo "profile\t: https://profile.intra.42.fr/users/hshimizu"
 
 -include $(DEPS)
