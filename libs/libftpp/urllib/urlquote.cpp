@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 18:12:07 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/28 20:24:44 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/28 21:32:02 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ std::string urlquote(std::string const &s) {
       ss.put(*it);
     else
       ss << '%' << std::setw(2) << std::hex << std::uppercase
-         << static_cast<int>(*it);
+         << static_cast<int>(*it & 0xFF);
   }
   return ss.str();
 }
