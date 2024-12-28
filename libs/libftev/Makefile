@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2024/12/25 04:26:49 by hshimizu         ###   ########.fr        #
+#    Updated: 2024/12/28 10:47:07 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,9 +30,13 @@ LDFLAGS		:=
 LIBS		:= -lftpp
 
 ifeq ($(DEBUG), 1)
-CXXFLAGS	+= -g -fsanitize=address -D FT_SUBJECT_NOT_COMPLIANT
+CXXFLAGS					+= -g -fsanitize=address
 else
-CXXFLAGS	+= -O3
+CXXFLAGS					+= -O3
+endif
+
+ifeq ($(COMPLIANT), 1)
+CXXFLAGS					+= -D FT_SUBJECT_COMPLIANT
 endif
 
 .PHONY: all clean fclean re

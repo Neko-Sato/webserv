@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2024/12/26 17:35:44 by hshimizu         ###   ########.fr        #
+#    Updated: 2024/12/28 21:01:06 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -48,9 +48,13 @@ LDFLAGS						:=
 LIBS						:= -lftev -lftpp -lftjson
 
 ifeq ($(DEBUG), 1)
-CXXFLAGS					+= -g -fsanitize=address -D FT_SUBJECT_NOT_COMPLIANT
+CXXFLAGS					+= -g -fsanitize=address
 else
 CXXFLAGS					+= -O3
+endif
+
+ifeq ($(NOT_COMPLIANT), 1)
+CXXFLAGS					+= -D FT_SUBJECT_NOT_COMPLIANT
 endif
 
 .PHONY: all bonus clean fclean re neko author $(LIBFTEV) $(LIBFTPP) $(LIBFTJSON)
