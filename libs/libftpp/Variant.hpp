@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/26 06:43:04 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/26 16:10:52 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/30 09:55:01 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,8 @@ private:
 
 public:
   Variant();
-  template <typename T> Variant(T const &value);
   Variant(Variant const &rhs);
+  template <typename T> Variant(T const &value);
   ~Variant();
   Variant &operator=(Variant const &rhs);
   template <typename T> Variant &operator=(T const &rhs);

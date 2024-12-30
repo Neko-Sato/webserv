@@ -2,61 +2,104 @@
   "servers": [
     {
       "server_names": [
-        "server0",
-        "server1"
+        "example.com",
+        "www.example.com"
       ],
       "listen": [
-        8082,
-        "localhost:8080"
+        "80",
+        "443"
       ],
-      "client_max_body_size": "1m",
-      "error_page": {
-        "404": "/404.html",
-        "500": "/50x.html",
-        "502": "/50x.html",
-        "503": "/50x.html",
-        "504": "/50x.html"
-      },
-      "location": {
-        "/": {
-          "type": "static",
+      "client_max_body_size": "10m",
+      "error_pages": [
+        {
+          "code": 404,
+          "path": "/errors/404.html"
+        },
+        {
+          "code": 500,
+          "path": "/errors/500.html"
+        }
+      ],
+      "locations": [
+        {
+          "path": "/",
+          "type": "default",
           "allow_methods": [
             "GET",
             "POST"
           ],
-          "root": "/usr/share/nginx/html",
-          "autoindex": true,
-          "index": "index.html"
+          "root": "/var/www/example",
+          "index": [
+            "index.html",
+            "index.htm"
+          ],
+          "autoindex": false,
+          "cgi": [
+            {
+              "ext": ".py",
+              "bin": "/usr/bin/pyton3"
+            }
+          ]
         },
-        "/redirect": {
-          "type": "redirect",
+        {
+          "path": "/static",
+          "type": "default",
           "allow_methods": [
             "GET"
           ],
-          "code": 301,
-          "path": "http://www.google.com/"
+          "root": "/var/www/example/static",
+          "index": [
+            "index.html"
+          ],
+          "autoindex": true
         },
-        "/cgi": {
-          "type": "cgi",
+        {
+          "path": "/redirect",
+          "type": "redirect",
+          "code": 301,
+          "redirect": "https://www.example.com/new-path"
+        }
+      ]
+    },
+    {
+      "server_names": [
+        "api.example.com"
+      ],
+      "listen": [
+        "8080"
+      ],
+      "client_max_body_size": "5m",
+      "error_pages": [
+        {
+          "code": 403,
+          "path": "/errors/403.html"
+        }
+      ],
+      "locations": [
+        {
+          "path": "/api",
+          "type": "default",
           "allow_methods": [
             "GET",
             "POST"
           ],
-          "cgi_path": "/usr/lib/cgi-bin",
-          "cgi_ext": ".cgi"
+          "root": "/var/www/api",
+          "index": [
+            "index.html"
+          ],
+          "autoindex": false
         },
-        "/storage": {
-          "type": "storage",
-          "upload_path": "/usr/share/nginx/upload"
+        {
+          "path": "/uploads",
+          "type": "upload",
+          "store": "/var/www/api/uploads",
+        },
+        {
+          "path": "/redirect",
+          "type": "redirect",
+          "code": 302,
+          "redirect": "https://www.api.example.com/redirected"
         }
-      }
-    },
-    {
-      "server_name": [
-        "server2"
-      ],
-      "listen": [
-        "localhost:8081"
       ]
     }
   ]

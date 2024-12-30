@@ -10,11 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "EchoServer.hpp"
+#include <EchoServer.hpp>
 
 #include <cstring>
 #include <iostream>
 #include <netinet/in.h>
+
+namespace ftev {
 
 EchoServer::EchoServer(ftev::EventLoop &loop, char const *host, int port)
     : BaseTCPServer(loop) {
@@ -86,3 +88,5 @@ void EchoServer::Connection::on_except() {
 void EchoServer::Connection::on_release() {
   delete this;
 }
+
+} // namespace ftev

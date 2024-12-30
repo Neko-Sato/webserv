@@ -1,9 +1,9 @@
-.vscode/
-.tmp/
-.out/
+.vscode
+.tmp
+.out
 a.out
 *.a
 *.so
 *.o
 *.d
-webserv
+./webserv

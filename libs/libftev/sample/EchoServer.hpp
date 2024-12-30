@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 04:31:15 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/06 10:43:18 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/30 17:18:56 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 #include <AsyncSocket/BaseAsyncStreamServer.hpp>
 #include <AsyncSocket/BaseTCPServer.hpp>
 #include <EventLoop.hpp>
+
+namespace ftev {
 
 class EchoServer : public ftev::BaseTCPServer {
 private:
@@ -46,3 +48,5 @@ public:
 
   Server *create_server(int domain, int type, int protocol);
 };
+
+} // namespace ftev
