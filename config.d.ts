@@ -6,7 +6,7 @@ export interface Server {
 	server_names: string[]
 	listen: string[]
 	client_max_body_size: string
-	error_pages: ErrorPage[]
+	error_page: ErrorPage[]
 	locations: Location[]
 }
 
