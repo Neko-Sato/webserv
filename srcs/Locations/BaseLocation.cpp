@@ -16,25 +16,16 @@
 #include "Locations/LocationRedirect.hpp"
 #include "Locations/LocationUpload.hpp"
 
-#include <Json.hpp>
 #include <Any.hpp>
+#include <Json.hpp>
 
 #include <stdexcept>
 
 BaseLocation::BaseLocation() {
 }
 
-BaseLocation::BaseLocation(ftpp::Any const &value) {
-  ftjson::Object const &location = value.as<ftjson::Object>();
-  {
-    ftjson::Object::const_iterator it = location.find("allow_methods");
-    if (it != location.end()) {
-      ftjson::Array const &methods = it->second.as<ftjson::Array>();
-      for (ftjson::Array::const_iterator jt = methods.begin();
-           jt != methods.end(); ++jt)
-        _allow_methods.insert(jt->as<ftjson::String>());
-    }
-  }
+BaseLocation::BaseLocation(ftpp::Any const &value)
+    : _allow_methods(_takeAllowMethods(value)) {
 }
 
 BaseLocation::BaseLocation(BaseLocation const &rhs)
