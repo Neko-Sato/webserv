@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Variant.cpp                                        :+:      :+:    :+:   */
+/*   Any.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,37 +10,37 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <Variant.hpp>
+#include <Any.hpp>
 #include <cstddef>
 #include <typeinfo>
 
 namespace ftpp {
 
-Variant::BaseValue::BaseValue() {
+Any::BaseValue::BaseValue() {
 }
 
-Variant::BaseValue::BaseValue(BaseValue const &) {
+Any::BaseValue::BaseValue(BaseValue const &) {
 }
 
-Variant::BaseValue &Variant::BaseValue::operator=(BaseValue const &) {
+Any::BaseValue &Any::BaseValue::operator=(BaseValue const &) {
   return *this;
 }
 
-Variant::BaseValue::~BaseValue() {
+Any::BaseValue::~BaseValue() {
 }
 
-Variant::Variant() : _value(NULL) {
+Any::Any() : _value(NULL) {
 }
 
-Variant::Variant(Variant const &rhs) {
+Any::Any(Any const &rhs) {
   _value = rhs._value ? rhs._value->copy() : NULL;
 }
 
-Variant::~Variant() {
+Any::~Any() {
   delete _value;
 }
 
-Variant &Variant::operator=(Variant const &rhs) {
+Any &Any::operator=(Any const &rhs) {
   if (this != &rhs) {
     BaseValue *tmp = rhs._value ? rhs._value->copy() : NULL;
     delete _value;
@@ -49,11 +49,11 @@ Variant &Variant::operator=(Variant const &rhs) {
   return *this;
 }
 
-std::type_info const &Variant::type() const {
+std::type_info const &Any::type() const {
   return _value ? _value->type() : typeid(void);
 }
 
-bool Variant::isvalid() const {
+bool Any::isvalid() const {
   return _value != NULL;
 }
 

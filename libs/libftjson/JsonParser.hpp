@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 04:30:35 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/28 02:33:57 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/30 18:28:27 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 #include <JsonLexer.hpp>
 
-#include <Variant.hpp>
+#include <Any.hpp>
 
 #include <stack>
 
@@ -41,12 +41,12 @@ private:
 
   std::stack<state> _state;
   state _current_state;
-  std::stack<ftpp::Variant> _tmp;
+  std::stack<ftpp::Any> _tmp;
 
   JsonParser(std::istream &stream);
   ~JsonParser();
 
-  ftpp::Variant _parse();
+  ftpp::Any _parse();
 
   void _transition(JsonToken const &token);
 
@@ -72,8 +72,8 @@ private:
   JsonParser &operator=(JsonParser const &rhs);
 
 public:
-  static ftpp::Variant parse(char const *str);
-  static ftpp::Variant parse(std::istream &stream);
+  static ftpp::Any parse(char const *str);
+  static ftpp::Any parse(std::istream &stream);
 };
 
 } // namespace ftjson

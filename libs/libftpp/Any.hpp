@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Variant.hpp                                        :+:      :+:    :+:   */
+/*   Any.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -17,7 +17,7 @@
 
 namespace ftpp {
 
-class Variant {
+class Any {
 private:
   class BaseValue {
   protected:
@@ -50,12 +50,12 @@ private:
   BaseValue *_value;
 
 public:
-  Variant();
-  Variant(Variant const &rhs);
-  template <typename T> Variant(T const &value);
-  ~Variant();
-  Variant &operator=(Variant const &rhs);
-  template <typename T> Variant &operator=(T const &rhs);
+  Any();
+  Any(Any const &rhs);
+  template <typename T> Any(T const &value);
+  ~Any();
+  Any &operator=(Any const &rhs);
+  template <typename T> Any &operator=(T const &rhs);
   template <typename T> T &as();
   template <typename T> T const &as() const;
   std::type_info const &type() const;
@@ -63,64 +63,64 @@ public:
   bool isvalid() const;
 };
 
-template <typename T> Variant::Value<T>::Value() : _value() {
+template <typename T> Any::Value<T>::Value() : _value() {
 }
 
-template <typename T> Variant::Value<T>::Value(T const &value) : _value(value) {
-}
-
-template <typename T>
-Variant::Value<T>::Value(Value const &rhs) : _value(rhs._value) {
-}
-
-template <typename T> Variant::Value<T>::~Value() {
+template <typename T> Any::Value<T>::Value(T const &value) : _value(value) {
 }
 
 template <typename T>
-typename Variant::Value<T> &Variant::Value<T>::operator=(Value const &rhs) {
+Any::Value<T>::Value(Value const &rhs) : _value(rhs._value) {
+}
+
+template <typename T> Any::Value<T>::~Value() {
+}
+
+template <typename T>
+typename Any::Value<T> &Any::Value<T>::operator=(Value const &rhs) {
   if (this != &rhs) {
     _value = rhs._value;
   }
   return *this;
 }
 
-template <typename T> T &Variant::Value<T>::get() {
+template <typename T> T &Any::Value<T>::get() {
   return _value;
 }
 
-template <typename T> T const &Variant::Value<T>::get() const {
+template <typename T> T const &Any::Value<T>::get() const {
   return _value;
 }
 
 template <typename T>
-typename Variant::BaseValue *Variant::Value<T>::copy() const {
+typename Any::BaseValue *Any::Value<T>::copy() const {
   return new Value(_value);
 }
 
-template <typename T> std::type_info const &Variant::Value<T>::type() const {
+template <typename T> std::type_info const &Any::Value<T>::type() const {
   return typeid(T);
 }
 
-template <typename T> Variant::Variant(T const &value) {
+template <typename T> Any::Any(T const &value) {
   _value = new Value<T>(value);
 }
 
-template <typename T> Variant &Variant::operator=(T const &rhs) {
+template <typename T> Any &Any::operator=(T const &rhs) {
   BaseValue *tmp = new Value<T>(rhs);
   delete _value;
   _value = tmp;
   return *this;
 }
 
-template <typename T> T &Variant::as() {
+template <typename T> T &Any::as() {
   return dynamic_cast<Value<T> &>(*_value).get();
 }
 
-template <typename T> T const &Variant::as() const {
+template <typename T> T const &Any::as() const {
   return dynamic_cast<Value<T> const &>(*_value).get();
 }
 
-template <typename T> bool Variant::isType() const {
+template <typename T> bool Any::isType() const {
   return dynamic_cast<Value<T> const *>(_value) != NULL;
 }
 

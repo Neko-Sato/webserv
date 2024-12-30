@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 04:30:35 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/28 02:36:51 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/30 18:28:27 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <JsonError.hpp>
 #include <JsonParser.hpp>
 
-#include <Variant.hpp>
+#include <Any.hpp>
 #include <unicode/surrogate.hpp>
 #include <unicode/utf8.hpp>
 
@@ -33,13 +33,13 @@ JsonParser::JsonParser(std::istream &stream)
 JsonParser::~JsonParser() {
 }
 
-ftpp::Variant JsonParser::_parse() {
+ftpp::Any JsonParser::_parse() {
   assert(_tmp.empty());
   assert(_current_state == STATE_VALUE);
   for (; _current_state != STATE_END;)
     _transition(_lexer.nextToken());
   assert(_tmp.size() == 1);
-  ftpp::Variant result = _tmp.top();
+  ftpp::Any result = _tmp.top();
   _tmp.pop();
   return result;
 }
@@ -272,7 +272,7 @@ void JsonParser::_case_null() {
   default:
     throw JsonError("Unexpected token: null");
   }
-  _tmp.push(ftpp::Variant());
+  _tmp.push(ftpp::Any());
 }
 
 void JsonParser::_case_end() {
@@ -287,7 +287,7 @@ void JsonParser::_case_end() {
 
 void JsonParser::_insert_object() {
   assert(3 <= _tmp.size());
-  ftpp::Variant value = _tmp.top();
+  ftpp::Any value = _tmp.top();
   _tmp.pop();
   assert(_tmp.top().isType<String>());
   std::string key = _tmp.top().as<String>();
@@ -299,7 +299,7 @@ void JsonParser::_insert_object() {
 
 void JsonParser::_insert_array() {
   assert(2 <= _tmp.size());
-  ftpp::Variant value = _tmp.top();
+  ftpp::Any value = _tmp.top();
   _tmp.pop();
   assert(_tmp.top().isType<Array>());
   Array &arr = _tmp.top().as<Array>();
@@ -372,12 +372,12 @@ std::string JsonParser::_string_dequote(std::string const &str) {
   return ss.str();
 }
 
-ftpp::Variant JsonParser::parse(char const *str) {
+ftpp::Any JsonParser::parse(char const *str) {
   std::stringstream ss(str);
   return parse(ss);
 }
 
-ftpp::Variant JsonParser::parse(std::istream &stream) {
+ftpp::Any JsonParser::parse(std::istream &stream) {
   return JsonParser(stream)._parse();
 }
 

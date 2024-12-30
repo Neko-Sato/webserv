@@ -6,13 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 22:21:27 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/26 16:12:27 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/30 18:28:27 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <Variant.hpp>
+#include <Any.hpp>
 
 #include <map>
 #include <string>
@@ -20,8 +20,8 @@
 
 namespace ftjson {
 
-typedef std::map<std::string, ftpp::Variant> Object;
-typedef std::vector<ftpp::Variant> Array;
+typedef std::map<std::string, ftpp::Any> Object;
+typedef std::vector<ftpp::Any> Array;
 typedef std::string String;
 typedef double Number;
 typedef bool Boolean;
