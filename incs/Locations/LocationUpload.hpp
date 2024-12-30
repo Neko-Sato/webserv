@@ -1,40 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Configs.hpp                                        :+:      :+:    :+:   */
+/*   LocationUpload.hpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/30 14:04:54 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/30 18:38:02 by hshimizu         ###   ########.fr       */
+/*   Created: 2024/12/30 17:21:52 by hshimizu          #+#    #+#             */
+/*   Updated: 2024/12/30 18:46:51 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "Server.hpp"
+#include "BaseLocation.hpp"
 
 #include <Any.hpp>
 
-#include <list>
+#include <string>
 
-class Configs {
-public:
-  typedef std::list<Server> Servers;
-
+class LocationUpload : public BaseLocation {
 private:
-  Servers _servers;
+  std::string _store;
 
-  static Servers _takeServers(ftpp::Any const &value);
+  static std::string _takeStore(ftpp::Any const &value);
+
+  LocationUpload();
 
 public:
-  Configs();
-  Configs(ftpp::Any const &value);
-  Configs(Configs const &rhs);
-  Configs &operator=(Configs const &rhs);
-  ~Configs();
+  LocationUpload(ftpp::Any const &value);
+  LocationUpload(LocationUpload const &rhs);
+  LocationUpload &operator=(LocationUpload const &rhs);
+  ~LocationUpload();
 
-  Servers const &getServers() const;
-
-  static Configs load(std::string const &filename);
+  LocationUpload *copy() const;
 };
