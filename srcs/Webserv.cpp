@@ -1,32 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Webserv.hpp                                        :+:      :+:    :+:   */
+/*   Webserv.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/26 07:59:54 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/31 10:43:32 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/31 10:43:07 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#include "Webserv.hpp"
 
-#include "Configs.hpp"
-#include "SigIntHandler.hpp"
+#include <iostream>
 
-#include <EventLoop.hpp>
+Webserv::Webserv(ftev::EventLoop &loop, Configs const &configs)
+    : _configs(configs), _sigint_handler(loop) {
+  try {
+    Configs::Addresses tmp(_configs.getAllAddresses());
+    for (Configs::Addresses::iterator it = tmp.begin(); it != tmp.end(); ++it)
+      std::cout << "host: " << it->host << ", port: " << it->port << std::endl;
+  } catch (...) {
+    for (Servers::iterator it = _servers.begin(); it != _servers.end(); ++it)
+      delete *it;
+    throw;
+  }
+}
 
-class Webserv {
-private:
-  Configs _configs;
-  SigIntHandler _sigint_handler;
-
-  Webserv();
-  Webserv(Webserv const &);
-  Webserv &operator=(Webserv const &);
-
-public:
-  Webserv(ftev::EventLoop &loop, Configs const &configs);
-  ~Webserv();
-};
+Webserv::~Webserv() {
+}
