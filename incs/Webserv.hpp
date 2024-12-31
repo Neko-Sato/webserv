@@ -6,21 +6,28 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/26 07:59:54 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/01 00:34:54 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/01 00:54:46 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+#include "HttpServer.hpp"
 #include "configs/Configs.hpp"
 
 #include <EventLoop.hpp>
 #include <LoopStopper/LoopStopper.hpp>
 
+#include <list>
+
 class Webserv {
+public:
+  typedef std::list<HttpServer *> Servers;
+
 private:
   Configs _configs;
   ftev::LoopStopper _stopper;
+  Servers _servers;
 
   Webserv();
   Webserv(Webserv const &);

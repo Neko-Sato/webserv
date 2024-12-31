@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 14:28:11 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/01 00:38:45 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/01 01:02:43 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,8 @@ void ServerConf::_takeAddresses(ftjson::Object const &server) {
       ftjson::Object::const_iterator const &jt = addr.find("host");
       if (jt != addr.end())
         host = jt->second.as<ftjson::String>();
+      else
+        host = "0.0.0.0";
       ftjson::Object::const_iterator const &kt = addr.find("port");
       if (kt != addr.end()) {
         double tmp = kt->second.as<ftjson::Number>();
