@@ -1,15 +1,20 @@
 /* It was an inappropriate definition of json, but better than json schema. */
 
 export interface Root {
-	servers: Server[];
+	servers?: Server[];
 }
 
 export interface Server {
-	server_names: string[];
-	listen: string[];
-	client_max_body_size: string;
-	error_pages: ErrorPage[];
-	locations: Location[];
+	server_names?: string[];
+	listen?: Address[];
+	client_max_body_size?: string;
+	error_pages?: ErrorPage[];
+	locations?: Location[];
+}
+
+export interface Address {
+	host?: string;
+	port: number;
 }
 
 export interface ErrorPage {
@@ -26,8 +31,8 @@ export interface Location {
 export interface LocationDefault extends Location {
 	type: "default";
 	root: string;
-	index: string[];
-	autoindex: boolean;
+	index?: string[];
+	autoindex?: boolean;
 	cgi?: { [ext: string]: Cgi };
 }
 
@@ -44,6 +49,6 @@ export interface LocationUpload extends Location {
 
 export interface LocationRedirect extends Location {
 	type: "redirect";
-	code: number;
+	code?: number;
 	redirect: string;
 }

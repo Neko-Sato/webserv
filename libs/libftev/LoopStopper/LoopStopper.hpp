@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   SigIntHandler.hpp                                  :+:      :+:    :+:   */
+/*   LoopStopper.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/31 10:00:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/31 10:03:18 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/31 23:11:37 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,14 @@
 #include <EventLoop.hpp>
 #include <EventLoop/BaseSignalWatcher.hpp>
 
-class SigIntHandler : public ftev::EventLoop::BaseSignalWatcher {
+namespace ftev {
+
+class LoopStopper : public ftev::EventLoop::BaseSignalWatcher {
 public:
-  SigIntHandler(ftev::EventLoop &loop);
-  ~SigIntHandler();
+  LoopStopper(ftev::EventLoop &loop);
+  ~LoopStopper();
 
   void on_signal();
 };
+
+} // namespace ftev

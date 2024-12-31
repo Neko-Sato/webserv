@@ -6,98 +6,47 @@
         "www.example.com"
       ],
       "listen": [
-        "80",
-        "443"
+        {
+          "host": "127.0.0.1",
+          "port": 80.0
+        },
+        {
+          "host": "127.0.0.1",
+          "port": 443
+        }
       ],
-      "client_max_body_size": "10m",
+      "client_max_body_size": "10M",
       "error_pages": [
         {
           "code": 404,
-          "path": "/errors/404.html"
+          "path": "/404.html"
         },
         {
           "code": 500,
-          "path": "/errors/500.html"
+          "path": "/500.html"
         }
       ],
       "locations": [
         {
           "path": "/",
           "type": "default",
-          "allow_methods": [
-            "GET",
-            "POST"
-          ],
-          "root": "/var/www/example",
+          "root": "/var/www/html",
           "index": [
             "index.html",
             "index.htm"
           ],
-          "autoindex": false,
-          "cgi": {
-            ".py": {
-              "bin": "/usr/bin/python3"
-            }
-          }
-        },
-        {
-          "path": "/static",
-          "type": "default",
-          "allow_methods": [
-            "GET"
-          ],
-          "root": "/var/www/example/static",
-          "index": [
-            "index.html"
-          ],
           "autoindex": true
         },
         {
-          "path": "/redirect",
+          "path": "/upload",
+          "type": "upload",
+          "store": "/var/uploads"
+        },
+        {
+          "path": "/redirect-me",
           "type": "redirect",
           "code": 301,
-          "redirect": "https://www.example.com/new-path"
-        }
-      ]
-    },
-    {
-      "server_names": [
-        "api.example.com"
-      ],
-      "listen": [
-        "8080"
-      ],
-      "client_max_body_size": "5m",
-      "error_pages": [
-        {
-          "code": 403,
-          "path": "/errors/403.html"
-        }
-      ],
-      "locations": [
-        {
-          "path": "/api",
-          "type": "default",
-          "allow_methods": [
-            "GET",
-            "POST"
-          ],
-          "root": "/var/www/api",
-          "index": [
-            "index.html"
-          ],
-          "autoindex": false
-        },
-        {
-          "path": "/uploads",
-          "type": "upload",
-          "store": "/var/www/api/uploads"
-        },
-        {
-          "path": "/redirect",
-          "type": "redirect",
-          "code": 302,
-          "redirect": "https://www.api.example.com/redirected"
+          "redirect": "https://www.newdomain.com"
         }
       ]
     }
