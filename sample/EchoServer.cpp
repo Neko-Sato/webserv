@@ -59,15 +59,12 @@ EchoServer::Connection::Connection(ftev::EventLoop &loop, int connfd)
 EchoServer::Connection::~Connection() {
 }
 
-void EchoServer::Connection::on_data(std::deque<char> &data) {
-  std::vector<char> buffer(data.begin(), data.end());
-  data.clear();
-  write(buffer.data(), buffer.size());
-  std::cout.write(buffer.data(), buffer.size());
+void EchoServer::Connection::on_data(std::vector<char> const &data) {
+  write(data.data(), data.size());
+  std::cout.write(data.data(), data.size());
 }
 
-void EchoServer::Connection::on_eof(std::deque<char> &data) {
-  on_data(data);
+void EchoServer::Connection::on_eof() {
   drain();
 }
 

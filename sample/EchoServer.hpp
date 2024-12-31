@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 04:31:15 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/30 18:52:25 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/01 01:55:12 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,8 @@ private:
     Connection(ftev::EventLoop &loop, int connfd);
     ~Connection();
 
-    void on_data(std::deque<char> &data);
-    void on_eof(std::deque<char> &data);
+    void on_data(std::vector<char> const &data);
+    void on_eof();
     void on_drain();
     void on_except();
     void on_release();
