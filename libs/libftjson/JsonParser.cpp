@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 04:30:35 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/30 18:28:27 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/31 21:40:39 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <JsonParser.hpp>
 
 #include <Any.hpp>
+#include <ft_string.hpp>
 #include <unicode/surrogate.hpp>
 #include <unicode/utf8.hpp>
 
@@ -218,7 +219,7 @@ void JsonParser::_case_number(std::string const &value) {
   default:
     throw JsonError("Unexpected token: number");
   }
-  _tmp.push(std::strtod(value.c_str(), NULL));
+  _tmp.push(ftpp::stod(value));
 }
 
 void JsonParser::_case_true() {
