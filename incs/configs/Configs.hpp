@@ -6,26 +6,30 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 14:04:54 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/30 18:38:02 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/01 00:20:05 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "Server.hpp"
+#include "configs/ServerConf.hpp"
+#include "structs/address.hpp"
 
 #include <Any.hpp>
+#include <Json.hpp>
 
 #include <list>
+#include <set>
 
 class Configs {
 public:
-  typedef std::list<Server> Servers;
+  typedef std::list<ServerConf> Servers;
+  typedef std::set<address> Addresses;
 
 private:
   Servers _servers;
 
-  static Servers _takeServers(ftpp::Any const &value);
+  void _takeServers(ftjson::Object const &configs);
 
 public:
   Configs();
@@ -34,7 +38,7 @@ public:
   Configs &operator=(Configs const &rhs);
   ~Configs();
 
-  Servers const &getServers() const;
-
   static Configs load(std::string const &filename);
+
+  Addresses getAllAddresses() const;
 };

@@ -1,30 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   LoopStopper.cpp                                    :+:      :+:    :+:   */
+/*   address.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/31 10:00:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/01 00:36:51 by hshimizu         ###   ########.fr       */
+/*   Created: 2024/12/31 09:45:58 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/01/01 00:24:03 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <LoopStopper/LoopStopper.hpp>
+#include "structs/address.hpp"
 
-namespace ftev {
+#include <string>
 
-LoopStopper::LoopStopper(ftev::EventLoop &loop) : BaseSignalWatcher(loop) {
-  start(SIGINT);
+address::address(std::string const &host, int port) : host(host), port(port) {
 }
 
-LoopStopper::~LoopStopper() {
-  if (is_active())
-    stop();
+bool address::operator<(address const &rhs) const {
+  return host < rhs.host || (host == rhs.host && port < rhs.port);
 }
-
-void LoopStopper::on_signal() {
-  loop.stop();
-}
-
-} // namespace ftev

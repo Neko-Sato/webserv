@@ -1,32 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Webserv.hpp                                        :+:      :+:    :+:   */
+/*   LocationUpload.hpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/26 07:59:54 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/01 00:34:54 by hshimizu         ###   ########.fr       */
+/*   Created: 2024/12/30 17:21:52 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/01/01 00:22:54 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "configs/Configs.hpp"
+#include "configs/Location.hpp"
 
-#include <EventLoop.hpp>
-#include <LoopStopper/LoopStopper.hpp>
+#include <Any.hpp>
+#include <Json.hpp>
 
-class Webserv {
+#include <string>
+
+class LocationUpload : public Location {
 private:
-  Configs _configs;
-  ftev::LoopStopper _stopper;
+  std::string _store;
 
-  Webserv();
-  Webserv(Webserv const &);
-  Webserv &operator=(Webserv const &);
+  void _takeStore(ftjson::Object const &location);
+
+  LocationUpload();
 
 public:
-  Webserv(ftev::EventLoop &loop, Configs const &configs);
-  ~Webserv();
+  LocationUpload(ftpp::Any const &value);
+  LocationUpload(LocationUpload const &rhs);
+  LocationUpload &operator=(LocationUpload const &rhs);
+  ~LocationUpload();
+
+  LocationUpload *copy() const;
 };

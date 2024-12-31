@@ -6,25 +6,26 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 17:21:52 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/30 18:42:54 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/01 00:22:24 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "BaseLocation.hpp"
+#include "configs/Location.hpp"
 
 #include <Any.hpp>
+#include <Json.hpp>
 
 #include <string>
 
-class LocationRedirect : public BaseLocation {
+class LocationRedirect : public Location {
 private:
   int _code;
   std::string _redirect;
 
-  static int _takeCode(ftpp::Any const &value);
-  static std::string _takeRedirect(ftpp::Any const &value);
+  void _takeCode(ftjson::Object const &location);
+  void _takeRedirect(ftjson::Object const &location);
 
   LocationRedirect();
 

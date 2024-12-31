@@ -1,41 +1,45 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   BaseLocation.hpp                                   :+:      :+:    :+:   */
+/*   Location.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 17:21:38 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/30 18:39:36 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/01 00:21:57 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <Any.hpp>
+#include <Json.hpp>
 
 #include <set>
 #include <string>
 
-class BaseLocation {
+class Location {
 public:
   typedef std::set<std::string> AllowMethods;
 
 private:
+  std::string _path;
   AllowMethods _allow_methods;
 
-  static AllowMethods _takeAllowMethods(ftpp::Any const &value);
+  void _takePath(ftjson::Object const &location);
+  void _takeAllowMethods(ftjson::Object const &location);
 
 protected:
-  BaseLocation();
-  BaseLocation(ftpp::Any const &value);
-  BaseLocation(BaseLocation const &rhs);
-  virtual BaseLocation &operator=(BaseLocation const &rhs);
+  Location();
+  Location(ftpp::Any const &value);
+  Location(Location const &rhs);
+  virtual Location &operator=(Location const &rhs);
 
 public:
-  static BaseLocation *create(ftpp::Any const &value);
-  virtual ~BaseLocation();
-  virtual BaseLocation *copy() const = 0;
+  static Location *create(ftpp::Any const &value);
+  virtual ~Location();
+  virtual Location *copy() const = 0;
 
+  std::string const &getPath() const;
   AllowMethods const &getAllowMethods() const;
 };

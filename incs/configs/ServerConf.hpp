@@ -1,38 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Server.hpp                                         :+:      :+:    :+:   */
+/*   ServerConf.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 17:07:45 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/30 18:37:51 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/01 00:22:06 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "Locations/BaseLocation.hpp"
+#include "configs/Location.hpp"
+#include "structs/address.hpp"
 
+#include <Any.hpp>
+#include <Json.hpp>
+
+#include <list>
 #include <map>
 #include <set>
 #include <string>
 
-class Server {
+class ServerConf {
 public:
-  struct Address {
-    std::string host;
-    int port;
-  };
+  static std::size_t const default_client_max_body_size;
 
   typedef std::set<std::string> ServerNames;
-  typedef std::set<Address> Addresses;
+  typedef std::set<address> Addresses;
   typedef std::map<int, std::string> ErrorPages;
-  typedef std::map<std::string, BaseLocation *> Locations;
-
-  static std::size_t const default_client_max_body_size;
-  static Address parseAddress(std::string const &address);
-  static std::size_t parseSize(std::string const &str);
+  typedef std::list<Location *> Locations;
 
 private:
   ServerNames _server_names;
@@ -41,18 +39,18 @@ private:
   ErrorPages _error_pages;
   Locations _locations;
 
-  static ServerNames _takeServerNames(ftpp::Any const &value);
-  static Addresses _takeAddresses(ftpp::Any const &value);
-  static std::size_t _takeClientBodySize(ftpp::Any const &value);
-  static ErrorPages _takeErrorPages(ftpp::Any const &value);
-  static Locations _takeLocations(ftpp::Any const &value);
+  void _takeServerNames(ftjson::Object const &server);
+  void _takeAddresses(ftjson::Object const &server);
+  void _takeClientBodySize(ftjson::Object const &server);
+  void _takeErrorPages(ftjson::Object const &server);
+  void _takeLocations(ftjson::Object const &server);
 
 public:
-  Server();
-  Server(ftpp::Any const &value);
-  Server(Server const &rhs);
-  Server &operator=(Server const &rhs);
-  ~Server();
+  ServerConf();
+  ServerConf(ftpp::Any const &value);
+  ServerConf(ServerConf const &rhs);
+  ServerConf &operator=(ServerConf const &rhs);
+  ~ServerConf();
 
   ServerNames const &getServerNames() const;
   Addresses const &getAddresses() const;

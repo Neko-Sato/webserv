@@ -6,13 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 17:21:52 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/30 18:42:04 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/01 00:22:10 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "BaseLocation.hpp"
+#include "configs/Location.hpp"
 
 #include <Any.hpp>
 
@@ -20,11 +20,10 @@
 #include <string>
 #include <vector>
 
-class LocationDefault : public BaseLocation {
+class LocationDefault : public Location {
 public:
   struct Cgi {
     std::string path;
-    std::vector<std::string> args;
   };
 
 private:
@@ -33,10 +32,10 @@ private:
   bool _autoindex;
   std::map<std::string, Cgi> _cgi;
 
-  static std::string _takeRoot(ftpp::Any const &value);
-  static std::vector<std::string> _takeIndex(ftpp::Any const &value);
-  static bool _takeAutoindex(ftpp::Any const &value);
-  static std::map<std::string, Cgi> _takeCgi(ftpp::Any const &value);
+  void _takeRoot(ftjson::Object const &location);
+  void _takeIndex(ftjson::Object const &location);
+  void _takeAutoindex(ftjson::Object const &location);
+  void _takeCgi(ftjson::Object const &location);
 
   LocationDefault();
 
