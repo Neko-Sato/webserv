@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/24 01:28:08 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/31 17:29:28 by hshimizu         ###   ########.fr       */
+/*   Updated: 2024/12/31 17:30:02 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,8 @@ template <typename T> void swap(T &a, T &b) {
 }
 
 template <typename T, std::size_t N> void swap(T (&a)[N], T (&b)[N]) {
-  for (std::size_t i = 0; i < N; ++i) {
+  for (std::size_t i = 0; i < N; ++i)
     swap(a[i], b[i]);
-  }
 }
 
 template <typename InputIterator, typename UnaryPredicate>
