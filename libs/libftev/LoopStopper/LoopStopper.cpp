@@ -6,11 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/31 10:00:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/01 00:36:51 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/01 00:44:22 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <LoopStopper/LoopStopper.hpp>
+
+#include <iostream>
 
 namespace ftev {
 
@@ -25,6 +27,7 @@ LoopStopper::~LoopStopper() {
 
 void LoopStopper::on_signal() {
   loop.stop();
+  std::cerr << "stopping..." << std::endl;
 }
 
 } // namespace ftev
