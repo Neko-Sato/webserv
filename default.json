@@ -34,12 +34,11 @@
             "index.htm"
           ],
           "autoindex": false,
-          "cgi": [
-            {
-              "ext": ".py",
-              "bin": "/usr/bin/pyton3"
+          "cgi": {
+            ".py": {
+              "bin": "/usr/bin/python3"
             }
-          ]
+          }
         },
         {
           "path": "/static",
@@ -92,7 +91,7 @@
         {
           "path": "/uploads",
           "type": "upload",
-          "store": "/var/www/api/uploads",
+          "store": "/var/www/api/uploads"
         },
         {
           "path": "/redirect",
