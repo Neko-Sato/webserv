@@ -6,12 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/01 00:55:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/01 01:00:01 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/01 02:03:43 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "HttpServer.hpp"
 
+#include <algorithm>
 #include <iostream>
 
 HttpServer::HttpServer(ftev::EventLoop &loop, char const *host, int port,
@@ -53,24 +54,35 @@ void HttpServer::Server::on_except() {
 
 HttpServer::Connection::Connection(ftev::EventLoop &loop, int connfd,
                                    Configs &configs)
-    : ftev::BaseAsyncSocket(loop, connfd), _configs(configs) {
+    : ftev::BaseAsyncSocket(loop, connfd), _configs(configs), _state(REQUEST) {
 }
 
 HttpServer::Connection::~Connection() {
 }
 
-void HttpServer::Connection::on_data(std::deque<char> &data) {
+void HttpServer::Connection::on_data(std::vector<char> const &data) {
   (void)data;
+  /*
+
+  */
 }
 
-void HttpServer::Connection::on_eof(std::deque<char> &data) {
-  (void)data;
+void HttpServer::Connection::on_eof() {
+  /*
+
+  */
 }
 
 void HttpServer::Connection::on_drain() {
+  /*
+
+  */
 }
 
 void HttpServer::Connection::on_except() {
+  /*
+
+  */
 }
 
 void HttpServer::Connection::on_release() {

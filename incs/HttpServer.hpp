@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/01 00:49:08 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/01 00:58:29 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/01 01:56:26 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,14 +36,31 @@ private:
 
   class Connection : public ftev::BaseAsyncStreamConnection {
   private:
+    enum State {
+      REQUEST,
+      HEADERS,
+      BODY,
+      RESPONSE,
+      DONE,
+    };
+
+    struct Request {
+      std::string method;
+      std::string path;
+      std::string version;
+      std::map<std::string, std::string> headers;
+    };
+
     Configs &_configs;
+    State _state;
+    Request _request;
 
   public:
     Connection(ftev::EventLoop &loop, int connfd, Configs &configs);
     ~Connection();
 
-    void on_data(std::deque<char> &data);
-    void on_eof(std::deque<char> &data);
+    void on_data(std::vector<char> const &data);
+    void on_eof();
     void on_drain();
     void on_except();
     void on_release();
