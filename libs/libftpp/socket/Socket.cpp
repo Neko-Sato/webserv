@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 03:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/01 12:29:20 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/01 12:50:31 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ Socket::Socket(int domain, int type, int protocol) {
   _sockfd = _create_socket(domain, type, protocol);
 }
 
-Socket::Socket(rm_ref<Socket> const &rhs) : _sockfd(rhs.ref._sockfd) {
+Socket::Socket(transfer<Socket> const &rhs) : _sockfd(rhs.ref._sockfd) {
   rhs.ref._sockfd = -1;
 }
 
@@ -46,7 +46,7 @@ Socket::~Socket() {
     close();
 }
 
-Socket &Socket::operator=(rm_ref<Socket> const &rhs) {
+Socket &Socket::operator=(transfer<Socket> const &rhs) {
   if (this != &rhs.ref) {
     close();
     _sockfd = rhs.ref._sockfd;
