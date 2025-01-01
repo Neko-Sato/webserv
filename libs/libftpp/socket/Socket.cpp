@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 03:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/01 13:28:26 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/01 15:57:30 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void Socket::swap(Socket &rhs) {
   std::swap(_sockfd, rhs._sockfd);
 }
 
-int Socket::get_sockfd() const {
+int Socket::getSockfd() const {
   return _sockfd;
 }
 

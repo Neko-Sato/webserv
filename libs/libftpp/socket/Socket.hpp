@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 03:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/01 12:50:31 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/01 15:56:33 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ public:
   Socket &operator=(transfer<Socket> const &rhs);
   void swap(Socket &rhs);
 
-  int get_sockfd() const;
+  int getSockfd() const;
 
   void bind(sockaddr const *addr, socklen_t addrlen);
   void connect(sockaddr const *addr, socklen_t addrlen);
