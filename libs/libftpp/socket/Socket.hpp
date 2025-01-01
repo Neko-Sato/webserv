@@ -6,13 +6,17 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 03:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/07 08:39:12 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/01 12:11:55 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+#include <move.hpp>
+
+#include <map>
 #include <sys/socket.h>
+#include <vector>
 
 namespace ftpp {
 
@@ -20,23 +24,34 @@ class Socket {
 private:
   int _sockfd;
 
+#if !defined(FT_SUBJECT_NOT_COMPLIANT)
+  typedef std::vector<char> SockAddr;
+  static std::map<int, SockAddr> _sockNames;
+  static std::map<int, SockAddr> _peerNames;
+
+#endif
+
   static int _create_socket(int domain, int type, int protocol);
 
+  Socket(int sockfd);
   Socket(Socket const &rhs);
   Socket &operator=(Socket const &rhs);
 
 public:
-  Socket(int sockfd = -1);
+  Socket();
   Socket(int domain, int type, int protocol);
+  Socket(remove_reference<Socket> const &rhs);
   ~Socket();
+  Socket &operator=(remove_reference<Socket> const &rhs);
+  void swap(Socket &rhs);
 
   int get_sockfd() const;
 
   void bind(sockaddr const *addr, socklen_t addrlen);
   void connect(sockaddr const *addr, socklen_t addrlen);
   void listen(int backlog = 1024);
-  int accept(sockaddr *addr, socklen_t *addrlen);
 
+  Socket accept();
   std::size_t write(void const *buf, std::size_t len);
   std::size_t read(void *buf, std::size_t len);
   std::size_t send(void const *buf, std::size_t len, int flags);
