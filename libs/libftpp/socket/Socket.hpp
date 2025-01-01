@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 03:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/01 12:11:55 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/01 12:29:20 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,9 +40,9 @@ private:
 public:
   Socket();
   Socket(int domain, int type, int protocol);
-  Socket(remove_reference<Socket> const &rhs);
+  Socket(rm_ref<Socket> const &rhs);
   ~Socket();
-  Socket &operator=(remove_reference<Socket> const &rhs);
+  Socket &operator=(rm_ref<Socket> const &rhs);
   void swap(Socket &rhs);
 
   int get_sockfd() const;

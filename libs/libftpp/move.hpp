@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/01 10:34:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/01 11:22:43 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/01 12:29:33 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,16 +21,16 @@ It resolves by swapping with an invalidated object.
 
 */
 
-template <typename T> struct remove_reference {
+template <typename T> struct rm_ref {
   T &ref;
-  explicit remove_reference(T ref);
+  explicit rm_ref(T ref);
 };
 
-template <typename T> remove_reference<T>::remove_reference(T ref) : ref(ref) {
+template <typename T> rm_ref<T>::rm_ref(T ref) : ref(ref) {
 }
 
-template <typename T> remove_reference<T> move(T &ref) {
-  return remove_reference<T>(ref);
+template <typename T> rm_ref<T> move(T &ref) {
+  return rm_ref<T>(ref);
 }
 
 } // namespace ftpp
