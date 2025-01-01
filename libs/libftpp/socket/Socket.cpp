@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 03:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/01 12:50:31 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/01 13:28:26 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,11 @@
 #include <unistd.h>
 
 namespace ftpp {
+
+#if !defined(FT_SUBJECT_NOT_COMPLIANT)
+std::map<int, Socket::SockAddr> Socket::_sockNames;
+std::map<int, Socket::SockAddr> Socket::_peerNames;
+#endif
 
 int Socket::_create_socket(int domain, int type, int protocol) {
   int sockfd = ::socket(domain, type, protocol);
@@ -208,7 +213,7 @@ void Socket::getpeername(sockaddr *addr, socklen_t *addrlen) {
 #else
   std::map<int, SockAddr>::iterator it = _peerNames.find(_sockfd);
   if (it == _peerNames.end())
-	throw std::runtime_error("getpeername: No Peer Name");
+    throw std::runtime_error("getpeername: No Peer Name");
   std::memcpy(addr, it->second.data(), it->second.size());
   *addrlen = it->second.size();
 #endif
