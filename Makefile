@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2024/12/28 21:01:06 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/01/01 02:08:34 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,7 +17,7 @@ INCS_DIR					:= $(DIR)/incs
 SRCS_DIR					:= $(DIR)/srcs
 LIBS_DIR					:= $(DIR)/libs
 OUT_DIR						:= $(DIR)/.out
-DEFAULT_CONFIGURE			:= $(DIR)/default.json
+DEFAULT_CONFIGURE			:= $(DIR)/configs/default.json
 
 LIBFTEV						:= $(LIBS_DIR)/libftev
 LIBFTPP						:= $(LIBS_DIR)/libftpp

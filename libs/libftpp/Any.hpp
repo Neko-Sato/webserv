@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <move.hpp>
+
 #include <cstddef>
 #include <typeinfo>
 
@@ -52,10 +54,13 @@ private:
 public:
   Any();
   Any(Any const &rhs);
+  Any(remove_reference<Any> const &rhs);
   template <typename T> Any(T const &value);
   ~Any();
   Any &operator=(Any const &rhs);
+  Any &operator=(remove_reference<Any> const &rhs);
   template <typename T> Any &operator=(T const &rhs);
+  void swap(Any &rhs);
   template <typename T> T &as();
   template <typename T> T const &as() const;
   std::type_info const &type() const;
@@ -92,8 +97,7 @@ template <typename T> T const &Any::Value<T>::get() const {
   return _value;
 }
 
-template <typename T>
-typename Any::BaseValue *Any::Value<T>::copy() const {
+template <typename T> typename Any::BaseValue *Any::Value<T>::copy() const {
   return new Value(_value);
 }
 

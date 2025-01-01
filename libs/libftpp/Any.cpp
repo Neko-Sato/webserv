@@ -14,6 +14,8 @@
 #include <cstddef>
 #include <typeinfo>
 
+#include <algorithm>
+
 namespace ftpp {
 
 Any::BaseValue::BaseValue() {
@@ -36,6 +38,10 @@ Any::Any(Any const &rhs) {
   _value = rhs._value ? rhs._value->copy() : NULL;
 }
 
+Any::Any(remove_reference<Any> const &rhs) : _value(rhs.ref._value) {
+  rhs.ref._value = NULL;
+}
+
 Any::~Any() {
   delete _value;
 }
@@ -47,6 +53,21 @@ Any &Any::operator=(Any const &rhs) {
     _value = tmp;
   }
   return *this;
+}
+
+Any &Any::operator=(remove_reference<Any> const &rhs) {
+  if (this != &rhs.ref) {
+    delete _value;
+    _value = rhs.ref._value;
+    rhs.ref._value = NULL;
+  }
+  return *this;
+}
+
+void Any::swap(Any &rhs) {
+  if (this != &rhs) {
+    std::swap(_value, rhs._value);
+  }
 }
 
 std::type_info const &Any::type() const {
