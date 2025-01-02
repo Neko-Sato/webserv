@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 22:55:05 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/02 23:43:18 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/03 00:20:07 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 HttpServer::HttpServer(ftev::EventLoop &loop, std::string const &host, int port,
                        Configs const &configs)
     : ftev::BaseTCPServer(loop, host, port), _configs(configs) {
-  std::cout << "host:" << host << ", port: " << port << std::endl;
+  std::cout << "host: " << host << ", port: " << port << std::endl;
   start();
 }
 

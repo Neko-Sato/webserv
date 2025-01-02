@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 23:06:24 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/02 23:39:44 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/03 01:52:56 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 #include <AsyncSocket/MixinReader.hpp>
 #include <AsyncSocket/MixinWriter.hpp>
 
+#include <string>
+
 class HttpConnection : virtual public ftev::BaseAsyncSocket,
                        public ftev::MixinReader,
                        public ftev::MixinWriter {
@@ -25,12 +27,12 @@ public:
   enum State {
     REQUEST,
     HEADER,
-    BODY,
-    RESPONSE,
   };
 
 private:
   HttpServer const &_server;
+  State _state;
+  std::deque<char> _buffer;
 
 public:
   HttpConnection(ftev::EventLoop &loop, ftpp::Socket &socket,
