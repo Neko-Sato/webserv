@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   configs.d.ts                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/03 02:18:41 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/01/03 02:18:57 by hshimizu         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 /* It was an inappropriate definition of json, but better than json schema. */
 
 export interface Root {
