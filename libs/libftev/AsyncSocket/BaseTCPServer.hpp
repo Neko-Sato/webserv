@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 20:31:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/02 20:33:00 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/02 23:14:10 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ private:
 
 public:
   BaseTCPServer(EventLoop &loop, std::string const &host, int port);
-  ~BaseTCPServer();
+  virtual ~BaseTCPServer();
 
   std::string const &getHost() const;
   int getPort() const;
