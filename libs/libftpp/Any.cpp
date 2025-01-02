@@ -38,10 +38,6 @@ Any::Any(Any const &rhs) {
   _value = rhs._value ? rhs._value->copy() : NULL;
 }
 
-Any::Any(transfer<Any> const &rhs) : _value(rhs.ref._value) {
-  rhs.ref._value = NULL;
-}
-
 Any::~Any() {
   delete _value;
 }
@@ -51,15 +47,6 @@ Any &Any::operator=(Any const &rhs) {
     BaseValue *tmp = rhs._value ? rhs._value->copy() : NULL;
     delete _value;
     _value = tmp;
-  }
-  return *this;
-}
-
-Any &Any::operator=(transfer<Any> const &rhs) {
-  if (this != &rhs.ref) {
-    delete _value;
-    _value = rhs.ref._value;
-    rhs.ref._value = NULL;
   }
   return *this;
 }

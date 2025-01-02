@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 03:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/01 15:57:30 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/02 17:02:39 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,6 @@
 #include <unistd.h>
 
 namespace ftpp {
-
-#if !defined(FT_SUBJECT_NOT_COMPLIANT)
-std::map<int, Socket::SockAddr> Socket::_sockNames;
-std::map<int, Socket::SockAddr> Socket::_peerNames;
-#endif
 
 int Socket::_create_socket(int domain, int type, int protocol) {
   int sockfd = ::socket(domain, type, protocol);
@@ -39,25 +34,12 @@ Socket::Socket(int domain, int type, int protocol) {
   _sockfd = _create_socket(domain, type, protocol);
 }
 
-Socket::Socket(transfer<Socket> const &rhs) : _sockfd(rhs.ref._sockfd) {
-  rhs.ref._sockfd = -1;
-}
-
 Socket::Socket(int sockfd) : _sockfd(sockfd) {
 }
 
 Socket::~Socket() {
   if (_sockfd != -1)
     close();
-}
-
-Socket &Socket::operator=(transfer<Socket> const &rhs) {
-  if (this != &rhs.ref) {
-    close();
-    _sockfd = rhs.ref._sockfd;
-    rhs.ref._sockfd = -1;
-  }
-  return *this;
 }
 
 void Socket::swap(Socket &rhs) {
@@ -71,19 +53,11 @@ int Socket::getSockfd() const {
 void Socket::bind(sockaddr const *addr, socklen_t addrlen) {
   if (__glibc_unlikely(::bind(_sockfd, addr, addrlen) == -1))
     throw OSError(errno, "bind");
-#if !defined(FT_SUBJECT_NOT_COMPLIANT)
-  char const *&data = reinterpret_cast<char const *&>(addr);
-  _sockNames[_sockfd].assign(data, data + addrlen);
-#endif
 }
 
 void Socket::connect(sockaddr const *addr, socklen_t addrlen) {
   if (__glibc_unlikely(::connect(_sockfd, addr, addrlen) == -1))
     throw OSError(errno, "connect");
-#if !defined(FT_SUBJECT_NOT_COMPLIANT)
-  char const *&data = reinterpret_cast<char const *&>(addr);
-  _peerNames[_sockfd].assign(data, data + addrlen);
-#endif
 }
 
 void Socket::listen(int backlog) {
@@ -91,18 +65,11 @@ void Socket::listen(int backlog) {
     throw OSError(errno, "listen");
 }
 
-Socket Socket::accept() {
-  sockaddr_storage addr;
-  socklen_t addrlen = sizeof(addr);
-  int connfd = ::accept(_sockfd, reinterpret_cast<sockaddr *>(&addr), &addrlen);
+void Socket::accept(Socket &conn) {
+  int connfd = ::accept(_sockfd, NULL, 0);
   if (__glibc_unlikely(connfd == -1))
     throw OSError(errno, "accept");
-#if !defined(FT_SUBJECT_NOT_COMPLIANT)
-  _sockNames[connfd] = _sockNames[_sockfd];
-  char *&data = reinterpret_cast<char *&>(addr);
-  _peerNames[connfd].assign(data, data + addrlen);
-#endif
-  return Socket(connfd);
+  Socket(connfd).swap(conn);
 }
 
 std::size_t Socket::write(void const *buf, std::size_t len) {
@@ -187,8 +154,6 @@ void Socket::close() {
   if (_sockfd != -1) {
     if (__glibc_unlikely(::close(_sockfd) == -1))
       throw OSError(errno, "close");
-    _sockNames.erase(_sockfd);
-    _peerNames.erase(_sockfd);
     _sockfd = -1;
   }
 }
@@ -198,11 +163,9 @@ void Socket::getsockname(sockaddr *addr, socklen_t *addrlen) {
   if (__glibc_unlikely(::getsockname(_sockfd, addr, addrlen) == -1))
     throw OSError(errno, "getsockname");
 #else
-  std::map<int, SockAddr>::iterator it = _sockNames.find(_sockfd);
-  if (it == _sockNames.end())
-    throw std::runtime_error("getsockname: No Socket Name");
-  std::memcpy(addr, it->second.data(), it->second.size());
-  *addrlen = it->second.size();
+  (void)addr;
+  (void)addrlen;
+  throw std::runtime_error("getsockname: Forbidden Function");
 #endif
 }
 
@@ -211,11 +174,9 @@ void Socket::getpeername(sockaddr *addr, socklen_t *addrlen) {
   if (__glibc_unlikely(::getpeername(_sockfd, addr, addrlen) == -1))
     throw OSError(errno, "getpeername");
 #else
-  std::map<int, SockAddr>::iterator it = _peerNames.find(_sockfd);
-  if (it == _peerNames.end())
-    throw std::runtime_error("getpeername: No Peer Name");
-  std::memcpy(addr, it->second.data(), it->second.size());
-  *addrlen = it->second.size();
+  (void)addr;
+  (void)addrlen;
+  throw std::runtime_error("getpeername: Forbidden Function");
 #endif
 }
 

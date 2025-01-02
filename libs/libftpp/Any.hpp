@@ -12,8 +12,6 @@
 
 #pragma once
 
-#include <move.hpp>
-
 #include <cstddef>
 #include <typeinfo>
 
@@ -54,11 +52,9 @@ private:
 public:
   Any();
   Any(Any const &rhs);
-  Any(transfer<Any> const &rhs);
   template <typename T> Any(T const &value);
   ~Any();
   Any &operator=(Any const &rhs);
-  Any &operator=(transfer<Any> const &rhs);
   template <typename T> Any &operator=(T const &rhs);
   void swap(Any &rhs);
   template <typename T> T &as();
