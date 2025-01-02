@@ -17,54 +17,33 @@
 #include <netinet/in.h>
 
 EchoServer::EchoServer(ftev::EventLoop &loop, char const *host, int port)
-    : BaseTCPServer(loop) {
-  _setup(host, port);
+    : BaseTCPServer(loop, host, port) {
 }
 
 EchoServer::~EchoServer() {
 }
 
-EchoServer::Server *EchoServer::create_server(int domain, int type,
-                                              int protocol) {
-  return new Server(loop, domain, type, protocol);
+void EchoServer::on_connect(ftpp::Socket &socket) {
+  new Connection(*this, socket);
 }
 
-EchoServer::Server::Server(ftev::EventLoop &loop, int domain, int type,
-                           int protocol)
-    : BaseAsyncSocket(loop, domain, type, protocol) {
-}
-
-EchoServer::Server::~Server() {
-}
-
-void EchoServer::Server::on_accept(int sockfd, sockaddr const *addr) {
-  (void)addr;
-  try {
-    new Connection(loop, sockfd);
-  } catch (std::exception const &e) {
-    close(sockfd);
-    std::cerr << "Connection Error: " << e.what() << std::endl;
-  }
-}
-
-void EchoServer::Server::on_except() {
-  std::cerr << "Server Error" << std::endl;
-  loop.stop();
-}
-
-EchoServer::Connection::Connection(ftev::EventLoop &loop, int connfd)
-    : BaseAsyncSocket(loop, connfd) {
+EchoServer::Connection::Connection(EchoServer &server, ftpp::Socket &socket)
+    : BaseAsyncSocket(server.loop, socket) {
+  start(_socket.getSockfd(), ftpp::BaseSelector::READ);
 }
 
 EchoServer::Connection::~Connection() {
 }
 
 void EchoServer::Connection::on_data(std::vector<char> const &data) {
-  write(data.data(), data.size());
+  std::cout << "Received: ";
   std::cout.write(data.data(), data.size());
+  std::cout << std::endl;
+  _socket.write(data.data(), data.size());
 }
 
 void EchoServer::Connection::on_eof() {
+  std::cout << "Connection closed" << std::endl;
   drain();
 }
 

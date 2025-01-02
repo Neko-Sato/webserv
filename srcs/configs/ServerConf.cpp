@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 14:28:11 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/02 19:18:45 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/02 21:03:04 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,15 @@ ServerConf::ServerConf(ServerConf const &rhs)
   Locations tmp;
   try {
     for (Locations::const_iterator it = rhs._locations.begin();
-         it != rhs._locations.end(); ++it)
-      tmp.push_back((*it)->copy());
+         it != rhs._locations.end(); ++it) {
+      Location *loc = (*it)->copy();
+      try {
+        tmp.push_back(loc);
+      } catch (...) {
+        delete loc;
+        throw;
+      }
+    }
   } catch (...) {
     for (Locations::iterator it = tmp.begin(); it != tmp.end();
          it = tmp.erase(it))
@@ -56,8 +63,15 @@ ServerConf &ServerConf::operator=(ServerConf const &rhs) {
     Locations tmp;
     try {
       for (Locations::const_iterator it = rhs._locations.begin();
-           it != rhs._locations.end(); ++it)
-        tmp.push_back((*it)->copy());
+           it != rhs._locations.end(); ++it) {
+        Location *loc = (*it)->copy();
+        try {
+          tmp.push_back(loc);
+        } catch (...) {
+          delete loc;
+          throw;
+        }
+      }
     } catch (...) {
       for (Locations::iterator it = tmp.begin(); it != tmp.end();
            it = tmp.erase(it))
@@ -161,8 +175,15 @@ void ServerConf::_takeLocations(ftjson::Object const &server) {
     ftjson::Array const &locs = it->second.as<ftjson::Array>();
     try {
       for (ftjson::Array::const_iterator it = locs.begin(); it != locs.end();
-           ++it)
-        _locations.push_back(Location::create(*it));
+           ++it) {
+        Location *loc = Location::create(it->as<ftjson::Object>());
+        try {
+          _locations.push_back(loc);
+        } catch (...) {
+          delete loc;
+          throw;
+        }
+      }
     } catch (...) {
       for (Locations::iterator it = _locations.begin(); it != _locations.end();
            it = _locations.erase(it))

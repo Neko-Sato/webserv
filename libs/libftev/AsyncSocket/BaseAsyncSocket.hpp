@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 23:59:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/02 06:26:57 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/02 20:26:19 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ protected:
   ftpp::Socket _socket;
 
   BaseAsyncSocket(EventLoop &loop, int domain, int type, int protocol);
-  BaseAsyncSocket(EventLoop &loop, int sockfd);
+  BaseAsyncSocket(EventLoop &loop, ftpp::Socket &socket);
 
 public:
   virtual ~BaseAsyncSocket();
