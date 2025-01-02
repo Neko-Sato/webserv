@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 23:59:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/12 15:40:20 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/02 17:32:43 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void MixinWriter::write(char const *buffer, size_t size) {
     if (!(event & ftpp::BaseSelector::WRITE))
       modify(event | ftpp::BaseSelector::WRITE);
   } else
-    start(_socket.get_sockfd(), ftpp::BaseSelector::WRITE);
+    start(_socket.getSockfd(), ftpp::BaseSelector::WRITE);
 }
 
 void MixinWriter::drain() {
