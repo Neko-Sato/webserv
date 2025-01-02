@@ -1,39 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Webserv.hpp                                        :+:      :+:    :+:   */
+/*   HttpServer.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/26 07:59:54 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/02 22:57:48 by hshimizu         ###   ########.fr       */
+/*   Created: 2025/01/02 22:55:05 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/01/02 23:00:58 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "HttpServer.hpp"
 #include "configs/Configs.hpp"
 
-#include <EventLoop.hpp>
-#include <LoopStopper/LoopStopper.hpp>
+#include <AsyncSocket/BaseTCPServer.hpp>
+#include <socket/Socket.hpp>
 
-#include <list>
-
-class Webserv {
-public:
-  typedef std::list<HttpServer *> Servers;
-
+class HttpServer : public ftev::BaseTCPServer {
 private:
-  Configs _configs;
-  ftev::LoopStopper _stopper;
-  Servers _servers;
-
-  Webserv();
-  Webserv(Webserv const &);
-  Webserv &operator=(Webserv const &);
+  Configs const &_configs;
 
 public:
-  Webserv(ftev::EventLoop &loop, Configs const &configs);
-  ~Webserv();
+  HttpServer(ftev::EventLoop &loop, std::string const &host, int port,
+             Configs const &configs);
+  ~HttpServer();
+
+  void on_connect(ftpp::Socket &socket);
 };
