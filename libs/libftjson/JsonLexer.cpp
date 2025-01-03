@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/19 02:25:31 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/26 17:01:13 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/03 22:05:48 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ JsonLexer::~JsonLexer() {
 JsonToken JsonLexer::nextToken() {
   try {
     _skip_space();
-    char c = _stream.peek();
+    int c = _stream.peek();
     switch (c) {
     case -1:
       return JsonToken(JsonToken::END);
@@ -86,7 +86,7 @@ JsonToken JsonLexer::_maybe_string() {
   std::stringstream ss;
   bool escape = false;
   ss.put(_stream.get());
-  for (char c; (c = _stream.peek()) != -1;) {
+  for (int c; (c = _stream.peek()) != -1;) {
     ss.put(_stream.get());
     if (std::iscntrl(c))
       throw JsonError("Bad control character in string literal");
@@ -118,7 +118,7 @@ JsonToken JsonLexer::_maybe_number() {
   }
   if (_stream.peek() == '0')
     throw JsonError("Unexpected number");
-  for (char c; (c = _stream.peek()) != -1;) {
+  for (int c; (c = _stream.peek()) != -1;) {
     if (!std::isdigit(c))
       break;
     ss.put(_stream.get());
@@ -127,7 +127,7 @@ JsonToken JsonLexer::_maybe_number() {
     ss.put(_stream.get());
     if (!std::isdigit(_stream.peek()))
       throw JsonError("Unterminated fractional number");
-    for (char c; (c = _stream.peek()) != -1;) {
+    for (int c; (c = _stream.peek()) != -1;) {
       if (!std::isdigit(c))
         break;
       ss.put(_stream.get());
@@ -140,7 +140,7 @@ JsonToken JsonLexer::_maybe_number() {
       if (!std::isdigit(_stream.peek()))
         throw JsonError("Exponent part is missing a number");
     }
-    for (char c; (c = _stream.peek()) != -1;) {
+    for (int c; (c = _stream.peek()) != -1;) {
       if (!std::isdigit(c))
         break;
       ss.put(_stream.get());
