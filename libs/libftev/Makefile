@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2025/01/03 22:25:01 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/01/03 23:57:05 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,9 +25,9 @@ DEPS		:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=.d))
 CXX			:= c++
 CXXFLAGS	:= -Wall -Wextra -Werror
 CXXFLAGS	+= -std=c++98
-IDFLAGS		:= -I$(DIR)
-LDFLAGS		:=
-LIBS		:= -Wl,-rpath=$(LIBRARY_PATH) -lftpp
+IDFLAGS		:= -I$(DIR) -I$(CPLUS_INCLUDE_PATH)
+LDFLAGS		:= -L$(LIBRARY_PATH)
+LIBS		:= -Wl,-rpath,$(LD_RUN_PATH) -lftpp
 
 ifeq ($(DEBUG), 1)
 CXXFLAGS	+= -g -fsanitize=address

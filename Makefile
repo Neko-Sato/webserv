@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2025/01/03 22:25:24 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/01/03 23:55:55 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -43,9 +43,9 @@ CXX							:= c++
 CXXFLAGS					:= -Wall -Wextra -Werror
 CXXFLAGS					+= -std=c++98
 CXXFLAGS					+= -D DEFAULT_CONFIGURE=\"$(CURDIR)/$(DEFAULT_CONFIGURE)\"
-IDFLAGS						:= -I$(INCS_DIR)
-LDFLAGS						:=
-LIBS						:= -Wl,-rpath=$(LIBRARY_PATH) -lftev -lftpp -lftjson
+IDFLAGS						:= -I$(INCS_DIR) -I$(CPLUS_INCLUDE_PATH)
+LDFLAGS						:= -L$(LIBRARY_PATH)
+LIBS						:= -Wl,-rpath,$(LD_RUN_PATH) -lftev -lftpp -lftjson
 
 ifeq ($(DEBUG), 1)
 CXXFLAGS					+= -g -fsanitize=address
