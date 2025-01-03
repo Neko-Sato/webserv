@@ -6,56 +6,58 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2025/01/03 23:55:55 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/01/04 00:06:48 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME						:= webserv
+NAME				:= webserv
 
-DIR							:= .
-INCS_DIR					:= $(DIR)/incs
-SRCS_DIR					:= $(DIR)/srcs
-LIBS_DIR					:= $(DIR)/libs
-OUT_DIR						:= $(DIR)/.out
-DEFAULT_CONFIGURE			:= $(DIR)/configs/default.json
+DIR					:= .
+INCS_DIR			:= $(DIR)/incs
+SRCS_DIR			:= $(DIR)/srcs
+LIBS_DIR			:= $(DIR)/libs
+OUT_DIR				:= $(DIR)/.out
+DEFAULT_CONFIGURE	:= $(DIR)/configs/default.json
 
-LIBFTEV						:= $(LIBS_DIR)/libftev
-LIBFTPP						:= $(LIBS_DIR)/libftpp
-LIBFTJSON					:= $(LIBS_DIR)/libftjson
+LIBFTEV				:= $(LIBS_DIR)/libftev
+LIBFTPP				:= $(LIBS_DIR)/libftpp
+LIBFTJSON			:= $(LIBS_DIR)/libftjson
 
-export CPLUS_INCLUDE_PATH	:= $(CPLUS_INCLUDE_PATH):$(CURDIR)/$(LIBFTEV)
-export CPLUS_INCLUDE_PATH	:= $(CPLUS_INCLUDE_PATH):$(CURDIR)/$(LIBFTPP)
-export CPLUS_INCLUDE_PATH	:= $(CPLUS_INCLUDE_PATH):$(CURDIR)/$(LIBFTJSON)
+CPLUS_INCLUDE_PATH	:= $(CPLUS_INCLUDE_PATH):$(CURDIR)/$(LIBFTEV)
+CPLUS_INCLUDE_PATH	:= $(CPLUS_INCLUDE_PATH):$(CURDIR)/$(LIBFTPP)
+CPLUS_INCLUDE_PATH	:= $(CPLUS_INCLUDE_PATH):$(CURDIR)/$(LIBFTJSON)
 
-export LD_RUN_PATH			:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTEV)
-export LD_RUN_PATH			:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTPP)
-export LD_RUN_PATH			:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTJSON)
+LD_RUN_PATH			:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTEV)
+LD_RUN_PATH			:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTPP)
+LD_RUN_PATH			:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTJSON)
 
-export LIBRARY_PATH			:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTEV)
-export LIBRARY_PATH			:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTPP)
-export LIBRARY_PATH			:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTJSON)
+LIBRARY_PATH		:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTEV)
+LIBRARY_PATH		:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTPP)
+LIBRARY_PATH		:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTJSON)
 
-SRCS						:= $(shell find $(SRCS_DIR) -name "*.cpp")
-OBJS						:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=.o))
-DEPS						:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=.d))
+SRCS				:= $(shell find $(SRCS_DIR) -name "*.cpp")
+OBJS				:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=.o))
+DEPS				:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=.d))
 
-CXX							:= c++
-CXXFLAGS					:= -Wall -Wextra -Werror
-CXXFLAGS					+= -std=c++98
-CXXFLAGS					+= -D DEFAULT_CONFIGURE=\"$(CURDIR)/$(DEFAULT_CONFIGURE)\"
-IDFLAGS						:= -I$(INCS_DIR) -I$(CPLUS_INCLUDE_PATH)
-LDFLAGS						:= -L$(LIBRARY_PATH)
-LIBS						:= -Wl,-rpath,$(LD_RUN_PATH) -lftev -lftpp -lftjson
+CXX					:= c++
+CXXFLAGS			:= -Wall -Wextra -Werror
+CXXFLAGS			+= -std=c++98
+CXXFLAGS			+= -D DEFAULT_CONFIGURE=\"$(CURDIR)/$(DEFAULT_CONFIGURE)\"
+IDFLAGS				:= -I$(INCS_DIR) -I$(CPLUS_INCLUDE_PATH)
+LDFLAGS				:= -L$(LIBRARY_PATH)
+LIBS				:= -Wl,-rpath,$(LD_RUN_PATH) -lftev -lftpp -lftjson
 
 ifeq ($(DEBUG), 1)
-CXXFLAGS					+= -g -fsanitize=address
+CXXFLAGS			+= -g -fsanitize=address
 else
-CXXFLAGS					+= -O3
+CXXFLAGS			+= -O3
 endif
 
 ifeq ($(NOT_COMPLIANT), 1)
-CXXFLAGS					+= -D FT_SUBJECT_NOT_COMPLIANT
+CXXFLAGS			+= -D FT_SUBJECT_NOT_COMPLIANT
 endif
+
+export CPLUS_INCLUDE_PATH LD_RUN_PATH LIBRARY_PATH
 
 .PHONY: all bonus clean fclean re neko author
 
