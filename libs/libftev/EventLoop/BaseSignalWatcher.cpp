@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 00:31:00 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/03 21:32:07 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/03 22:03:19 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include <cassert>
 #include <cstdlib>
 #include <fcntl.h>
+#include <unistd.h>
 
 namespace ftev {
 
