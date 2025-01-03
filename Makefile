@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2025/01/03 22:15:57 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/01/03 22:19:11 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,11 +42,10 @@ DEPS						:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=.d))
 CXX							:= c++
 CXXFLAGS					:= -Wall -Wextra -Werror
 CXXFLAGS					+= -std=c++98
-CSSFLAGS					+= -Wl,-rpath=$(LIBRARY_PATH)
 CXXFLAGS					+= -D DEFAULT_CONFIGURE=\"$(CURDIR)/$(DEFAULT_CONFIGURE)\"
 IDFLAGS						:= -I$(INCS_DIR)
 LDFLAGS						:=
-LIBS						:= -lftev -lftpp -lftjson
+LIBS						:= -Wl,-rpath=$(LIBRARY_PATH) -lftev -lftpp -lftjson
 
 ifeq ($(DEBUG), 1)
 CXXFLAGS					+= -g -fsanitize=address
