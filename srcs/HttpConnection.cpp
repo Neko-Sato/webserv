@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 23:10:39 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/03 01:54:11 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/03 22:07:54 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ HttpConnection::HttpConnection(ftev::EventLoop &loop, ftpp::Socket &socket,
                                HttpServer const &server)
     : ftev::BaseAsyncSocket(loop, socket), _server(server), _state(REQUEST) {
   start(_socket.getSockfd(), ftpp::BaseSelector::READ);
+  (void)_server;
 }
 
 HttpConnection::~HttpConnection() {
