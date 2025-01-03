@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2025/01/04 00:06:48 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/01/04 00:58:55 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -122,6 +122,10 @@ cgi_tester:
 	fi
 	@chmod +x $@
 
+# At first I tried yaml but found it cumbersome and switched to json.
+# yaml was friendly when I read it but json is easier to parse.
+# However, it is hard to look at and write json directly,
+# so I prepared a converterw here.
 yaml2json:
 	@pip3 install pyyaml > /dev/null
 	@echo "#!/usr/bin/env python3" >> $@
