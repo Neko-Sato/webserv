@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 21:22:42 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/03 21:33:39 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/04 01:27:19 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,17 +28,22 @@
 
 template <typename T> bool __add_overflow(T a, T b, T *result) {
   *result = a + b;
-  return *result < a;
+  return (b > 0 && a > std::numeric_limits<T>::max() - b) ||
+         (b < 0 && a < std::numeric_limits<T>::min() - b);
 }
 
 template <typename T> bool __sub_overflow(T a, T b, T *result) {
   *result = a - b;
-  return *result > a;
+  return (b < 0 && a > std::numeric_limits<T>::max() + b) ||
+         (b > 0 && a < std::numeric_limits<T>::min() + b);
 }
 
 template <typename T> bool __mul_overflow(T a, T b, T *result) {
   *result = a * b;
-  return a != 0 && *result / a != b;
+  return (a > 0 && b > 0 && a > std::numeric_limits<T>::max() / b) ||
+         (a > 0 && b < 0 && b < std::numeric_limits<T>::min() / a) ||
+         (a < 0 && b > 0 && a < std::numeric_limits<T>::min() / b) ||
+         (a < 0 && b < 0 && a < std::numeric_limits<T>::max() / b);
 }
 
 #define add_overflow(a, b, result) __add_overflow(a, b, result)

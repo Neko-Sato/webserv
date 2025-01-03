@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/31 21:38:23 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/31 21:40:35 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/04 01:28:29 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 
 namespace ftpp {
 
+int stoi(std::string const &str, std::size_t *idx = NULL, int base = 10);
 long stol(std::string const &str, std::size_t *idx = NULL, int base = 10);
 unsigned long stoul(std::string const &str, std::size_t *idx = NULL,
                     int base = 10);
