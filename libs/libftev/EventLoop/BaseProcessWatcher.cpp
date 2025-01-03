@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 16:23:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/12 15:43:25 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/03 21:31:49 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <EventLoop/BaseProcessWatcher.hpp>
 
 #include <exceptions/OSError.hpp>
+#include <macros.hpp>
 
 #include <cassert>
 #include <cstdlib>
@@ -69,7 +70,7 @@ EventLoop::BaseProcessWatcher::WaitWatcher::WaitWatcher(EventLoop &loop)
 
 EventLoop::BaseProcessWatcher::WaitWatcher::~WaitWatcher() {
   if (is_active())
-	stop();
+    stop();
 }
 
 void EventLoop::BaseProcessWatcher::WaitWatcher::on_signal() {
@@ -80,7 +81,7 @@ void EventLoop::BaseProcessWatcher::WaitWatcher::on_signal() {
       pid = waitpid(-1, &status, WNOHANG);
       if (pid == 0)
         return;
-      else if (__glibc_unlikely(pid == -1)) {
+      else if (unlikely(pid == -1)) {
         if (errno == EINTR)
           continue;
         else if (errno == ECHILD)
@@ -97,28 +98,28 @@ void EventLoop::BaseProcessWatcher::WaitWatcher::on_signal() {
 }
 
 void EventLoop::BaseProcessWatcher::_activate() {
-  if (__glibc_unlikely(!loop._wait_watcher))
+  if (unlikely(!loop._wait_watcher))
     loop._wait_watcher = new WaitWatcher(loop);
-  if (__glibc_unlikely(!loop._wait_watcher->is_active()))
+  if (unlikely(!loop._wait_watcher->is_active()))
     loop._wait_watcher->start(SIGCHLD);
 }
 
 pid_t EventLoop::BaseProcessWatcher::_spawn(options const &opts) {
   pid_t pid = fork();
-  if (__glibc_unlikely(pid == -1))
+  if (unlikely(pid == -1))
     throw ftpp::OSError(errno, "fork");
   if (pid)
     return pid;
   try {
-    if (opts.cwd && __glibc_unlikely(chdir(opts.cwd) == -1))
+    if (opts.cwd && unlikely(chdir(opts.cwd) == -1))
       throw ftpp::OSError(errno, "chdir");
     if (opts.pipe[0] != -1) {
-      if (__glibc_unlikely(dup2(opts.pipe[0], STDIN_FILENO) == -1))
+      if (unlikely(dup2(opts.pipe[0], STDIN_FILENO) == -1))
         throw ftpp::OSError(errno, "dup2");
       close(opts.pipe[0]);
     }
     if (opts.pipe[1] != -1) {
-      if (__glibc_unlikely(dup2(opts.pipe[1], STDOUT_FILENO) == -1))
+      if (unlikely(dup2(opts.pipe[1], STDOUT_FILENO) == -1))
         throw ftpp::OSError(errno, "dup2");
       close(opts.pipe[1]);
     }

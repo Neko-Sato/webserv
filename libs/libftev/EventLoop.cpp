@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/22 06:58:31 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/03 21:31:20 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 
 #include <exceptions/OSError.hpp>
 #include <selectors/Selector.hpp>
+#include <macros.hpp>
 
 #include <cassert>
 #include <cstdlib>
@@ -59,7 +60,7 @@ EventLoop::~EventLoop() {
 
 void EventLoop::_update_time() {
   timespec ts;
-  if (__glibc_unlikely(clock_gettime(CLOCK_MONOTONIC, &ts) == -1))
+  if (unlikely(clock_gettime(CLOCK_MONOTONIC, &ts) == -1))
     throw ftpp::OSError(errno, "clock_gettime");
   _time = ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
 }
@@ -70,7 +71,7 @@ int EventLoop::_backend_timeout() const {
   time_t timeout = _timer_watchers.begin()->first - _time;
   if (timeout < 0)
     return 0;
-  else if (__glibc_unlikely(std::numeric_limits<int>::max() < timeout))
+  else if (unlikely(std::numeric_limits<int>::max() < timeout))
     return std::numeric_limits<int>::max();
   return timeout;
 }
@@ -126,7 +127,7 @@ void EventLoop::run() {
   assert(!_running);
   _stop_flag = false;
   _run_timer();
-  for (; __glibc_likely(
+  for (; likely(
            !(_stop_flag ||
              (_timer_watchers.empty() && _io_watchers.empty() &&
               _signal_watchers.empty() && _process_watchers.empty())));

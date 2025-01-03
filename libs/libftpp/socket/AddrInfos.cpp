@@ -6,11 +6,12 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/25 04:39:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/25 04:39:51 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/03 21:33:00 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <exceptions/OSError.hpp>
+#include <macros.hpp>
 #include <socket/AddrInfos.hpp>
 
 #include <cstring>
@@ -114,7 +115,7 @@ addrinfo *AddrInfos::_getaddrinfo(char const *name, char const *service,
                                   addrinfo const *hints) {
   addrinfo *res;
   int err = ::getaddrinfo(name, service, hints, &res);
-  if (__glibc_unlikely(err != 0))
+  if (unlikely(err != 0))
     throw GAIError(err);
   return res;
 }

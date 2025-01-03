@@ -6,11 +6,12 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 23:35:50 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/06 08:58:55 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/03 21:32:46 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <exceptions/OSError.hpp>
+#include <macros.hpp>
 #include <selectors/SelectSelector.hpp>
 
 #include <sys/select.h>
@@ -29,8 +30,7 @@ void SelectSelector::select(Events &events, int timeout) const {
   FD_ZERO(&readfds);
   FD_ZERO(&writefds);
   FD_ZERO(&exceptfds);
-  for (Mapping::const_iterator it = _fds.begin();
-       it != _fds.end(); it++) {
+  for (Mapping::const_iterator it = _fds.begin(); it != _fds.end(); it++) {
     if (maxfd < it->first)
       maxfd = it->first;
     if (it->second & READ)
@@ -48,10 +48,10 @@ void SelectSelector::select(Events &events, int timeout) const {
     _timeout.tv_usec = (timeout % 1000) * 1000;
     nfds = ::select(maxfd + 1, &readfds, &writefds, &exceptfds, &_timeout);
   }
-  if (__glibc_unlikely(nfds == -1))
+  if (unlikely(nfds == -1))
     throw OSError(errno, "select");
-  for (Mapping::const_iterator it = _fds.begin();
-       nfds && it != _fds.end(); it++) {
+  for (Mapping::const_iterator it = _fds.begin(); nfds && it != _fds.end();
+       it++) {
     event_details tmp;
     tmp.fd = it->first;
     tmp.events = 0;

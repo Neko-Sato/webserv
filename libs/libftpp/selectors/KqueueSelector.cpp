@@ -6,12 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/03 02:16:56 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/03 21:32:31 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <exceptions/OSError.hpp>
 #include <selectors/KqueueSelector.hpp>
+#include <macros.hpp>
 
 #if defined(__APPLE__) || defined(__FreeBSD__)
 
@@ -25,7 +26,7 @@ int const KqueueSelector::max_events = 1024;
 
 int KqueueSelector::_create_kqueue() {
   int kq = kqueue();
-  if (__glibc_unlikely(kq == -1))
+  if (unlikely(kq == -1))
     throw OSError(errno, "kqueue");
   return kq;
 }

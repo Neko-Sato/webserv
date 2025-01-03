@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 00:31:00 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/12 15:43:11 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/03 21:32:07 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <EventLoop/BaseSignalWatcher.hpp>
 
 #include <exceptions/OSError.hpp>
+#include <macros.hpp>
 
 #include <cassert>
 #include <cstdlib>
@@ -43,7 +44,7 @@ void EventLoop::BaseSignalWatcher::start(int signum) {
   _it = result.first;
   try {
     sighandler_t old_handler = signal(signum, _signal_handler);
-    if (__glibc_unlikely(old_handler == SIG_ERR))
+    if (unlikely(old_handler == SIG_ERR))
       throw ftpp::OSError(errno, "signal");
     _old_handler = old_handler;
   } catch (...) {
@@ -56,7 +57,7 @@ void EventLoop::BaseSignalWatcher::start(int signum) {
 void EventLoop::BaseSignalWatcher::stop() {
   assert(_is_active);
   sighandler_t old_handler = signal(_it->first, _old_handler);
-  if (__glibc_unlikely(old_handler == SIG_ERR))
+  if (unlikely(old_handler == SIG_ERR))
     throw ftpp::OSError(errno, "signal");
   loop._signal_watchers.erase(_it);
   _is_active = false;
@@ -99,24 +100,24 @@ void EventLoop::BaseSignalWatcher::SignalpipeWatcher::on_except() {
 void EventLoop::BaseSignalWatcher::_activate() {
   int &pipe_in = _signalpipe[0];
   int &pipe_out = _signalpipe[1];
-  if (__glibc_unlikely(pipe_in == -1 || pipe_out == -1)) {
-    if (__glibc_unlikely(pipe(_signalpipe) == -1))
+  if (unlikely(pipe_in == -1 || pipe_out == -1)) {
+    if (unlikely(pipe(_signalpipe) == -1))
       throw ftpp::OSError(errno, "pipe");
     int flags;
     flags = fcntl(pipe_in, F_GETFD);
-    if (__glibc_unlikely(flags == -1))
+    if (unlikely(flags == -1))
       throw ftpp::OSError(errno, "fcntl");
-    if (__glibc_unlikely(fcntl(pipe_in, F_SETFD, flags | FD_CLOEXEC) == -1))
+    if (unlikely(fcntl(pipe_in, F_SETFD, flags | FD_CLOEXEC) == -1))
       throw ftpp::OSError(errno, "fcntl");
     flags = fcntl(pipe_out, F_GETFD);
-    if (__glibc_unlikely(flags == -1))
+    if (unlikely(flags == -1))
       throw ftpp::OSError(errno, "fcntl");
-    if (__glibc_unlikely(fcntl(pipe_out, F_SETFD, flags | FD_CLOEXEC) == -1))
+    if (unlikely(fcntl(pipe_out, F_SETFD, flags | FD_CLOEXEC) == -1))
       throw ftpp::OSError(errno, "fcntl");
   }
-  if (__glibc_unlikely(!loop._signalpipe_watcher))
+  if (unlikely(!loop._signalpipe_watcher))
     loop._signalpipe_watcher = new SignalpipeWatcher(loop);
-  if (__glibc_unlikely(!loop._signalpipe_watcher->is_active()))
+  if (unlikely(!loop._signalpipe_watcher->is_active()))
     loop._signalpipe_watcher->start(pipe_in, ftpp::BaseSelector::READ);
 }
 

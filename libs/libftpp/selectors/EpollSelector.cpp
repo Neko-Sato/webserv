@@ -6,11 +6,12 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/22 06:56:39 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/03 21:32:20 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <exceptions/OSError.hpp>
+#include <macros.hpp>
 #include <selectors/EpollSelector.hpp>
 
 #if defined(__linux__)
@@ -25,13 +26,13 @@ int const EpollSelector::max_events = 1024;
 
 int EpollSelector::_create_epollfd() {
   int epfd = epoll_create(1);
-  if (__glibc_unlikely(epfd == -1))
+  if (unlikely(epfd == -1))
     throw OSError(errno, "epoll_create");
   try {
     int flags = fcntl(epfd, F_GETFD);
-    if (__glibc_unlikely(flags == -1))
+    if (unlikely(flags == -1))
       throw ftpp::OSError(errno, "fcntl");
-    if (__glibc_unlikely(fcntl(epfd, F_SETFD, flags | FD_CLOEXEC) == -1))
+    if (unlikely(fcntl(epfd, F_SETFD, flags | FD_CLOEXEC) == -1))
       throw ftpp::OSError(errno, "fcntl");
   } catch (OSError const &e) {
     close(epfd);
@@ -58,7 +59,7 @@ void EpollSelector::add(int fd, event_t events) {
     if (events & WRITE)
       ev.events |= EPOLLOUT;
     ev.data.fd = fd;
-    if (__glibc_unlikely(epoll_ctl(_epfd, EPOLL_CTL_ADD, fd, &ev) == -1))
+    if (unlikely(epoll_ctl(_epfd, EPOLL_CTL_ADD, fd, &ev) == -1))
       throw OSError(errno, "epoll_ctl");
   } catch (OSError const &e) {
     switch (e.get_errno()) {
@@ -73,7 +74,7 @@ void EpollSelector::add(int fd, event_t events) {
 
 void EpollSelector::remove(int fd) {
   try {
-    if (__glibc_unlikely(epoll_ctl(_epfd, EPOLL_CTL_DEL, fd, NULL) == -1))
+    if (unlikely(epoll_ctl(_epfd, EPOLL_CTL_DEL, fd, NULL) == -1))
       throw OSError(errno, "epoll_ctl");
   } catch (OSError const &e) {
     switch (e.get_errno()) {
@@ -96,7 +97,7 @@ void EpollSelector::modify(int fd, event_t events) {
     if (events & WRITE)
       ev.events |= EPOLLOUT;
     ev.data.fd = fd;
-    if (__glibc_unlikely(epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, &ev) == -1))
+    if (unlikely(epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, &ev) == -1))
       throw OSError(errno, "epoll_ctl");
   } catch (OSError const &e) {
     switch (e.get_errno()) {
@@ -112,7 +113,7 @@ void EpollSelector::modify(int fd, event_t events) {
 void EpollSelector::select(Events &events, int timeout) const {
   epoll_event ev[max_events];
   int nfds = epoll_wait(_epfd, ev, max_events, timeout);
-  if (__glibc_unlikely(nfds == -1))
+  if (unlikely(nfds == -1))
     throw OSError(errno, "epoll_wait");
   for (int i = 0; i < nfds; i++) {
     event_details tmp;

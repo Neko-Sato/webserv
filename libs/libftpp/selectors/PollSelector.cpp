@@ -6,12 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/06 08:58:55 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/03 21:32:36 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <exceptions/OSError.hpp>
 #include <selectors/PollSelector.hpp>
+#include <macros.hpp>
 
 #include <poll.h>
 
@@ -39,7 +40,7 @@ void PollSelector::select(Events &events, int timeout) const {
     }
   }
   int nfds = poll(fds, size, timeout);
-  if (__glibc_unlikely(nfds == -1))
+  if (unlikely(nfds == -1))
     throw OSError(errno, "poll");
   for (std::size_t i = 0; nfds && i < size; i++) {
     event_details tmp;

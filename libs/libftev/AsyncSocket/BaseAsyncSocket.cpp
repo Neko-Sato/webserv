@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 23:59:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/02 20:26:20 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/03 21:31:40 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <EventLoop.hpp>
 
 #include <exceptions/OSError.hpp>
+#include <macros.hpp>
 
 #include <fcntl.h>
 
@@ -31,14 +32,14 @@ BaseAsyncSocket::BaseAsyncSocket(EventLoop &loop, ftpp::Socket &socket)
   int sockfd = _socket.getSockfd();
   int flags;
   flags = fcntl(sockfd, F_GETFL);
-  if (__glibc_unlikely(flags == -1))
+  if (unlikely(flags == -1))
     throw ftpp::OSError(sockfd, "fcntl");
-  if (__glibc_unlikely(fcntl(sockfd, F_SETFL, flags | O_NONBLOCK) == -1))
+  if (unlikely(fcntl(sockfd, F_SETFL, flags | O_NONBLOCK) == -1))
     throw ftpp::OSError(sockfd, "fcntl");
   flags = fcntl(sockfd, F_GETFD);
-  if (__glibc_unlikely(flags == -1))
+  if (unlikely(flags == -1))
     throw ftpp::OSError(sockfd, "fcntl");
-  if (__glibc_unlikely(fcntl(sockfd, F_SETFD, flags | FD_CLOEXEC) == -1))
+  if (unlikely(fcntl(sockfd, F_SETFD, flags | FD_CLOEXEC) == -1))
     throw ftpp::OSError(sockfd, "fcntl");
 }
 
