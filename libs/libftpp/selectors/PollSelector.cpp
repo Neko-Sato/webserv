@@ -6,15 +6,16 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/03 21:32:36 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/03 21:58:33 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <exceptions/OSError.hpp>
-#include <selectors/PollSelector.hpp>
 #include <macros.hpp>
+#include <selectors/PollSelector.hpp>
 
 #include <poll.h>
+#include <vector>
 
 namespace ftpp {
 
@@ -25,32 +26,31 @@ PollSelector::~PollSelector() {
 }
 
 void PollSelector::select(Events &events, int timeout) const {
-  std::size_t size = _fds.size();
-  pollfd fds[size];
-  {
-    pollfd *fd = fds;
-    for (Mapping::const_iterator it = _fds.begin();
-         it != _fds.end(); it++, fd++) {
-      fd->fd = it->first;
-      fd->events = POLLERR | POLLHUP;
-      if (it->second & READ)
-        fd->events |= POLLIN;
-      if (it->second & WRITE)
-        fd->events |= POLLOUT;
-    }
+  typedef std::vector<pollfd> Pollfds;
+  Pollfds fds;
+  fds.reserve(_fds.size());
+  for (Mapping::const_iterator it = _fds.begin(); it != _fds.end(); ++it) {
+    pollfd fd;
+    fd.fd = it->first;
+    fd.events = POLLERR | POLLHUP;
+    if (it->second & READ)
+      fd.events |= POLLIN;
+    if (it->second & WRITE)
+      fd.events |= POLLOUT;
+    fds.push_back(fd);
   }
-  int nfds = poll(fds, size, timeout);
+  int nfds = poll(fds.data(), fds.size(), timeout);
   if (unlikely(nfds == -1))
     throw OSError(errno, "poll");
-  for (std::size_t i = 0; nfds && i < size; i++) {
+  for (Pollfds::iterator it = fds.begin(); nfds && it != fds.end(); ++it) {
     event_details tmp;
-    tmp.fd = fds[i].fd;
+    tmp.fd = it->fd;
     tmp.events = 0;
-    if (fds[i].revents & POLLIN)
+    if (it->revents & POLLIN)
       tmp.events |= READ;
-    if (fds[i].revents & POLLOUT)
+    if (it->revents & POLLOUT)
       tmp.events |= WRITE;
-    if (fds[i].revents & (POLLERR | POLLHUP))
+    if (it->revents & (POLLERR | POLLHUP))
       tmp.events |= EXCEPT;
     if (tmp.events)
       events.push(tmp), --nfds;

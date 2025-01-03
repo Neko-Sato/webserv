@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/03 21:32:20 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/03 21:55:40 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include <fcntl.h>
 #include <sys/epoll.h>
 #include <unistd.h>
+#include <vector>
 
 namespace ftpp {
 
@@ -111,19 +112,21 @@ void EpollSelector::modify(int fd, event_t events) {
 }
 
 void EpollSelector::select(Events &events, int timeout) const {
-  epoll_event ev[max_events];
-  int nfds = epoll_wait(_epfd, ev, max_events, timeout);
+  typedef std::vector<epoll_event> Epoll_events;
+  Epoll_events ev(max_events);
+  int nfds = epoll_wait(_epfd, ev.data(), ev.size(), timeout);
   if (unlikely(nfds == -1))
     throw OSError(errno, "epoll_wait");
-  for (int i = 0; i < nfds; i++) {
+  ev.resize(nfds);
+  for (Epoll_events::iterator it = ev.begin(); it != ev.end(); ++it) {
     event_details tmp;
-    tmp.fd = ev[i].data.fd;
+    tmp.fd = it->data.fd;
     tmp.events = 0;
-    if (ev[i].events & EPOLLIN)
+    if (it->events & EPOLLIN)
       tmp.events |= READ;
-    if (ev[i].events & EPOLLOUT)
+    if (it->events & EPOLLOUT)
       tmp.events |= WRITE;
-    if (ev[i].events & (EPOLLERR | EPOLLHUP))
+    if (it->events & (EPOLLERR | EPOLLHUP))
       tmp.events |= EXCEPT;
     events.push(tmp);
   }

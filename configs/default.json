@@ -1,53 +1,53 @@
 {
-  "servers": [
-    {
-      "server_names": [
-        "example.com",
-        "www.example.com"
-      ],
-      "listen": [
-        {
-          "port": 8080
-        },
-        {
-          "host" : "::",
-          "port": 8081
-        }
-      ],
-      "client_max_body_size": "10M",
-      "error_pages": [
-        {
-          "code": 404,
-          "path": "/404.html"
-        },
-        {
-          "code": 500,
-          "path": "/500.html"
-        }
-      ],
-      "locations": [
-        {
-          "path": "/",
-          "type": "default",
-          "root": "/var/www/html",
-          "index": [
-            "index.html",
-            "index.htm"
-          ],
-          "autoindex": true
-        },
-        {
-          "path": "/upload",
-          "type": "upload",
-          "store": "/var/uploads"
-        },
-        {
-          "path": "/redirect-me",
-          "type": "redirect",
-          "code": 301,
-          "redirect": "https://www.newdomain.com"
-        }
-      ]
-    }
-  ]
+	"servers": [
+		{
+			"server_names": [
+				"example.com",
+				"www.example.com"
+			],
+			"listen": [
+				{
+					"port": 8080
+				},
+				{
+					"host": "::",
+					"port": 8081
+				}
+			],
+			"client_max_body_size": "10M",
+			"error_pages": [
+				{
+					"code": 404,
+					"path": "/404.html"
+				},
+				{
+					"code": 500,
+					"path": "/500.html"
+				}
+			],
+			"locations": [
+				{
+					"path": "/",
+					"type": "default",
+					"root": "/var/www/html",
+					"index": [
+						"index.html",
+						"index.htm"
+					],
+					"autoindex": true
+				},
+				{
+					"path": "/upload",
+					"type": "upload",
+					"store": "/var/uploads"
+				},
+				{
+					"path": "/redirect-me",
+					"type": "redirect",
+					"code": 301,
+					"redirect": "https://www.newdomain.com"
+				}
+			]
+		}
+	]
 }

@@ -7,3 +7,4 @@ a.out
 *.o
 *.d
 /webserv
+/yaml2json
