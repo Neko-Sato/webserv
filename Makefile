@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2025/01/01 02:08:34 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/01/03 21:21:13 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -57,7 +57,7 @@ ifeq ($(NOT_COMPLIANT), 1)
 CXXFLAGS					+= -D FT_SUBJECT_NOT_COMPLIANT
 endif
 
-.PHONY: all bonus clean fclean re neko author $(LIBFTEV) $(LIBFTPP) $(LIBFTJSON)
+.PHONY: all bonus clean fclean re neko author
 
 all: $(NAME)
 
@@ -75,7 +75,7 @@ clean:
 	@$(MAKE) -C $(LIBFTPP) fclean
 	@$(MAKE) -C $(LIBFTJSON) fclean
 	$(RM) -r $(OUT_DIR)
-	@$(RM) tester cgi_tester
+	@$(RM) tester cgi_tester yaml2json
 
 fclean:
 	@$(MAKE) clean
@@ -92,6 +92,8 @@ author:
 	@echo "Made by hshimizu."
 	@echo "github\t: https://github.com/Neko-Sato"
 	@echo "profile\t: https://profile.intra.42.fr/users/hshimizu"
+
+.PHONY: $(LIBFTEV) $(LIBFTPP) $(LIBFTJSON)
 
 $(LIBFTPP):
 	@$(MAKE) -C $@
@@ -116,6 +118,15 @@ cgi_tester:
 	else \
 		wget -O $@ https://cdn.intra.42.fr/document/document/27563/ubuntu_cgi_tester; \
 	fi
+	@chmod +x $@
+
+yaml2json:
+	@pip3 install pyyaml > /dev/null
+	@echo "#!/usr/bin/env python3" >> $@
+	@echo "import sys" >> $@
+	@echo "import yaml" >> $@
+	@echo "import json" >> $@
+	@echo "json.dump(yaml.safe_load(sys.stdin), sys.stdout)" >> $@
 	@chmod +x $@
 
 -include $(DEPS)
