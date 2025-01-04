@@ -1,40 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   JsonLexer.hpp                                      :+:      :+:    :+:   */
+/*   constant.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/19 02:25:31 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/04 16:02:25 by hshimizu         ###   ########.fr       */
+/*   Created: 2025/01/04 17:47:19 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/01/04 17:47:44 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <JsonToken.hpp>
+#include <string>
 
-#include <istream>
-
-namespace ftjson {
-
-class JsonLexer {
-private:
-  std::istream &_stream;
-
-  JsonLexer();
-  JsonLexer(JsonLexer const &rhs);
-  JsonLexer &operator=(JsonLexer const &rhs);
-
-public:
-  JsonLexer(std::istream &stream);
-  ~JsonLexer();
-
-  JsonToken nextToken();
-
-private:
-  JsonToken _maybe_string();
-  JsonToken _maybe_number();
-};
-
-} // namespace ftjson
+extern std::string const CRLF;

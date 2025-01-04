@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:13:47 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/03 02:13:48 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/04 17:58:55 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,8 @@ void BaseTCPServer::start() {
 BaseTCPServer::Server::Server(BaseTCPServer &server, int domain, int type,
                               int protocol)
     : BaseAsyncSocket(server.loop, domain, type, protocol), server(server) {
+  int opt = 1;
+  _socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 }
 
 BaseTCPServer::Server::~Server() {

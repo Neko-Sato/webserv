@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/19 02:25:31 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/03 22:05:48 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/04 17:44:59 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ JsonLexer::~JsonLexer() {
 
 JsonToken JsonLexer::nextToken() {
   try {
-    _skip_space();
+    _stream >> std::ws;
     int c = _stream.peek();
     switch (c) {
     case -1:
@@ -75,11 +75,6 @@ JsonToken JsonLexer::nextToken() {
     _stream.setstate(std::ios_base::failbit);
     throw;
   }
-}
-
-void JsonLexer::_skip_space() {
-  while (std::isspace(_stream.peek()))
-    _stream.ignore();
 }
 
 JsonToken JsonLexer::_maybe_string() {
