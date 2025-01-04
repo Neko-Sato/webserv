@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 04:30:35 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/31 21:40:39 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/04 11:39:30 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -288,19 +288,22 @@ void JsonParser::_case_end() {
 
 void JsonParser::_insert_object() {
   assert(3 <= _tmp.size());
-  ftpp::Any value = _tmp.top();
+  ftpp::Any value;
+   value.swap(_tmp.top());
   _tmp.pop();
   assert(_tmp.top().isType<String>());
-  std::string key = _tmp.top().as<String>();
+  std::string key;
+  key.swap(_tmp.top().as<String>());
   _tmp.pop();
   assert(_tmp.top().isType<Object>());
   Object &obj = _tmp.top().as<Object>();
-  obj[key] = value;
+  obj[key].swap(value);
 }
 
 void JsonParser::_insert_array() {
   assert(2 <= _tmp.size());
-  ftpp::Any value = _tmp.top();
+  ftpp::Any value;
+   value.swap(_tmp.top());
   _tmp.pop();
   assert(_tmp.top().isType<Array>());
   Array &arr = _tmp.top().as<Array>();
