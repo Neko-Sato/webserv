@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 16:23:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/03 21:31:49 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/04 15:11:04 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,24 +113,32 @@ pid_t EventLoop::BaseProcessWatcher::_spawn(options const &opts) {
   try {
     if (opts.cwd && unlikely(chdir(opts.cwd) == -1))
       throw ftpp::OSError(errno, "chdir");
-    if (opts.pipe[0] != -1) {
-      if (unlikely(dup2(opts.pipe[0], STDIN_FILENO) == -1))
+    if (opts.stdin != -1) {
+      if (unlikely(dup2(opts.stdin, STDIN_FILENO) == -1))
         throw ftpp::OSError(errno, "dup2");
-      close(opts.pipe[0]);
+      if (opts.stdin != 0 && opts.stdin != 1 && opts.stdin != 2)
+        close(opts.stdin);
     }
-    if (opts.pipe[1] != -1) {
-      if (unlikely(dup2(opts.pipe[1], STDOUT_FILENO) == -1))
+    if (opts.stdout != -1) {
+      if (unlikely(dup2(opts.stdout, STDOUT_FILENO) == -1))
         throw ftpp::OSError(errno, "dup2");
-      close(opts.pipe[1]);
+      if (opts.stdout != 0 && opts.stdout != 1 && opts.stdout != 2)
+        close(opts.stdout);
+    }
+    if (opts.stderr != -1) {
+      if (unlikely(dup2(opts.stderr, STDERR_FILENO) == -1))
+        throw ftpp::OSError(errno, "dup2");
+      if (opts.stderr != 0 && opts.stderr != 1 && opts.stderr != 2)
+        close(opts.stderr);
     }
     execve(opts.file, const_cast<char *const *>(opts.args),
            const_cast<char *const *>(opts.envp ? opts.envp : environ));
     throw ftpp::OSError(errno, "execve");
   } catch (ftpp::OSError const &e) {
     std::cerr << e.what() << std::endl;
+    throw;
   }
-  exit(EXIT_FAILURE);
-  assert(false);
+  exit(127);
 }
 
 } // namespace ftev

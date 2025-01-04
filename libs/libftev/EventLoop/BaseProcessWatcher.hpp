@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/01 13:05:22 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/04 14:57:20 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,9 @@ public:
     char const *const *args;
     char const *const *envp;
     char const *cwd;
-    int pipe[2];
+    int stdin;
+    int stdout;
+    int stderr;
   };
 
   void start(options const &opts);
