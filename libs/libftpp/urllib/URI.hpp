@@ -6,9 +6,11 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 14:32:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/28 20:53:50 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/05 00:02:22 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#pragma once
 
 #include <string>
 

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 23:06:24 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/04 23:38:10 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/04 23:58:42 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <AsyncSocket/BaseAsyncSocket.hpp>
 #include <AsyncSocket/MixinReader.hpp>
 #include <AsyncSocket/MixinWriter.hpp>
+#include <urllib/URI.hpp>
 
 #include <map>
 #include <string>
@@ -40,7 +41,7 @@ private:
   std::deque<char> _buffer;
 
   std::string _method;
-  std::string _path;
+  ftpp::URI _uri;
   std::string _version;
   Headers _headers;
 

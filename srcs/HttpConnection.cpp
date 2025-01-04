@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 23:10:39 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/04 23:44:47 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/05 00:07:20 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #include "constant.hpp"
 
 #include <ft_string.hpp>
+#include <urllib/URI.hpp>
+#include <urllib/urlquote.hpp>
 
 #include <algorithm>
 #include <iostream>
@@ -64,7 +66,14 @@ void HttpConnection::on_eof() {
 }
 
 void HttpConnection::on_drain() {
-  std::cout << "on_drain" << std::endl;
+  switch (_state) {
+  case RESPONSE:
+    stop();
+    delete_later();
+    break;
+  default:
+    break;
+  }
 }
 
 void HttpConnection::on_except() {
@@ -78,11 +87,10 @@ void HttpConnection::on_release() {
 
 void HttpConnection::_parseRequest(std::string const &line) {
   std::stringstream ss(line);
-  ss >> _method >> _path >> _version;
-  if (ss.fail())
-    _state = ERROR;
-  else
-    _state = HEADER;
+  std::string path;
+  ss >> _method >> path >> _version;
+  _uri = ftpp::URI(ftpp::urlunquote(path));
+  _state = ss.fail() ? ERROR : HEADER;
 }
 
 void HttpConnection::_parseHeader(std::string const &line) {
@@ -99,12 +107,14 @@ void HttpConnection::_parseHeader(std::string const &line) {
 }
 
 void HttpConnection::_sendResponse() {
-  Configs const &configs = _server.getConfigs();
-  // std::string const *hostname = _getHostname();
-  // hostnameを参考にして、ServerConfを取得する
-  // ServerConf const &serverConf = _getServerConf();
-  // serverConfを参考にして、Locationを取得する
-  // Location const *location = _getLocation();
-  // locationがタスクを生成してそれに残りのタスクを渡す
-  // 
+  std::stringstream ss;
+  ss << "HTTP/1.1 200 OK" << CRLF;
+  ss << "Content-Type: text/plain" << CRLF;
+  ss << "Content-Length: " << _uri.getPath().size() << CRLF;
+  ss << CRLF;
+  ss << _uri.getPath();
+  std::string const &response = ss.str();
+  std::cout << response << std::endl;
+  write(response.c_str(), response.size());
+  drain();
 }
