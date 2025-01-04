@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/31 21:52:35 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/03 21:35:00 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/04 22:43:03 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ std::size_t parseSize(std::string const &str) {
   std::size_t result(ftpp::stoul(str, &pos));
   {
     std::size_t unit = 1;
-    std::string tmp(str.substr(pos));
+    std::string tmp(str, pos, std::string::npos);
     if (tmp == "k" || tmp == "K")
       unit = 1ul << 10;
     else if (tmp == "m" || tmp == "M")

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 22:55:05 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/03 22:08:33 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/04 23:08:24 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,4 +32,8 @@ void HttpServer::on_connect(ftpp::Socket &socket) {
   } catch (std::exception const &e) {
     std::cerr << "HttpServer::on_connect: " << e.what() << std::endl;
   }
+}
+
+Configs const &HttpServer::getConfigs() const {
+  return _configs;
 }

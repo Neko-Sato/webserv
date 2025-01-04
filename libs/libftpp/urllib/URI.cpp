@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 14:50:24 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/01 11:43:47 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/04 22:40:58 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ std::string URI::_readScheme(std::string const &url, std::size_t &pos) {
     ++_pos;
   if (_pos >= url.size() || url[_pos] != ':')
     return "";
-  std::string result = url.substr(pos, _pos - pos);
+  std::string result(url, pos, _pos - pos);
   ++_pos;
   pos = _pos;
   return result;
@@ -81,7 +81,7 @@ std::string URI::_readNetloc(std::string const &url, std::size_t &pos) {
   _pos += 2;
   while (_pos < url.size() && !memchr("/?#", url[_pos], 3))
     ++_pos;
-  std::string result = url.substr(pos + 2, _pos - pos - 2);
+  std::string result(url, pos + 2, _pos - pos - 2);
   pos = _pos;
   return result;
 }
@@ -90,7 +90,7 @@ std::string URI::_readPath(std::string const &url, std::size_t &pos) {
   std::size_t _pos = pos;
   while (_pos < url.size() && !memchr("?#", url[_pos], 3))
     ++_pos;
-  std::string result = url.substr(pos, _pos - pos);
+  std::string result(url, pos, _pos - pos);
   pos = _pos;
   return result;
 }
@@ -102,7 +102,7 @@ std::string URI::_readQuery(std::string const &url, std::size_t &pos) {
   ++_pos;
   while (_pos < url.size() && !memchr("#", url[_pos], 1))
     ++_pos;
-  std::string result = url.substr(pos + 1, _pos - pos);
+  std::string result(url, pos + 1, _pos - pos);
   pos = _pos;
   return result;
 }
@@ -111,7 +111,7 @@ std::string URI::_readFragment(std::string const &url, std::size_t &pos) {
   std::size_t _pos = pos;
   if (_pos >= url.size() || url[_pos] != '#')
     return "";
-  std::string result = url.substr(pos + 1);
+  std::string result(url, pos + 1);
   pos = url.size();
   return result;
 }

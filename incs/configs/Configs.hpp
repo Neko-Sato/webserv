@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 14:04:54 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/01 00:20:05 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/04 23:09:18 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,4 +41,5 @@ public:
   static Configs load(std::string const &filename);
 
   Addresses getAllAddresses() const;
+  Servers const &getServers() const;
 };
