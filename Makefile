@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2025/01/05 21:54:25 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/01/05 22:47:35 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,7 +41,7 @@ DEPS				:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=.d))
 
 CXX					:= c++
 CXXFLAGS			:= -Wall -Wextra -Werror
-CXXFLAGS			+= -std=c++98 -pedantic-errors
+CXXFLAGS			+= -std=c++98 -pedantic
 CXXFLAGS			+= -D DEFAULT_CONFIGURE=\"$(CURDIR)/$(DEFAULT_CONFIGURE)\"
 IDFLAGS				:= -I$(INCS_DIR) -I$(CPLUS_INCLUDE_PATH)
 LDFLAGS				:= -L$(LIBRARY_PATH)

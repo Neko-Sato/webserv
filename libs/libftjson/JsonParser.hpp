@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 04:30:35 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/30 18:28:27 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/05 22:18:10 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ class JsonParser {
 private:
   JsonLexer _lexer;
 
-  enum state {
+  enum State {
     STATE_END,
     STATE_INVALID,
     STATE_EOF,
@@ -39,8 +39,8 @@ private:
     STATE_ARRAY_NEXT_OR_END,
   };
 
-  std::stack<state> _state;
-  state _current_state;
+  std::stack<State> _state;
+  State _current_state;
   std::stack<ftpp::Any> _tmp;
 
   JsonParser(std::istream &stream);
