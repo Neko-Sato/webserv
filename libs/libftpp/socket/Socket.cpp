@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 03:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/03 21:31:11 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/05 21:35:23 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,6 +159,16 @@ void Socket::close() {
   }
 }
 
+void Socket::shutdown(int how) {
+#if defined(FT_SUBJECT_NOT_COMPLIANT)
+  if (unlikely(::shutdown(_sockfd, how) == -1))
+    throw OSError(errno, "shutdown");
+#else
+  UNUSED(how);
+  throw std::runtime_error("shutdown: Forbidden Function");
+#endif
+}
+
 void Socket::getsockname(sockaddr *addr, socklen_t *addrlen) {
 #if defined(FT_SUBJECT_NOT_COMPLIANT)
   if (unlikely(::getsockname(_sockfd, addr, addrlen) == -1))
@@ -184,8 +194,7 @@ void Socket::getpeername(sockaddr *addr, socklen_t *addrlen) {
 void Socket::getsockopt(int level, int optname, void *optval,
                         socklen_t *optlen) {
 #if defined(FT_SUBJECT_NOT_COMPLIANT)
-  if (unlikely(::getsockopt(_sockfd, level, optname, optval, optlen) ==
-                       -1))
+  if (unlikely(::getsockopt(_sockfd, level, optname, optval, optlen) == -1))
     throw OSError(errno, "getsockopt");
 #else
   UNUSED(level);
@@ -198,8 +207,7 @@ void Socket::getsockopt(int level, int optname, void *optval,
 
 void Socket::setsockopt(int level, int optname, void const *optval,
                         socklen_t optlen) {
-  if (unlikely(::setsockopt(_sockfd, level, optname, optval, optlen) ==
-                       -1))
+  if (unlikely(::setsockopt(_sockfd, level, optname, optval, optlen) == -1))
     throw OSError(errno, "setsockopt");
 }
 

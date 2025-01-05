@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 03:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/02 16:56:22 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/05 21:34:54 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ public:
   std::size_t recvfrom(void *buf, std::size_t len, int flags,
                        sockaddr *src_addr, socklen_t *addrlen);
   void close();
+  void shutdown(int how);
 
   void getsockname(sockaddr *addr, socklen_t *addrlen);
   void getpeername(sockaddr *addr, socklen_t *addrlen);
