@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2025/01/03 23:56:30 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/01/05 21:51:28 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ DEPS		:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=.d))
 
 CXX			:= c++
 CXXFLAGS	:= -Wall -Wextra -Werror
-CXXFLAGS	+= -std=c++98
+CXXFLAGS	+= -std=c++98 -pedantic-errors
 IDFLAGS		:= -I$(DIR) -I$(CPLUS_INCLUDE_PATH)
 LDFLAGS		:= -L$(LIBRARY_PATH)
 LIBS		:= -Wl,-rpath,$(LD_RUN_PATH) -lftpp
