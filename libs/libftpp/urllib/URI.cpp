@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 14:50:24 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/04 22:40:58 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/06 01:04:36 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,22 @@
 #include <cstring>
 #include <sstream>
 
+#include <iostream>
+
 namespace ftpp {
 
 URI::URI(std::string const &url) {
   std::size_t pos = 0;
   _readScheme(url, pos).swap(_scheme);
+  std::cout << "scheme: " << _scheme << std::endl;
   _readNetloc(url, pos).swap(_netloc);
+  std::cout << "netloc: " << _netloc << std::endl;
   _readPath(url, pos).swap(_path);
+  std::cout << "path: " << _path << std::endl;
   _readQuery(url, pos).swap(_query);
+  std::cout << "query: " << _query << std::endl;
   _readFragment(url, pos).swap(_fragment);
+  std::cout << "fragment: " << _fragment << std::endl;
 }
 
 URI::URI(URI const &rhs)
@@ -45,6 +52,14 @@ URI &URI::operator=(URI const &rhs) {
   return *this;
 }
 
+void URI::swap(URI &rhs) {
+  _scheme.swap(rhs._scheme);
+  _netloc.swap(rhs._netloc);
+  _path.swap(rhs._path);
+  _query.swap(rhs._query);
+  _fragment.swap(rhs._fragment);
+}
+
 std::string URI::toString() const {
   std::stringstream tmp;
   if (!_scheme.empty())
@@ -61,12 +76,10 @@ std::string URI::toString() const {
 }
 
 std::string URI::_readScheme(std::string const &url, std::size_t &pos) {
-  std::size_t _pos = pos;
-  if (_pos >= url.size() || memchr(":/?#", url[_pos], 4))
+  std::size_t _pos = url.find_first_of(":/?#", pos);
+  if (_pos == std::string::npos)
     return "";
-  while (_pos < url.size() && !memchr(":/?#", url[_pos], 4))
-    ++_pos;
-  if (_pos >= url.size() || url[_pos] != ':')
+  if (url[_pos] != ':')
     return "";
   std::string result(url, pos, _pos - pos);
   ++_pos;
@@ -75,41 +88,34 @@ std::string URI::_readScheme(std::string const &url, std::size_t &pos) {
 }
 
 std::string URI::_readNetloc(std::string const &url, std::size_t &pos) {
-  std::size_t _pos = pos;
-  if (url.substr(_pos, 2) != "//")
+  if (url.compare(pos, 2, "//"))
     return "";
-  _pos += 2;
-  while (_pos < url.size() && !memchr("/?#", url[_pos], 3))
-    ++_pos;
-  std::string result(url, pos + 2, _pos - pos - 2);
+  std::size_t _pos = url.find_first_of("/?#", pos + 2);
+  std::string result(url, pos + 2, _pos - (pos + 2));
   pos = _pos;
   return result;
 }
 
 std::string URI::_readPath(std::string const &url, std::size_t &pos) {
-  std::size_t _pos = pos;
-  while (_pos < url.size() && !memchr("?#", url[_pos], 3))
-    ++_pos;
+  std::size_t _pos = url.find_first_of("?#", pos);
+  _pos = _pos == std::string::npos ? url.size() : _pos;
   std::string result(url, pos, _pos - pos);
   pos = _pos;
   return result;
 }
 
 std::string URI::_readQuery(std::string const &url, std::size_t &pos) {
-  std::size_t _pos = pos;
-  if (_pos >= url.size() || url[_pos] != '?')
+  if (url.compare(pos, 1, "?"))
     return "";
-  ++_pos;
-  while (_pos < url.size() && !memchr("#", url[_pos], 1))
-    ++_pos;
-  std::string result(url, pos + 1, _pos - pos);
+  std::size_t _pos = url.find_first_of("#", pos + 1);
+  _pos = _pos == std::string::npos ? url.size() : _pos;
+  std::string result(url, pos + 1, _pos - (pos + 1));
   pos = _pos;
   return result;
 }
 
 std::string URI::_readFragment(std::string const &url, std::size_t &pos) {
-  std::size_t _pos = pos;
-  if (_pos >= url.size() || url[_pos] != '#')
+  if (url.compare(pos, 1, "#"))
     return "";
   std::string result(url, pos + 1);
   pos = url.size();
@@ -134,34 +140,6 @@ std::string const &URI::getQuery() const {
 
 std::string const &URI::getFragment() const {
   return _fragment;
-}
-
-void URI::setScheme(std::string const &scheme) {
-  if (scheme.find_first_of(":/?#") != std::string::npos)
-    throw std::invalid_argument("Invalid scheme");
-  _scheme = scheme;
-}
-
-void URI::setNetloc(std::string const &netloc) {
-  if (netloc.find_first_of("/?#") != std::string::npos)
-    throw std::invalid_argument("Invalid netloc");
-  _netloc = netloc;
-}
-
-void URI::setPath(std::string const &path) {
-  if (path.find_first_of("?#") != std::string::npos)
-    throw std::invalid_argument("Invalid path");
-  _path = path;
-}
-
-void URI::setQuery(std::string const &query) {
-  if (query.find_first_of("#") != std::string::npos)
-    throw std::invalid_argument("Invalid query");
-  _query = query;
-}
-
-void URI::setFragment(std::string const &fragment) {
-  _fragment = fragment;
 }
 
 } // namespace ftpp
