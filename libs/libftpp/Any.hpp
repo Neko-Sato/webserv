@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:17:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/03 02:17:56 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/09 20:20:23 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,8 @@ public:
   void swap(Any &rhs);
   template <typename T> T &as();
   template <typename T> T const &as() const;
+  template <typename T> T &as_unsafe();
+  template <typename T> T const &as_unsafe() const;
   std::type_info const &type() const;
   template <typename T> bool isType() const;
   bool isvalid() const;
@@ -118,6 +120,14 @@ template <typename T> T &Any::as() {
 
 template <typename T> T const &Any::as() const {
   return dynamic_cast<Value<T> const &>(*_value).get();
+}
+
+template <typename T> T &Any::as_unsafe() {
+  return static_cast<Value<T> &>(*_value).get();
+}
+
+template <typename T> T const &Any::as_unsafe() const {
+  return static_cast<Value<T> const &>(*_value).get();
 }
 
 template <typename T> bool Any::isType() const {
