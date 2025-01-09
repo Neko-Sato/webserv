@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/19 02:25:31 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/04 17:44:59 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/09 20:58:22 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,19 +58,8 @@ JsonToken JsonLexer::nextToken() {
     default:
       if (std::isdigit(c) || c == '-')
         return _maybe_number();
-      char tmp[5];
-      if (!_stream.read(&tmp[0], 4))
-        break;
-      if (!std::memcmp(tmp, "true", 4))
-        return JsonToken(JsonToken::TRUE);
-      else if (!std::memcmp(tmp, "null", 4))
-        return JsonToken(JsonToken::NULL_);
-      if (!_stream.read(&tmp[4], 1))
-        break;
-      if (!std::memcmp(tmp, "false", 5))
-        return JsonToken(JsonToken::FALSE);
+      return _maybe_keyword();
     }
-    throw JsonError("Unexpected character");
   } catch (...) {
     _stream.setstate(std::ios_base::failbit);
     throw;
@@ -142,6 +131,22 @@ JsonToken JsonLexer::_maybe_number() {
     }
   }
   return JsonToken(JsonToken::NUMBER, ss.str());
+}
+
+JsonToken JsonLexer::_maybe_keyword() {
+  char tmp[5];
+  if (!_stream.read(&tmp[0], 4))
+    goto error;
+  if (!std::memcmp(tmp, "true", 4))
+    return JsonToken(JsonToken::TRUE);
+  else if (!std::memcmp(tmp, "null", 4))
+    return JsonToken(JsonToken::NULL_);
+  if (!_stream.read(&tmp[4], 1))
+    goto error;
+  if (!std::memcmp(tmp, "false", 5))
+    return JsonToken(JsonToken::FALSE);
+error:
+  throw JsonError("Unexpected character");
 }
 
 } // namespace ftjson

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/19 02:25:31 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/04 16:02:25 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/09 20:42:25 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ public:
 private:
   JsonToken _maybe_string();
   JsonToken _maybe_number();
+  JsonToken _maybe_keyword();
 };
 
 } // namespace ftjson
