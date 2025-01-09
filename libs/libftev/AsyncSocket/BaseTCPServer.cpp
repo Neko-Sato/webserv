@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:13:47 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/04 17:58:55 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/08 13:26:58 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 namespace ftev {
 
 BaseTCPServer::BaseTCPServer(EventLoop &loop, std::string const &host, int port)
-    : loop(loop), _host(host), _port(port) {
+    : loop(loop) {
   char service[16];
   std::snprintf(service, sizeof(service), "%d", port);
   ftpp::AddrInfos::Hints hints(AF_UNSPEC, SOCK_STREAM, 0, AI_PASSIVE);
@@ -51,14 +51,6 @@ BaseTCPServer::~BaseTCPServer() {
   for (Servers::iterator it = _servers.begin(); it != _servers.end();
        it = _servers.erase(it))
     delete *it;
-}
-
-std::string const &BaseTCPServer::getHost() const {
-  return _host;
-}
-
-int BaseTCPServer::getPort() const {
-  return _port;
 }
 
 void BaseTCPServer::start() {
