@@ -1,28 +1,55 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   MixinWriter.cpp                                    :+:      :+:    :+:   */
+/*   BaseTCPConnection.cpp                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 23:59:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/02 17:32:43 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/11 22:55:46 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <AsyncSocket/MixinWriter.hpp>
+#include <AsyncSocket/BaseTCPConnection.hpp>
 
 #include <cassert>
 
 namespace ftev {
 
-MixinWriter::MixinWriter() : _draining(false) {
+BaseTCPConnection::BaseTCPConnection(EventLoop &loop, int domain, int type,
+                                     int protocol)
+    : BaseAsyncSocket(loop, domain, type, protocol), _draining(false) {
+  start(_socket.getSockfd(), ftpp::BaseSelector::READ);
 }
 
-MixinWriter::~MixinWriter() {
+BaseTCPConnection::BaseTCPConnection(EventLoop &loop, ftpp::Socket &socket)
+    : BaseAsyncSocket(loop, socket), _draining(false) {
+  start(_socket.getSockfd(), ftpp::BaseSelector::READ);
 }
 
-void MixinWriter::on_write() {
+BaseTCPConnection::~BaseTCPConnection() {
+}
+
+void BaseTCPConnection::on_read() {
+  std::vector<char> chank(_chank_size);
+  try {
+    chank.resize(_socket.read(chank.data(), chank.size()));
+  } catch (...) {
+    return;
+  }
+  if (chank.empty()) {
+    event_t event = get_events() & ~ftpp::BaseSelector::READ;
+    if (event)
+      modify(event);
+    else
+      stop();
+    on_eof();
+  } else {
+    on_data(chank);
+  }
+}
+
+void BaseTCPConnection::on_write() {
   size_t size = _socket.write(_buffer.data(), _buffer.size());
   _buffer.erase(_buffer.begin(), _buffer.begin() + size);
   if (_buffer.empty()) {
@@ -38,7 +65,7 @@ void MixinWriter::on_write() {
   }
 }
 
-void MixinWriter::write(char const *buffer, size_t size) {
+void BaseTCPConnection::write(char const *buffer, size_t size) {
   assert(!_draining);
   if (!size)
     return;
@@ -51,7 +78,7 @@ void MixinWriter::write(char const *buffer, size_t size) {
     start(_socket.getSockfd(), ftpp::BaseSelector::WRITE);
 }
 
-void MixinWriter::drain() {
+void BaseTCPConnection::drain() {
   assert(!_draining);
   if (_buffer.empty())
     on_drain();

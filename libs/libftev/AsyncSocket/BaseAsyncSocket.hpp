@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 23:59:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/02 20:26:19 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/11 19:05:29 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ protected:
 
 public:
   virtual ~BaseAsyncSocket();
+
+  void bind(sockaddr const *addr, socklen_t addrlen);
 };
 
 } // namespace ftev

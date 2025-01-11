@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:13:47 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/08 13:26:58 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/11 19:05:39 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,10 +66,6 @@ BaseTCPServer::Server::Server(BaseTCPServer &server, int domain, int type,
 }
 
 BaseTCPServer::Server::~Server() {
-}
-
-void BaseTCPServer::Server::bind(sockaddr const *addr, socklen_t addrlen) {
-  _socket.bind(addr, addrlen);
 }
 
 void BaseTCPServer::Server::listen(int backlog) {

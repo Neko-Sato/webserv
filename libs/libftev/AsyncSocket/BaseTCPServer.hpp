@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 20:31:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/08 13:26:37 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/11 19:05:24 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ private:
     Server(BaseTCPServer &server, int domain, int type, int protocol);
     ~Server();
 
-    void bind(sockaddr const *addr, socklen_t addrlen);
     void listen(int backlog = 1024);
 
     void on_read();
