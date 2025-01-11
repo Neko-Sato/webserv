@@ -6,10 +6,10 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 17:47:19 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/11 14:28:04 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/11 14:28:28 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "constants.hpp"
 
-std::string const CRLF = "\r\n";
+std::string const CRLF("\r\n");
