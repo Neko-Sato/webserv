@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:17:50 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/03 02:17:51 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/11 13:57:53 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,9 +52,8 @@ Any &Any::operator=(Any const &rhs) {
 }
 
 void Any::swap(Any &rhs) {
-  if (this != &rhs) {
+  if (this != &rhs)
     std::swap(_value, rhs._value);
-  }
 }
 
 std::type_info const &Any::type() const {
