@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:25:07 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/03 02:25:10 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/11 23:01:38 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void EchoServer::on_connect(ftpp::Socket &socket) {
 }
 
 EchoServer::Connection::Connection(EchoServer &server, ftpp::Socket &socket)
-    : BaseAsyncSocket(server.loop, socket) {
+    : BaseTCPConnection(server.loop, socket) {
   start(_socket.getSockfd(), ftpp::BaseSelector::READ);
 }
 

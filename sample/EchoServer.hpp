@@ -6,24 +6,20 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/05 04:31:15 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/02 20:45:17 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/11 23:01:09 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <AsyncSocket/BaseAsyncSocket.hpp>
+#include <AsyncSocket/BaseTCPConnection.hpp>
 #include <AsyncSocket/BaseTCPServer.hpp>
-#include <AsyncSocket/MixinReader.hpp>
-#include <AsyncSocket/MixinWriter.hpp>
 
 #include <EventLoop.hpp>
 
 class EchoServer : public ftev::BaseTCPServer {
 private:
-  class Connection : virtual public ftev::BaseAsyncSocket,
-                     public ftev::MixinReader,
-                     public ftev::MixinWriter {
+  class Connection : public ftev::BaseTCPConnection {
   public:
     Connection(EchoServer &server, ftpp::Socket &socket);
     ~Connection();
