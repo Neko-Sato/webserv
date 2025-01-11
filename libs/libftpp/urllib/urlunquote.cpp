@@ -6,11 +6,12 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 18:12:07 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/28 20:23:55 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/11 13:52:39 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ft_algorithm.hpp>
+#include <ft_string.hpp>
 
 #include <cstdlib>
 #include <iomanip>
@@ -27,7 +28,7 @@ std::string urlunquote(std::string const &s) {
       if (it + 2 < s.end()) {
         std::string hex(it + 1, it + 3);
         if (ftpp::all_of(hex.begin(), hex.end(), isxdigit)) {
-          ss.put(std::strtol(hex.c_str(), NULL, 16));
+          ss.put(stol(hex, NULL, 16));
           it += 2;
           break;
         }

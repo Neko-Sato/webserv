@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/22 03:58:26 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/25 04:19:00 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/10 17:28:41 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ public:
     FALSE,
     NULL_,
     END,
-    INVALID,
+    INVALID
   };
 
 private:

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 04:30:35 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/05 22:18:19 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/11 13:53:51 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -315,13 +315,13 @@ static inline void _unicode_escape(std::stringstream &ss,
   ++index;
   bool valid = true;
   unsigned int code;
-  code = std::strtoul(str.substr(index, 4).c_str(), NULL, 16);
+  code = ftpp::stoul(str.substr(index, 4), NULL, 16);
   index += 4;
   if (ftpp::ishghtsurrogate(code)) {
     if (str[index] == '\\' && str[index + 1] == 'u') {
       index += 2;
       unsigned int code2;
-      code2 = std::strtoul(str.substr(index, 4).c_str(), NULL, 16);
+      code2 = ftpp::stoul(str.substr(index, 4), NULL, 16);
       index += 4;
       if (ftpp::islowsurrogate(code2))
         code = ftpp::surrogatepair(code, code2);

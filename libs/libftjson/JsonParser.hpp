@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 04:30:35 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/05 22:18:10 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/10 17:28:37 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ private:
     STATE_OBJECT_NEXT_OR_END,
     STATE_ARRAY_VALUE_OR_END,
     STATE_ARRAY_VALUE,
-    STATE_ARRAY_NEXT_OR_END,
+    STATE_ARRAY_NEXT_OR_END
   };
 
   std::stack<State> _state;
