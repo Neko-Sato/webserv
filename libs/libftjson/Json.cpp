@@ -6,13 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 22:21:27 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/17 01:56:53 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/17 02:44:40 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <Json.hpp>
 
-// #include <Any.hpp>
+#include <Any.hpp>
 
 #define FTPP_ANY_INSTANTIATE_AS(T)                                             \
   template ftpp::Any::Any(T const &value);                                     \

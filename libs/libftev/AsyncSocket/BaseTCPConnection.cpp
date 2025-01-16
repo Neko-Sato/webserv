@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 23:59:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/11 22:55:46 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/17 02:18:51 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 #include <cassert>
 
 namespace ftev {
+
+std::size_t const BaseTCPConnection::_chank_size = 4096;
 
 BaseTCPConnection::BaseTCPConnection(EventLoop &loop, int domain, int type,
                                      int protocol)

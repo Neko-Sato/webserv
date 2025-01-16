@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2025/01/05 22:47:35 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/01/17 02:42:22 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,9 +31,9 @@ LD_RUN_PATH			:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTEV)
 LD_RUN_PATH			:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTPP)
 LD_RUN_PATH			:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTJSON)
 
-LIBRARY_PATH		:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTEV)
-LIBRARY_PATH		:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTPP)
-LIBRARY_PATH		:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTJSON)
+LIBRARY_PATH		:= $(LIBRARY_PATH):$(CURDIR)/$(LIBFTEV)
+LIBRARY_PATH		:= $(LIBRARY_PATH):$(CURDIR)/$(LIBFTPP)
+LIBRARY_PATH		:= $(LIBRARY_PATH):$(CURDIR)/$(LIBFTJSON)
 
 SRCS				:= $(shell find $(SRCS_DIR) -name "*.cpp")
 OBJS				:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=.o))
