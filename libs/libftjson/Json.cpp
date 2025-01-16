@@ -6,22 +6,25 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 22:21:27 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/31 15:18:29 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/17 01:56:53 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <Json.hpp>
 
-#include <Any.hpp>
+// #include <Any.hpp>
 
-template ftjson::Object &ftpp::Any::as<ftjson::Object>();
-template ftjson::Array &ftpp::Any::as<ftjson::Array>();
-template ftjson::String &ftpp::Any::as<ftjson::String>();
-template ftjson::Number &ftpp::Any::as<ftjson::Number>();
-template ftjson::Boolean &ftpp::Any::as<ftjson::Boolean>();
+#define FTPP_ANY_INSTANTIATE_AS(T)                                             \
+  template ftpp::Any::Any(T const &value);                                     \
+  template ftpp::Any &ftpp::Any::operator=(T const &rhs);                      \
+  template T &ftpp::Any::as<T>();                                              \
+  template T const &ftpp::Any::as<T>() const;                                  \
+  template T &ftpp::Any::as_unsafe<T>();                                       \
+  template T const &ftpp::Any::as_unsafe<T>() const;                           \
+  template bool ftpp::Any::isType<T>() const;
 
-template ftjson::Object const &ftpp::Any::as<ftjson::Object>() const;
-template ftjson::Array const &ftpp::Any::as<ftjson::Array>() const;
-template ftjson::String const &ftpp::Any::as<ftjson::String>() const;
-template ftjson::Number const &ftpp::Any::as<ftjson::Number>() const;
-template ftjson::Boolean const &ftpp::Any::as<ftjson::Boolean>() const;
+FTPP_ANY_INSTANTIATE_AS(ftjson::Object)
+FTPP_ANY_INSTANTIATE_AS(ftjson::Array)
+FTPP_ANY_INSTANTIATE_AS(ftjson::String)
+FTPP_ANY_INSTANTIATE_AS(ftjson::Number)
+FTPP_ANY_INSTANTIATE_AS(ftjson::Boolean)
