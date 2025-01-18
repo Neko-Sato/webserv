@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 22:21:27 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/17 02:44:40 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/18 10:03:32 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,3 +28,5 @@ FTPP_ANY_INSTANTIATE_AS(ftjson::Array)
 FTPP_ANY_INSTANTIATE_AS(ftjson::String)
 FTPP_ANY_INSTANTIATE_AS(ftjson::Number)
 FTPP_ANY_INSTANTIATE_AS(ftjson::Boolean)
+
+#undef FTPP_ANY_INSTANTIATE_AS

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 22:21:27 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/17 01:56:38 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/18 10:07:50 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,3 +27,32 @@ typedef double Number;
 typedef bool Boolean;
 
 } // namespace ftjson
+
+
+// C++98 does not have extern template.
+// However, it seems that it is available in gnu++98.
+// Templates are instantiated for each object file,
+// which is very inefficient.
+// This can be resolved through explicit instantiation and declaration, 
+// but this is not possible in C++98.
+// This feature was introduced in C++11.
+// I am leaving this note here to acknowledge that fact.
+#if defined(__GNUC__) || defined(__clang__)
+
+#define FTPP_ANY_DECLARATION_AS(T)                                             \
+  extern template ftpp::Any::Any(T const &value);                              \
+  extern template ftpp::Any &ftpp::Any::operator=(T const &rhs);               \
+  extern template T &ftpp::Any::as<T>();                                       \
+  extern template T const &ftpp::Any::as<T>() const;                           \
+  extern template T &ftpp::Any::as_unsafe<T>();                                \
+  extern template T const &ftpp::Any::as_unsafe<T>() const;                    \
+  extern template bool ftpp::Any::isType<T>() const;
+
+FTPP_ANY_DECLARATION_AS(ftjson::Object)
+FTPP_ANY_DECLARATION_AS(ftjson::Array)
+FTPP_ANY_DECLARATION_AS(ftjson::String)
+FTPP_ANY_DECLARATION_AS(ftjson::Number)
+FTPP_ANY_DECLARATION_AS(ftjson::Boolean)
+
+#undef FTPP_ANY_DECLARATION_AS
+#endif
