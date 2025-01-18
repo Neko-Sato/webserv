@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/03 21:31:20 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/18 14:26:06 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@
 #include <EventLoop/BaseTimerWatcher.hpp>
 
 #include <exceptions/OSError.hpp>
-#include <selectors/Selector.hpp>
 #include <macros.hpp>
+#include <selectors/Selector.hpp>
 
 #include <cassert>
 #include <cstdlib>
@@ -35,7 +35,12 @@ EventLoop::EventLoop()
     : _time(0), _running(false), _stop_flag(false), _signalpipe_watcher(NULL),
       _wait_watcher(NULL) {
   _selector = new ftpp::Selector;
-  _update_time();
+  try {
+    _update_time();
+  } catch (...) {
+    delete _selector;
+    throw;
+  }
 }
 
 EventLoop::~EventLoop() {
@@ -127,10 +132,9 @@ void EventLoop::run() {
   assert(!_running);
   _stop_flag = false;
   _run_timer();
-  for (; likely(
-           !(_stop_flag ||
-             (_timer_watchers.empty() && _io_watchers.empty() &&
-              _signal_watchers.empty() && _process_watchers.empty())));
+  for (; likely(!(_stop_flag ||
+                  (_timer_watchers.empty() && _io_watchers.empty() &&
+                   _signal_watchers.empty() && _process_watchers.empty())));
        operator++())
     ;
 }
