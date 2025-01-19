@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/11 14:38:17 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/11 15:03:33 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/19 12:22:24 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,19 +39,16 @@ template <typename T, std::size_t N> Array<T, N>::Array() {
 }
 
 template <typename T, std::size_t N> Array<T, N>::Array(T const *data) {
-  for (std::size_t i = 0; i < N; i++)
-    _data[i] = data[i];
+  std::copy(rhs._data, &data[N], _data);
 }
 
 template <typename T, std::size_t N> Array<T, N>::Array(Array const &rhs) {
-  for (size_t i = 0; i < N; i++)
-    _data[i] = rhs._data[i];
+  std::copy(rhs._data, &rhs._data[N], _data);
 }
 
 template <typename T, std::size_t N>
 Array<T, N> &Array<T, N>::operator=(Array const &rhs) {
-  for (size_t i = 0; i < N; i++)
-    _data[i] = rhs._data[i];
+  std::copy(rhs._data, &rhs._data[N], _data);
   return *this;
 }
 
@@ -81,8 +78,7 @@ template <typename T, std::size_t N> T const *Array<T, N>::data() const {
 }
 
 template <typename T, std::size_t N> void Array<T, N>::swap(Array &rhs) {
-  for (std::size_t i = 0; i < N; i++)
-    std::swap(_data[i], rhs._data[i]);
+    std::swap_ranges(_data, &_data[N], rhs._data);
 }
 
 } // namespace ftpp

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/24 01:28:08 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/31 17:30:02 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/19 12:23:19 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,17 +15,6 @@
 #include <cstddef>
 
 namespace ftpp {
-
-template <typename T> void swap(T &a, T &b) {
-  T tmp = a;
-  a = b;
-  b = tmp;
-}
-
-template <typename T, std::size_t N> void swap(T (&a)[N], T (&b)[N]) {
-  for (std::size_t i = 0; i < N; ++i)
-    swap(a[i], b[i]);
-}
 
 template <typename InputIterator, typename UnaryPredicate>
 bool all_of(InputIterator first, InputIterator last, UnaryPredicate pred) {
