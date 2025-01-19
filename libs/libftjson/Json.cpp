@@ -6,13 +6,15 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 22:21:27 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/18 10:03:32 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/19 13:10:08 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <Json.hpp>
 
 #include <Any.hpp>
+
+// So this file is useless. It's just a bunch of template instantiations.
 
 #define FTPP_ANY_INSTANTIATE_AS(T)                                             \
   template ftpp::Any::Any(T const &value);                                     \
