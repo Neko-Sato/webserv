@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/18 14:26:06 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/19 20:14:05 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,10 @@
 #include <macros.hpp>
 #include <selectors/Selector.hpp>
 
+#include <algorithm>
 #include <cassert>
 #include <cstdlib>
+#include <functional>
 #include <limits>
 #include <unistd.h>
 
@@ -54,8 +56,8 @@ EventLoop::~EventLoop() {
   Why is it that watcher has a dependency on loop but loop is removed first?
   That's a shitty code!
   */
-  for (Watchers::iterator it = _watchers.begin(); it != _watchers.end();)
-    (*it++)->on_release();
+  std::for_each(_watchers.begin(), _watchers.end(),
+                std::mem_fun(&BaseWatcher::on_release));
   delete _selector;
   if (_signalpipe[0] != -1)
     close(_signalpipe[0]);
