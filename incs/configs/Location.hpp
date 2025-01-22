@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 17:21:38 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/23 06:32:46 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/23 08:12:17 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,30 @@ class Location {
 public:
   typedef std::set<std::string> AllowMethods;
 
+  class Detail {
+  protected:
+    Detail();
+    Detail(ftjson::Object const &location);
+    Detail(Detail const &rhs);
+    virtual Detail &operator=(Detail const &rhs);
+
+  public:
+    virtual ~Detail();
+    virtual Detail *copy() const = 0;
+  };
+
+  typedef Detail *(*detail_factory)(ftjson::Object const &location);
+  typedef std::map<std::string, detail_factory> DetailFactories;
+  static DetailFactories detail_factories;
+
 private:
   std::string _path;
   AllowMethods _allow_methods;
+  Detail *_detail;
 
   void _takePath(ftjson::Object const &location);
   void _takeAllowMethods(ftjson::Object const &location);
+  void _takeDetail(ftjson::Object const &location);
 
 public:
   Location();

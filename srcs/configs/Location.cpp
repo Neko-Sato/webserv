@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:18:19 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/23 06:48:13 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/23 08:22:29 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,32 @@
 
 #include <Any.hpp>
 #include <Json.hpp>
+#include <macros.hpp>
 
 #include <stdexcept>
 
-Location::Location() {
+Location::DetailFactories Location::detail_factories;
+
+Location::Detail::Detail() {
+}
+
+Location::Detail::Detail(ftjson::Object const &location) {
+  UNUSED(location);
+}
+
+Location::Detail::Detail(Detail const &rhs) {
+  UNUSED(rhs);
+}
+
+Location::Detail &Location::Detail::operator=(Detail const &rhs) {
+  UNUSED(rhs);
+  return *this;
+}
+
+Location::Detail::~Detail() {
+}
+
+Location::Location() : _detail(NULL) {
 }
 
 Location::Location(ftpp::Any const &value) {
@@ -26,10 +48,12 @@ Location::Location(ftpp::Any const &value) {
   ftjson::Object const &location = value.as_unsafe<ftjson::Object>();
   _takePath(location);
   _takeAllowMethods(location);
+  _takeDetail(location);
 }
 
 Location::Location(Location const &rhs)
     : _path(rhs._path), _allow_methods(rhs._allow_methods) {
+  _detail = rhs._detail ? rhs._detail->copy() : NULL;
 }
 
 Location &Location::operator=(Location const &rhs) {
@@ -39,11 +63,13 @@ Location &Location::operator=(Location const &rhs) {
 }
 
 Location::~Location() {
+  delete _detail;
 }
 
 void Location::swap(Location &rhs) {
   _path.swap(rhs._path);
   _allow_methods.swap(rhs._allow_methods);
+  std::swap(_detail, rhs._detail);
 }
 
 void Location::_takePath(ftjson::Object const &location) {
@@ -68,4 +94,18 @@ void Location::_takeAllowMethods(ftjson::Object const &location) {
       _allow_methods.insert(it->as_unsafe<ftjson::String>());
     }
   }
+}
+
+void Location::_takeDetail(ftjson::Object const &location) {
+  static std::string const default_type("default");
+  ftjson::Object::const_iterator it = location.find("type");
+  if (it != location.end() && !it->second.isType<ftjson::String>())
+    throw std::runtime_error("Location type is not string");
+  std::string const &type = it != location.end()
+                                ? it->second.as_unsafe<ftjson::String>()
+                                : default_type;
+  DetailFactories::const_iterator factory = detail_factories.find(type);
+  if (factory == detail_factories.end())
+    throw std::runtime_error("Unknown location type: " + type);
+  _detail = factory->second(location);
 }
