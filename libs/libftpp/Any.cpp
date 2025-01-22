@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:17:50 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/11 13:57:53 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/23 05:41:22 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,8 @@ Any::~Any() {
 }
 
 Any &Any::operator=(Any const &rhs) {
-  if (this != &rhs) {
-    BaseValue *tmp = rhs._value ? rhs._value->copy() : NULL;
-    delete _value;
-    _value = tmp;
-  }
+  if (this != &rhs)
+    Any(rhs).swap(*this);
   return *this;
 }
 

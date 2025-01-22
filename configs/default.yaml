@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/08 13:47:37 by hshimizu          #+#    #+#              #
-#    Updated: 2025/01/08 13:47:38 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/01/22 07:38:36 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,8 +36,8 @@ servers:
         index: [index.html, index.htm]
         autoindex: true
         cgi:
-          .py: { bin: /usr/bin/python3 }
-          .rb: { bin: /usr/bin/ruby }
+          - { ext: .py, bin: /usr/bin/python3 }
+          - { ext: .php, bin: /usr/bin/php-cgi }
       - path: /upload
         type: upload
         store: ~/uploads

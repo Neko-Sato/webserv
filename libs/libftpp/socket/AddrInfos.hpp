@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/06 03:43:17 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/25 04:23:12 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/23 05:49:47 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,9 @@ private:
 
   static addrinfo *_getaddrinfo(char const *name, char const *service,
                                 addrinfo const *hints = NULL);
+  AddrInfos();
+  AddrInfos(AddrInfos const &rhs);
+  AddrInfos &operator=(AddrInfos const &rhs);
 
 public:
   class iterator {

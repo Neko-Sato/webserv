@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 14:50:24 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/06 01:04:36 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/23 05:50:10 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,13 +42,8 @@ URI::~URI() {
 }
 
 URI &URI::operator=(URI const &rhs) {
-  if (this != &rhs) {
-    _scheme = rhs._scheme;
-    _netloc = rhs._netloc;
-    _path = rhs._path;
-    _query = rhs._query;
-    _fragment = rhs._fragment;
-  }
+  if (this != &rhs)
+    URI(rhs).swap(*this);
   return *this;
 }
 
