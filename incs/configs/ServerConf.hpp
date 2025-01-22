@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 17:07:45 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/01 00:22:06 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/23 06:00:28 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ public:
   typedef std::set<std::string> ServerNames;
   typedef std::set<address> Addresses;
   typedef std::map<int, std::string> ErrorPages;
-  typedef std::list<Location *> Locations;
+  typedef std::list<Location> Locations;
 
 private:
   ServerNames _server_names;
@@ -51,10 +51,5 @@ public:
   ServerConf(ServerConf const &rhs);
   ServerConf &operator=(ServerConf const &rhs);
   ~ServerConf();
-
-  ServerNames const &getServerNames() const;
-  Addresses const &getAddresses() const;
-  std::size_t const &getClientMaxBodySize() const;
-  ErrorPages const &getErrorPage() const;
-  Locations const &getLocations() const;
+  void swap(ServerConf &rhs);
 };

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 17:21:38 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/01 00:21:57 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/23 06:32:46 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,17 +29,11 @@ private:
   void _takePath(ftjson::Object const &location);
   void _takeAllowMethods(ftjson::Object const &location);
 
-protected:
+public:
   Location();
   Location(ftpp::Any const &value);
   Location(Location const &rhs);
-  virtual Location &operator=(Location const &rhs);
-
-public:
-  static Location *create(ftpp::Any const &value);
-  virtual ~Location();
-  virtual Location *copy() const = 0;
-
-  std::string const &getPath() const;
-  AllowMethods const &getAllowMethods() const;
+  Location &operator=(Location const &rhs);
+  ~Location();
+  void swap(Location &rhs);
 };

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 04:30:35 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/11 13:53:51 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/23 06:39:47 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -293,10 +293,10 @@ void JsonParser::_insert_object() {
   _tmp.pop();
   assert(_tmp.top().isType<String>());
   std::string key;
-  key.swap(_tmp.top().as<String>());
+  key.swap(_tmp.top().as_unsafe<String>());
   _tmp.pop();
   assert(_tmp.top().isType<Object>());
-  Object &obj = _tmp.top().as<Object>();
+  Object &obj = _tmp.top().as_unsafe<Object>();
   obj[key].swap(value);
 }
 
@@ -306,7 +306,7 @@ void JsonParser::_insert_array() {
    value.swap(_tmp.top());
   _tmp.pop();
   assert(_tmp.top().isType<Array>());
-  Array &arr = _tmp.top().as<Array>();
+  Array &arr = _tmp.top().as_unsafe<Array>();
   arr.push_back(value);
 }
 
