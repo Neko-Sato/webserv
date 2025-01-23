@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 04:30:35 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/23 06:39:47 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/23 09:09:08 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,28 +133,30 @@ void JsonParser::_case_left_bracket() {
 
 void JsonParser::_case_right_brace() {
   switch (_current_state) {
-  case STATE_OBJECT_KEY_OR_END:
   case STATE_OBJECT_NEXT_OR_END:
+    _insert_object();
+    // fall through
+  case STATE_OBJECT_KEY_OR_END:
     _current_state = _state.top();
     _state.pop();
     break;
   default:
     throw JsonError("Unexpected token: }");
   }
-  _insert_object();
 }
 
 void JsonParser::_case_right_bracket() {
   switch (_current_state) {
-  case STATE_ARRAY_VALUE_OR_END:
   case STATE_ARRAY_NEXT_OR_END:
+    _insert_array();
+    // fall through
+  case STATE_ARRAY_VALUE_OR_END:
     _current_state = _state.top();
     _state.pop();
     break;
   default:
     throw JsonError("Unexpected token: ]");
   }
-  _insert_array();
 }
 
 void JsonParser::_case_comma() {
@@ -289,7 +291,7 @@ void JsonParser::_case_end() {
 void JsonParser::_insert_object() {
   assert(3 <= _tmp.size());
   ftpp::Any value;
-   value.swap(_tmp.top());
+  value.swap(_tmp.top());
   _tmp.pop();
   assert(_tmp.top().isType<String>());
   std::string key;
@@ -303,7 +305,7 @@ void JsonParser::_insert_object() {
 void JsonParser::_insert_array() {
   assert(2 <= _tmp.size());
   ftpp::Any value;
-   value.swap(_tmp.top());
+  value.swap(_tmp.top());
   _tmp.pop();
   assert(_tmp.top().isType<Array>());
   Array &arr = _tmp.top().as_unsafe<Array>();
