@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:18:19 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/23 08:22:29 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/23 09:23:10 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,13 +97,12 @@ void Location::_takeAllowMethods(ftjson::Object const &location) {
 }
 
 void Location::_takeDetail(ftjson::Object const &location) {
-  static std::string const default_type("default");
   ftjson::Object::const_iterator it = location.find("type");
-  if (it != location.end() && !it->second.isType<ftjson::String>())
+  if (it == location.end())
+    throw std::runtime_error("Location without type");
+  if (!it->second.isType<ftjson::String>())
     throw std::runtime_error("Location type is not string");
-  std::string const &type = it != location.end()
-                                ? it->second.as_unsafe<ftjson::String>()
-                                : default_type;
+  std::string const &type = it->second.as_unsafe<ftjson::String>();
   DetailFactories::const_iterator factory = detail_factories.find(type);
   if (factory == detail_factories.end())
     throw std::runtime_error("Unknown location type: " + type);
