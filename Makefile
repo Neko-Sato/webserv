@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2025/01/17 02:42:22 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/01/25 10:05:43 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,7 +17,6 @@ INCS_DIR			:= $(DIR)/incs
 SRCS_DIR			:= $(DIR)/srcs
 LIBS_DIR			:= $(DIR)/libs
 OUT_DIR				:= $(DIR)/.out
-DEFAULT_CONFIGURE	:= $(DIR)/configs/default.json
 
 LIBFTEV				:= $(LIBS_DIR)/libftev
 LIBFTPP				:= $(LIBS_DIR)/libftpp
@@ -42,7 +41,6 @@ DEPS				:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=.d))
 CXX					:= c++
 CXXFLAGS			:= -Wall -Wextra -Werror
 CXXFLAGS			+= -std=c++98 -pedantic
-CXXFLAGS			+= -D DEFAULT_CONFIGURE=\"$(CURDIR)/$(DEFAULT_CONFIGURE)\"
 IDFLAGS				:= -I$(INCS_DIR) -I$(CPLUS_INCLUDE_PATH)
 LDFLAGS				:= -L$(LIBRARY_PATH)
 LIBS				:= -Wl,-rpath,$(LD_RUN_PATH) -lftev -lftpp -lftjson
