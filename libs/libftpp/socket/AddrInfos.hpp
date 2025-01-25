@@ -6,9 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/06 03:43:17 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/23 05:49:47 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/25 07:20:21 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#pragma once
+
+#include <NonCopyable.hpp>
 
 #include <cstddef>
 #include <exception>
@@ -17,15 +21,13 @@
 
 namespace ftpp {
 
-class AddrInfos {
+class AddrInfos : private NonCopyable {
 private:
   addrinfo *_addrinfo;
 
   static addrinfo *_getaddrinfo(char const *name, char const *service,
                                 addrinfo const *hints = NULL);
   AddrInfos();
-  AddrInfos(AddrInfos const &rhs);
-  AddrInfos &operator=(AddrInfos const &rhs);
 
 public:
   class iterator {

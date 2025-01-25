@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 17:21:38 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/23 08:12:17 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/23 17:10:06 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,7 @@ public:
   protected:
     Detail();
     Detail(ftjson::Object const &location);
-    Detail(Detail const &rhs);
-    virtual Detail &operator=(Detail const &rhs);
+    Detail &operator=(Detail const &rhs);
 
   public:
     virtual ~Detail();

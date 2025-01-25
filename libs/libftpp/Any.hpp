@@ -6,11 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:17:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/09 20:20:23 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/25 08:48:38 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
+
+#include <smart_ptr/ScopedPtr.hpp>
 
 #include <cstddef>
 #include <typeinfo>
@@ -23,7 +25,7 @@ private:
   protected:
     BaseValue();
     BaseValue(BaseValue const &);
-    virtual BaseValue &operator=(BaseValue const &);
+    BaseValue &operator=(BaseValue const &);
 
   public:
     virtual ~BaseValue();
@@ -43,11 +45,11 @@ private:
     Value &operator=(Value const &rhs);
     T &get();
     T const &get() const;
-    BaseValue *copy() const;
+    Value *copy() const;
     std::type_info const &type() const;
   };
 
-  BaseValue *_value;
+  ScopedPtr<BaseValue> _value;
 
 public:
   Any();
@@ -81,9 +83,8 @@ template <typename T> Any::Value<T>::~Value() {
 
 template <typename T>
 typename Any::Value<T> &Any::Value<T>::operator=(Value const &rhs) {
-  if (this != &rhs) {
+  if (this != &rhs)
     _value = rhs._value;
-  }
   return *this;
 }
 
@@ -95,7 +96,7 @@ template <typename T> T const &Any::Value<T>::get() const {
   return _value;
 }
 
-template <typename T> typename Any::BaseValue *Any::Value<T>::copy() const {
+template <typename T> typename Any::Value<T> *Any::Value<T>::copy() const {
   return new Value(_value);
 }
 
@@ -103,14 +104,14 @@ template <typename T> std::type_info const &Any::Value<T>::type() const {
   return typeid(T);
 }
 
-template <typename T> Any::Any(T const &value) {
-  _value = new Value<T>(value);
+template <typename T> Any::Any(T const &value) : _value(new Value<T>(value)) {
 }
 
 template <typename T> Any &Any::operator=(T const &rhs) {
-  BaseValue *tmp = new Value<T>(rhs);
-  delete _value;
-  _value = tmp;
+  if (isType<T>())
+	as_unsafe<T>() = rhs;
+  else
+	Any(rhs).swap(*this);
   return *this;
 }
 
@@ -131,7 +132,7 @@ template <typename T> T const &Any::as_unsafe() const {
 }
 
 template <typename T> bool Any::isType() const {
-  return dynamic_cast<Value<T> const *>(_value) != NULL;
+  return dynamic_cast<Value<T> const *>(_value.get()) != NULL;
 }
 
 } // namespace ftpp

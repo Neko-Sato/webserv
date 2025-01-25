@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/19 02:25:31 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/09 20:42:25 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/23 19:06:01 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,17 @@
 
 #include <JsonToken.hpp>
 
+#include <NonCopyable.hpp>
+
 #include <istream>
 
 namespace ftjson {
 
-class JsonLexer {
+class JsonLexer : private ftpp::NonCopyable {
 private:
   std::istream &_stream;
 
   JsonLexer();
-  JsonLexer(JsonLexer const &rhs);
-  JsonLexer &operator=(JsonLexer const &rhs);
 
 public:
   JsonLexer(std::istream &stream);

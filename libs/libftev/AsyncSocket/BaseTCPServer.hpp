@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 20:31:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/11 19:05:24 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/23 19:25:14 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 #include <AsyncSocket/BaseAsyncSocket.hpp>
 
+#include <NonCopyable.hpp>
 #include <socket/Socket.hpp>
 
 #include <list>
@@ -21,7 +22,7 @@
 
 namespace ftev {
 
-class BaseTCPServer {
+class BaseTCPServer : private ftpp::NonCopyable {
 public:
   EventLoop &loop;
 
@@ -45,8 +46,6 @@ private:
   Servers _servers;
 
   BaseTCPServer();
-  BaseTCPServer(BaseTCPServer const &rhs);
-  BaseTCPServer &operator=(BaseTCPServer const &rhs);
 
 public:
   BaseTCPServer(EventLoop &loop, std::string const &host, int port);

@@ -1,18 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utility.hpp                                        :+:      :+:    :+:   */
+/*   NonCopyable.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/31 21:52:35 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/23 18:57:05 by hshimizu         ###   ########.fr       */
+/*   Created: 2025/01/23 18:33:33 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/01/23 18:52:18 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <cstddef>
-#include <string>
+namespace ftpp {
 
-std::size_t parseSize(std::string const &str);
+// I've decided to give this a try, and I hope it will become simpler.
+
+class NonCopyable {
+protected:
+  NonCopyable();
+  ~NonCopyable();
+
+private:
+  NonCopyable(NonCopyable const &);
+  NonCopyable &operator=(NonCopyable const &);
+};
+
+} // namespace ftpp

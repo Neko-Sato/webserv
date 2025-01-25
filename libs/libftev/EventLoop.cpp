@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/19 20:14:05 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/25 08:03:43 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cstdlib>
+#include <fcntl.h>
 #include <functional>
 #include <limits>
 #include <unistd.h>
@@ -33,16 +34,14 @@ EventLoop EventLoop::default_loop;
 
 int EventLoop::_signalpipe[2] = {-1, -1};
 
-EventLoop::EventLoop()
-    : _time(0), _running(false), _stop_flag(false), _signalpipe_watcher(NULL),
-      _wait_watcher(NULL) {
-  _selector = new ftpp::Selector;
-  try {
-    _update_time();
-  } catch (...) {
-    delete _selector;
-    throw;
-  }
+ftpp::BaseSelector *EventLoop::default_selector_factory() {
+  return new ftpp::Selector;
+}
+
+EventLoop::EventLoop(selector_factory_t factory)
+    : _selector(factory()), _time(0), _running(false), _stop_flag(false),
+      _signalpipe_watcher(NULL), _wait_watcher(NULL) {
+  _update_time();
 }
 
 EventLoop::~EventLoop() {
@@ -58,7 +57,6 @@ EventLoop::~EventLoop() {
   */
   std::for_each(_watchers.begin(), _watchers.end(),
                 std::mem_fun(&BaseWatcher::on_release));
-  delete _selector;
   if (_signalpipe[0] != -1)
     close(_signalpipe[0]);
   if (_signalpipe[1] != -1)
@@ -143,6 +141,33 @@ void EventLoop::run() {
 
 void EventLoop::stop() {
   _stop_flag = true;
+}
+
+void EventLoop::_maybe_init_signalpipe() {
+  int &pipe_in = _signalpipe[0];
+  int &pipe_out = _signalpipe[1];
+  if (unlikely(pipe_in == -1 || pipe_out == -1)) {
+    if (unlikely(pipe(_signalpipe) == -1))
+      throw ftpp::OSError(errno, "pipe");
+    try {
+      int flags;
+      flags = fcntl(pipe_in, F_GETFD);
+      if (unlikely(flags == -1))
+        throw ftpp::OSError(errno, "fcntl");
+      if (unlikely(fcntl(pipe_in, F_SETFD, flags | FD_CLOEXEC) == -1))
+        throw ftpp::OSError(errno, "fcntl");
+      flags = fcntl(pipe_out, F_GETFD);
+      if (unlikely(flags == -1))
+        throw ftpp::OSError(errno, "fcntl");
+      if (unlikely(fcntl(pipe_out, F_SETFD, flags | FD_CLOEXEC) == -1))
+        throw ftpp::OSError(errno, "fcntl");
+    } catch (...) {
+      close(pipe_in);
+      close(pipe_out);
+      pipe_in = pipe_out = -1;
+      throw;
+    }
+  }
 }
 
 } // namespace ftev

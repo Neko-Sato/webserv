@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/17 02:16:25 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/23 20:57:37 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/23 19:23:25 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,11 @@
 
 #include <EventLoop.hpp>
 
+#include <NonCopyable.hpp>
+
 namespace ftev {
 
-class EventLoop::BaseWatcher {
-private:
-  BaseWatcher(BaseWatcher const &rhs);
-  BaseWatcher &operator=(BaseWatcher const &rhs);
-
+class EventLoop::BaseWatcher : private ftpp::NonCopyable {
 public:
   EventLoop &loop;
 

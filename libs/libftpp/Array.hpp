@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/11 14:38:17 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/19 12:22:24 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/25 08:48:45 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ template <typename T, std::size_t N> T const *Array<T, N>::data() const {
 }
 
 template <typename T, std::size_t N> void Array<T, N>::swap(Array &rhs) {
-    std::swap_ranges(_data, &_data[N], rhs._data);
+  std::swap_ranges(_data, &_data[N], rhs._data);
 }
 
 } // namespace ftpp

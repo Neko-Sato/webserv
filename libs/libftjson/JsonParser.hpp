@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 04:30:35 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/10 17:28:37 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/23 19:09:21 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,13 @@
 #include <JsonLexer.hpp>
 
 #include <Any.hpp>
+#include <NonCopyable.hpp>
 
 #include <stack>
 
 namespace ftjson {
 
-class JsonParser {
+class JsonParser : private ftpp::NonCopyable {
 private:
   JsonLexer _lexer;
 
@@ -67,9 +68,6 @@ private:
   void _insert_array();
 
   static std::string _string_dequote(std::string const &str);
-
-  JsonParser(JsonParser const &rhs);
-  JsonParser &operator=(JsonParser const &rhs);
 
 public:
   static ftpp::Any parse(char const *str);

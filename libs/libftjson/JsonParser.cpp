@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 04:30:35 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/23 09:09:08 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/23 19:10:41 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -380,7 +380,7 @@ std::string JsonParser::_string_dequote(std::string const &str) {
 
 ftpp::Any JsonParser::parse(char const *str) {
   std::stringstream ss(str);
-  return parse(ss);
+  return JsonParser(ss)._parse();
 }
 
 ftpp::Any JsonParser::parse(std::istream &stream) {

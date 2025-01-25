@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:18:19 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/23 09:23:10 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/23 19:03:02 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,6 @@ Location::Detail::Detail() {
 
 Location::Detail::Detail(ftjson::Object const &location) {
   UNUSED(location);
-}
-
-Location::Detail::Detail(Detail const &rhs) {
-  UNUSED(rhs);
 }
 
 Location::Detail &Location::Detail::operator=(Detail const &rhs) {

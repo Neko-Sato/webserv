@@ -6,11 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 03:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/05 21:34:54 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/25 09:44:32 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
+
+#include <NonCopyable.hpp>
 
 #include <map>
 #include <sys/socket.h>
@@ -18,15 +20,13 @@
 
 namespace ftpp {
 
-class Socket {
+class Socket : private NonCopyable {
 private:
   int _sockfd;
 
   static int _create_socket(int domain, int type, int protocol);
 
   Socket(int sockfd);
-  Socket(Socket const &rhs);
-  Socket &operator=(Socket const &rhs);
 
 public:
   Socket();

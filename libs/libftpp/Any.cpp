@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:17:50 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/23 05:41:22 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/23 21:55:05 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,12 +34,11 @@ Any::BaseValue::~BaseValue() {
 Any::Any() : _value(NULL) {
 }
 
-Any::Any(Any const &rhs) {
-  _value = rhs._value ? rhs._value->copy() : NULL;
+Any::Any(Any const &rhs)
+    : _value(rhs._value.get() ? rhs._value->copy() : NULL) {
 }
 
 Any::~Any() {
-  delete _value;
 }
 
 Any &Any::operator=(Any const &rhs) {
@@ -49,16 +48,15 @@ Any &Any::operator=(Any const &rhs) {
 }
 
 void Any::swap(Any &rhs) {
-  if (this != &rhs)
-    std::swap(_value, rhs._value);
+  _value.swap(rhs._value);
 }
 
 std::type_info const &Any::type() const {
-  return _value ? _value->type() : typeid(void);
+  return _value.get() ? _value->type() : typeid(void);
 }
 
 bool Any::isvalid() const {
-  return _value != NULL;
+  return _value.get() != NULL;
 }
 
 } // namespace ftpp

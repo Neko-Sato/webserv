@@ -6,20 +6,11 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/08 13:47:37 by hshimizu          #+#    #+#              #
-#    Updated: 2025/01/23 06:51:16 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/01/23 16:48:32 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 servers:
-  # Server to redirect to profile
-  - server_names: [hshimizu.42.fr, hshimizu.42tokyo.jp]
-    listen:
-      - { port: 8080 }
-    locations:
-      - path: /
-        type: redirect
-        code: 301
-        redirect: https://profile.intra.42.fr/users/hshimizu
   # Server to serve static files
   - server_names: [localhost]
     listen:
@@ -41,3 +32,12 @@ servers:
       - path: /upload
         type: upload
         store: ~/uploads
+  # Server to redirect to profile
+  - server_names: [hshimizu.42.fr, hshimizu.42tokyo.jp]
+    listen:
+      - { port: 8080 }
+    locations:
+      - path: /
+        type: redirect
+        code: 301
+        redirect: https://profile.intra.42.fr/users/hshimizu

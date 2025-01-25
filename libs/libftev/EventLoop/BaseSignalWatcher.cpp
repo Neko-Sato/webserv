@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 00:31:00 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/03 22:03:19 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/25 08:03:50 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,27 +99,12 @@ void EventLoop::BaseSignalWatcher::SignalpipeWatcher::on_except() {
 }
 
 void EventLoop::BaseSignalWatcher::_activate() {
-  int &pipe_in = _signalpipe[0];
-  int &pipe_out = _signalpipe[1];
-  if (unlikely(pipe_in == -1 || pipe_out == -1)) {
-    if (unlikely(pipe(_signalpipe) == -1))
-      throw ftpp::OSError(errno, "pipe");
-    int flags;
-    flags = fcntl(pipe_in, F_GETFD);
-    if (unlikely(flags == -1))
-      throw ftpp::OSError(errno, "fcntl");
-    if (unlikely(fcntl(pipe_in, F_SETFD, flags | FD_CLOEXEC) == -1))
-      throw ftpp::OSError(errno, "fcntl");
-    flags = fcntl(pipe_out, F_GETFD);
-    if (unlikely(flags == -1))
-      throw ftpp::OSError(errno, "fcntl");
-    if (unlikely(fcntl(pipe_out, F_SETFD, flags | FD_CLOEXEC) == -1))
-      throw ftpp::OSError(errno, "fcntl");
-  }
+  EventLoop::_maybe_init_signalpipe();
   if (unlikely(!loop._signalpipe_watcher))
     loop._signalpipe_watcher = new SignalpipeWatcher(loop);
   if (unlikely(!loop._signalpipe_watcher->is_active()))
-    loop._signalpipe_watcher->start(pipe_in, ftpp::BaseSelector::READ);
+    loop._signalpipe_watcher->start(EventLoop::_signalpipe[0],
+                                    ftpp::BaseSelector::READ);
 }
 
 } // namespace ftev

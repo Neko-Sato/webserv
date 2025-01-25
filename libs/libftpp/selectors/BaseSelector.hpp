@@ -6,11 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:20:10 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/11/30 03:00:15 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/25 07:07:00 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
+
+#include <NonCopyable.hpp>
 
 #include <ctime>
 #include <exception>
@@ -19,7 +21,7 @@
 
 namespace ftpp {
 
-class BaseSelector {
+class BaseSelector : private NonCopyable {
 public:
   typedef unsigned int event_t;
   typedef std::map<int, event_t> Mapping;
@@ -32,10 +34,6 @@ public:
   static event_t const READ;
   static event_t const WRITE;
   static event_t const EXCEPT;
-
-private:
-  BaseSelector(BaseSelector const &rhs);
-  BaseSelector &operator=(BaseSelector const &rhs);
 
 protected:
   Mapping _fds;
