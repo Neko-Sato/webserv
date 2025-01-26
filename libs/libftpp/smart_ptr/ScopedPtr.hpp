@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 18:26:07 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/25 08:49:06 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/26 20:01:37 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ public:
   operator bool() const;
 
   T *get() const;
-  void swap(ScopedPtr &rhs);
+  void swap(ScopedPtr &rhs) throw();
 };
 
 template <typename T> ScopedPtr<T>::ScopedPtr(T *ptr) : _ptr(ptr) {
@@ -66,7 +66,7 @@ template <typename T> T *ScopedPtr<T>::get() const {
   return _ptr;
 }
 
-template <typename T> void ScopedPtr<T>::swap(ScopedPtr &rhs) {
+template <typename T> void ScopedPtr<T>::swap(ScopedPtr &rhs) throw() {
   std::swap(_ptr, rhs._ptr);
 }
 

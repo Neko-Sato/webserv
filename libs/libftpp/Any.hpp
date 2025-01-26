@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:17:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/26 19:14:42 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/26 20:00:27 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ public:
   ~Any();
   Any &operator=(Any const &rhs);
   template <typename T> Any &operator=(T const &rhs);
-  void swap(Any &rhs);
+  void swap(Any &rhs) throw();
   template <typename T> T &as();
   template <typename T> T const &as() const;
   template <typename T> T &as_unsafe();

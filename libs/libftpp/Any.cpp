@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:17:50 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/26 19:14:35 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/26 20:00:06 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ Any &Any::operator=(Any const &rhs) {
   return *this;
 }
 
-void Any::swap(Any &rhs) {
+void Any::swap(Any &rhs) throw() {
   _value.swap(rhs._value);
 }
 

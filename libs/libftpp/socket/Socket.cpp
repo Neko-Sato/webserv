@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 03:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/05 21:35:23 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/26 20:03:29 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ Socket::~Socket() {
     close();
 }
 
-void Socket::swap(Socket &rhs) {
+void Socket::swap(Socket &rhs) throw() {
   std::swap(_sockfd, rhs._sockfd);
 }
 

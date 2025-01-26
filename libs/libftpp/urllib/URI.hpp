@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 14:32:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/25 08:49:28 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/26 20:03:54 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ public:
   ~URI();
   URI &operator=(URI const &rhs);
 
-  void swap(URI &rhs);
+  void swap(URI &rhs) throw();
 
   std::string const &getScheme() const;
   std::string const &getNetloc() const;

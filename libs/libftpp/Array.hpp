@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/11 14:38:17 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/25 08:48:45 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/26 20:00:48 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ public:
   std::size_t size() const;
   T *data();
   T const *data() const;
-  void swap(Array &rhs);
+  void swap(Array &rhs) throw();
 };
 
 template <typename T, std::size_t N> Array<T, N>::Array() {
@@ -77,7 +77,8 @@ template <typename T, std::size_t N> T const *Array<T, N>::data() const {
   return _data;
 }
 
-template <typename T, std::size_t N> void Array<T, N>::swap(Array &rhs) {
+template <typename T, std::size_t N>
+void Array<T, N>::swap(Array &rhs) throw() {
   std::swap_ranges(_data, &_data[N], rhs._data);
 }
 

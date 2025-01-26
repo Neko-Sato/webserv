@@ -6,11 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/24 01:28:08 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/26 19:27:25 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/26 20:05:18 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
+
+#include <algorithm>
 
 #include <cstddef>
 

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 03:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/25 09:44:32 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/26 19:59:21 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ public:
   Socket();
   Socket(int domain, int type, int protocol);
   ~Socket();
-  void swap(Socket &rhs);
+  void swap(Socket &rhs) throw();
 
   int getSockfd() const;
 

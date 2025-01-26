@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 18:26:07 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/25 08:49:13 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/26 20:03:03 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ public:
   operator bool() const;
 
   T *get() const;
-  void swap(SharedArray &rhs);
+  void swap(SharedArray &rhs) throw();
 
   std::size_t use_count() const;
 };
@@ -86,7 +86,7 @@ template <typename T> T *SharedArray<T>::get() const {
   return _ptr;
 }
 
-template <typename T> void SharedArray<T>::swap(SharedArray &rhs) {
+template <typename T> void SharedArray<T>::swap(SharedArray &rhs) throw() {
   std::swap(_ptr, rhs._ptr);
   std::swap(_count, rhs._count);
 }
