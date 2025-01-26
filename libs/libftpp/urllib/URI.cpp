@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 14:50:24 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/23 05:50:10 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/26 12:51:00 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,22 +15,15 @@
 #include <cstring>
 #include <sstream>
 
-#include <iostream>
-
 namespace ftpp {
 
 URI::URI(std::string const &url) {
   std::size_t pos = 0;
   _readScheme(url, pos).swap(_scheme);
-  std::cout << "scheme: " << _scheme << std::endl;
   _readNetloc(url, pos).swap(_netloc);
-  std::cout << "netloc: " << _netloc << std::endl;
   _readPath(url, pos).swap(_path);
-  std::cout << "path: " << _path << std::endl;
   _readQuery(url, pos).swap(_query);
-  std::cout << "query: " << _query << std::endl;
   _readFragment(url, pos).swap(_fragment);
-  std::cout << "fragment: " << _fragment << std::endl;
 }
 
 URI::URI(URI const &rhs)

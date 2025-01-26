@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:13:47 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/11 19:05:39 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/26 12:36:38 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,11 @@ namespace ftev {
 
 BaseTCPServer::BaseTCPServer(EventLoop &loop, std::string const &host, int port)
     : loop(loop) {
-  char service[16];
-  std::snprintf(service, sizeof(service), "%d", port);
-  ftpp::AddrInfos::Hints hints(AF_UNSPEC, SOCK_STREAM, 0, AI_PASSIVE);
-  ftpp::AddrInfos infos(host.c_str(), service, hints);
   try {
+    char service[16];
+    std::snprintf(service, sizeof(service), "%d", port);
+    ftpp::AddrInfos::Hints hints(AF_UNSPEC, SOCK_STREAM, 0, AI_PASSIVE);
+    ftpp::AddrInfos infos(host.c_str(), service, hints);
     for (ftpp::AddrInfos::iterator it = infos.begin(); it != infos.end();
          ++it) {
       Server *server =
@@ -39,6 +39,8 @@ BaseTCPServer::BaseTCPServer(EventLoop &loop, std::string const &host, int port)
         throw;
       }
     }
+    for (Servers::iterator it = _servers.begin(); it != _servers.end(); ++it)
+      (*it)->listen();
   } catch (...) {
     for (Servers::iterator it = _servers.begin(); it != _servers.end();
          it = _servers.erase(it))
@@ -51,11 +53,6 @@ BaseTCPServer::~BaseTCPServer() {
   for (Servers::iterator it = _servers.begin(); it != _servers.end();
        it = _servers.erase(it))
     delete *it;
-}
-
-void BaseTCPServer::start() {
-  for (Servers::iterator it = _servers.begin(); it != _servers.end(); ++it)
-    (*it)->listen();
 }
 
 BaseTCPServer::Server::Server(BaseTCPServer &server, int domain, int type,

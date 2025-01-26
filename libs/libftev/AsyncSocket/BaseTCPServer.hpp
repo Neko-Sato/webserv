@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 20:31:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/23 19:25:14 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/26 12:35:42 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ public:
   BaseTCPServer(EventLoop &loop, std::string const &host, int port);
   virtual ~BaseTCPServer();
 
-  void start();
   virtual void on_connect(ftpp::Socket &conn) = 0;
 };
 
