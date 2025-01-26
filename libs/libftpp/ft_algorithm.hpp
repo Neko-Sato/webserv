@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/24 01:28:08 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/19 12:23:19 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/26 19:27:25 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,20 @@ bool none_of(InputIterator first, InputIterator last, UnaryPredicate pred) {
     if (static_cast<bool>(pred(*it)))
       return false;
   return true;
+}
+
+template <typename C1, typename C2>
+bool starts_with(C1 const &input, C2 const &prefix) {
+  if (prefix.size() > input.size())
+    return false;
+  return std::equal(prefix.begin(), prefix.end(), input.begin());
+}
+
+template <typename C1, typename C2>
+bool ends_with(C1 const &input, C2 const &suffix) {
+  if (suffix.size() > input.size())
+    return false;
+  return std::equal(suffix.rbegin(), suffix.rend(), input.rbegin());
 }
 
 } // namespace ftpp

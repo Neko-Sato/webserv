@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:17:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/25 08:48:38 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/26 19:14:42 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ private:
 
   public:
     virtual ~BaseValue();
-    virtual BaseValue *copy() const = 0;
+    virtual BaseValue *clone() const = 0;
     virtual std::type_info const &type() const = 0;
   };
 
@@ -45,7 +45,7 @@ private:
     Value &operator=(Value const &rhs);
     T &get();
     T const &get() const;
-    Value *copy() const;
+    Value *clone() const;
     std::type_info const &type() const;
   };
 
@@ -96,7 +96,7 @@ template <typename T> T const &Any::Value<T>::get() const {
   return _value;
 }
 
-template <typename T> typename Any::Value<T> *Any::Value<T>::copy() const {
+template <typename T> typename Any::Value<T> *Any::Value<T>::clone() const {
   return new Value(_value);
 }
 
@@ -109,9 +109,9 @@ template <typename T> Any::Any(T const &value) : _value(new Value<T>(value)) {
 
 template <typename T> Any &Any::operator=(T const &rhs) {
   if (isType<T>())
-	as_unsafe<T>() = rhs;
+    as_unsafe<T>() = rhs;
   else
-	Any(rhs).swap(*this);
+    Any(rhs).swap(*this);
   return *this;
 }
 

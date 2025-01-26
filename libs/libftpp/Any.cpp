@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:17:50 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/23 21:55:05 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/26 19:14:35 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ Any::Any() : _value(NULL) {
 }
 
 Any::Any(Any const &rhs)
-    : _value(rhs._value.get() ? rhs._value->copy() : NULL) {
+    : _value(rhs._value.get() ? rhs._value->clone() : NULL) {
 }
 
 Any::~Any() {
