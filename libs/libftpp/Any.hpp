@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:17:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/26 20:00:27 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/30 19:07:31 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,7 @@ template <typename T> T const &Any::as_unsafe() const {
 }
 
 template <typename T> bool Any::isType() const {
-  return dynamic_cast<Value<T> const *>(_value.get()) != NULL;
+  return _value->type() == typeid(T);
 }
 
 } // namespace ftpp
