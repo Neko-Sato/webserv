@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 14:28:11 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/23 06:48:06 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/05 02:14:32 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,14 @@
 #include "utility.hpp"
 
 #include <Json.hpp>
+#include <ft_algorithm.hpp>
 
 #include <algorithm>
 #include <iostream>
 #include <iterator>
 #include <limits>
 
-std::size_t const ServerConf::default_client_max_body_size = 1 << 20;
+std::size_t const ServerConf::default_client_max_body_size = parseSize("1m");
 
 ServerConf::ServerConf() : _client_max_body_size(default_client_max_body_size) {
 }
@@ -83,7 +84,8 @@ void ServerConf::_takeAddresses(ftjson::Object const &server) {
     ftjson::Array const &addrs = it->second.as_unsafe<ftjson::Array>();
     std::copy(addrs.begin(), addrs.end(),
               std::inserter(_addresses, _addresses.begin()));
-  }
+  } else
+    _addresses.insert(address("0.0.0.0", 8080));
 }
 
 void ServerConf::_takeClientBodySize(ftjson::Object const &server) {
@@ -139,4 +141,34 @@ void ServerConf::_takeLocations(ftjson::Object const &server) {
     ftjson::Array const &locs = it->second.as_unsafe<ftjson::Array>();
     std::copy(locs.begin(), locs.end(), std::back_inserter(_locations));
   }
+}
+
+ServerConf::ServerNames const &ServerConf::getServerNames() const {
+  return _server_names;
+}
+
+ServerConf::Addresses const &ServerConf::getAddresses() const {
+  return _addresses;
+}
+
+std::size_t ServerConf::getClientMaxBodySize() const {
+  return _client_max_body_size;
+}
+
+ServerConf::ErrorPages const &ServerConf::getErrorPages() const {
+  return _error_pages;
+}
+
+ServerConf::Locations const &ServerConf::getLocations() const {
+  return _locations;
+}
+
+ServerConf::Locations::const_iterator
+ServerConf::findLocation(std::string const &method,
+                         std::string const &path) const {
+  Locations::const_iterator it = _locations.begin();
+  for (; it != _locations.end(); ++it)
+    if (!it->match(method, path))
+      break;
+  return it;
 }

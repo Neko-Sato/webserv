@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 08:18:49 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/25 10:13:40 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/27 00:42:07 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include <cstdlib>
 #include <iostream>
 
-static char const *get_default_config_path() {
+static inline char const *get_default_config_path() {
   char const *const config_path = getenv("WEBSERV_CONFIG");
   return config_path ? config_path : "./default.json";
 }

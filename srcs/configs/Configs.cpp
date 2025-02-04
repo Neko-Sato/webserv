@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 08:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/23 06:49:09 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/05 01:22:03 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,4 +67,37 @@ void Configs::_takeServers(ftjson::Object const &configs) {
     ftjson::Array const &server = it->second.as_unsafe<ftjson::Array>();
     std::copy(server.begin(), server.end(), std::back_inserter(_servers));
   }
+}
+
+Configs::Servers const &Configs::getServers() const {
+  return _servers;
+}
+
+ServerConf const &Configs::findServer(address const &addr,
+                                      std::string const &name) const {
+  ServerConf const *first = NULL;
+  for (Servers::const_iterator it = _servers.begin(); it != _servers.end();
+       ++it) {
+    ServerConf::Addresses const &addrs = it->getAddresses();
+    if (addrs.find(addr) != addrs.end()) {
+      ServerConf::ServerNames const &names = it->getServerNames();
+      if (name.empty() || names.find(name) != names.end())
+        return *it;
+      if (!first)
+        first = &*it;
+    }
+  }
+  if (!first)
+    throw std::runtime_error("Not found server");
+  return *first;
+}
+
+std::set<address> Configs::getAddressAll() const {
+  std::set<address> addresses;
+  for (Servers::const_iterator it = _servers.begin(); it != _servers.end();
+       ++it) {
+    ServerConf::Addresses const &addrs = it->getAddresses();
+    addresses.insert(addrs.begin(), addrs.end());
+  }
+  return addresses;
 }

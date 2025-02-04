@@ -1,38 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Webserv.hpp                                        :+:      :+:    :+:   */
+/*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/26 07:59:54 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/05 01:18:41 by hshimizu         ###   ########.fr       */
+/*   Created: 2025/02/05 01:40:37 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/02/05 01:40:40 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "Server.hpp"
 #include "configs/Configs.hpp"
+#include "structs/address.hpp"
 
-#include <EventLoop.hpp>
-#include <LoopStopper/LoopStopper.hpp>
-#include <NonCopyable.hpp>
+#include <AsyncSocket/BaseTCPServer.hpp>
+#include <socket/Socket.hpp>
 
-#include <list>
-
-class Webserv : private ftpp::NonCopyable {
-public:
-  typedef std::list<Server *> Servers;
-
+class Server : public ftev::BaseTCPServer {
 private:
-  Configs _configs;
-  ftev::LoopStopper _stopper;
-  Servers _servers;
-
-  Webserv();
+  Configs const &_configs;
+  address _address;
 
 public:
-  Webserv(ftev::EventLoop &loop, Configs const &configs);
-  ~Webserv();
+  Server(ftev::EventLoop &loop, std::string const &host, int port,
+             Configs const &configs);
+  ~Server();
+
+  void on_connect(ftpp::Socket &socket);
+  Configs const &getConfigs() const;
+  address const &getAddress() const;
 };

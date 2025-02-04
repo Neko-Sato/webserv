@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 17:07:45 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/23 06:00:28 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/05 01:30:57 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,4 +52,13 @@ public:
   ServerConf &operator=(ServerConf const &rhs);
   ~ServerConf();
   void swap(ServerConf &rhs);
+
+  ServerNames const &getServerNames() const;
+  Addresses const &getAddresses() const;
+  std::size_t getClientMaxBodySize() const;
+  ErrorPages const &getErrorPages() const;
+  Locations const &getLocations() const;
+
+  Locations::const_iterator findLocation(std::string const &method,
+                                         std::string const &path) const;
 };

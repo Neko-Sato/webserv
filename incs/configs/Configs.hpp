@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 14:04:54 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/23 05:59:04 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/01/26 12:11:29 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,15 @@ public:
   Configs();
   Configs(ftpp::Any const &value);
   Configs(Configs const &rhs);
-  Configs &operator=(Configs const &rhs);
   ~Configs();
+  Configs &operator=(Configs const &rhs);
   void swap(Configs &rhs);
 
   static Configs load(std::string const &filename);
+
+  Servers const &getServers() const;
+
+  ServerConf const &findServer(address const &addr,
+                               std::string const &name = "") const;
+  std::set<address> getAddressAll() const;
 };

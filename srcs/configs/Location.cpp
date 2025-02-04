@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:18:19 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/23 19:03:02 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/05 01:37:19 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,13 @@
 
 #include <Any.hpp>
 #include <Json.hpp>
+#include <ft_algorithm.hpp>
+#include <ft_string.hpp>
 #include <macros.hpp>
 
 #include <stdexcept>
 
-Location::DetailFactories Location::detail_factories;
+Location::Detail::Factories Location::Detail::factories;
 
 Location::Detail::Detail() {
 }
@@ -49,7 +51,7 @@ Location::Location(ftpp::Any const &value) {
 
 Location::Location(Location const &rhs)
     : _path(rhs._path), _allow_methods(rhs._allow_methods) {
-  _detail = rhs._detail ? rhs._detail->copy() : NULL;
+  _detail = rhs._detail ? rhs._detail->clone() : NULL;
 }
 
 Location &Location::operator=(Location const &rhs) {
@@ -87,7 +89,7 @@ void Location::_takeAllowMethods(ftjson::Object const &location) {
          it != methods.end(); ++it) {
       if (!it->isType<ftjson::String>())
         throw std::runtime_error("allow_methods is not string");
-      _allow_methods.insert(it->as_unsafe<ftjson::String>());
+      _allow_methods.insert(ftpp::tolower(it->as_unsafe<ftjson::String>()));
     }
   }
 }
@@ -99,8 +101,27 @@ void Location::_takeDetail(ftjson::Object const &location) {
   if (!it->second.isType<ftjson::String>())
     throw std::runtime_error("Location type is not string");
   std::string const &type = it->second.as_unsafe<ftjson::String>();
-  DetailFactories::const_iterator factory = detail_factories.find(type);
-  if (factory == detail_factories.end())
+  Detail::Factories::const_iterator factory = Detail::factories.find(type);
+  if (factory == Detail::factories.end())
     throw std::runtime_error("Unknown location type: " + type);
   _detail = factory->second(location);
+}
+
+std::string const &Location::getPath() const {
+  return _path;
+}
+
+Location::AllowMethods const &Location::getAllowMethods() const {
+  return _allow_methods;
+}
+
+Location::Detail const &Location::getDetail() const {
+  return *_detail;
+}
+
+bool Location::match(std::string const &method, std::string const &path) const {
+  if (_allow_methods.empty() ||
+      _allow_methods.find(ftpp::tolower(method)) != _allow_methods.end())
+    return ftpp::starts_with(path, _path);
+  return false;
 }
