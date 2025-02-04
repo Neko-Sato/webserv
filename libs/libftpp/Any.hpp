@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:17:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/30 19:07:31 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/04 21:29:40 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@ private:
   class BaseValue {
   protected:
     BaseValue();
-    BaseValue(BaseValue const &);
-    BaseValue &operator=(BaseValue const &);
+    BaseValue(BaseValue const &rhs);
+    BaseValue &operator=(BaseValue const &rhs);
 
   public:
     virtual ~BaseValue();

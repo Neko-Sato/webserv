@@ -6,12 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:17:50 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/26 20:00:06 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/04 21:30:06 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <Any.hpp>
 #include <cstddef>
+#include <macros.hpp>
 #include <typeinfo>
 
 #include <algorithm>
@@ -21,10 +22,12 @@ namespace ftpp {
 Any::BaseValue::BaseValue() {
 }
 
-Any::BaseValue::BaseValue(BaseValue const &) {
+Any::BaseValue::BaseValue(BaseValue const &rhs) {
+  UNUSED(rhs);
 }
 
-Any::BaseValue &Any::BaseValue::operator=(BaseValue const &) {
+Any::BaseValue &Any::BaseValue::operator=(BaseValue const &rhs) {
+  UNUSED(rhs);
   return *this;
 }
 
