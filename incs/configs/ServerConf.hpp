@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 17:07:45 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/05 01:30:57 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/05 02:33:24 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ public:
   ServerConf(ServerConf const &rhs);
   ServerConf &operator=(ServerConf const &rhs);
   ~ServerConf();
-  void swap(ServerConf &rhs);
+  void swap(ServerConf &rhs) throw();
 
   ServerNames const &getServerNames() const;
   Addresses const &getAddresses() const;

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 14:28:11 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/05 02:14:32 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/05 12:25:45 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ ServerConf &ServerConf::operator=(ServerConf const &rhs) {
 ServerConf::~ServerConf() {
 }
 
-void ServerConf::swap(ServerConf &rhs) {
+void ServerConf::swap(ServerConf &rhs) throw() {
   _server_names.swap(rhs._server_names);
   _addresses.swap(rhs._addresses);
   std::swap(_client_max_body_size, rhs._client_max_body_size);

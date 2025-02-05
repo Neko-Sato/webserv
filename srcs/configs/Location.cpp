@@ -6,11 +6,14 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:18:19 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/05 01:37:19 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/05 12:25:57 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "configs/Location.hpp"
+#include "locations/LocationDefault.hpp"
+#include "locations/LocationRedirect.hpp"
+#include "locations/LocationUpload.hpp"
 
 #include <Any.hpp>
 #include <Json.hpp>
@@ -20,9 +23,22 @@
 
 #include <stdexcept>
 
-Location::Detail::Factories Location::Detail::factories;
+Location::Detail::Factories Location::Detail::factories =
+    Location::Detail::initFactories();
+
+Location::Detail::Factories Location::Detail::initFactories() {
+  Factories factories;
+  factories["default"] = &create<LocationDefault>;
+  factories["upload"] = &create<LocationUpload>;
+  factories["redirect"] = &create<LocationRedirect>;
+  return factories;
+}
 
 Location::Detail::Detail() {
+}
+
+Location::Detail::Detail(Detail const &rhs) {
+  UNUSED(rhs);
 }
 
 Location::Detail::Detail(ftjson::Object const &location) {
@@ -64,7 +80,7 @@ Location::~Location() {
   delete _detail;
 }
 
-void Location::swap(Location &rhs) {
+void Location::swap(Location &rhs) throw() {
   _path.swap(rhs._path);
   _allow_methods.swap(rhs._allow_methods);
   std::swap(_detail, rhs._detail);

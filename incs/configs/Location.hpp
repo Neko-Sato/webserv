@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 17:21:38 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/04 21:58:27 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/05 12:22:50 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,12 @@ public:
     typedef std::map<std::string, factory> Factories;
     static Factories factories;
 
+    static Factories initFactories();
+    template <typename T> static Detail *create(ftjson::Object const &location);
+
   protected:
     Detail();
+    Detail(Detail const &rhs);
     Detail(ftjson::Object const &location);
     Detail &operator=(Detail const &rhs);
 
@@ -53,7 +57,7 @@ public:
   Location(Location const &rhs);
   Location &operator=(Location const &rhs);
   ~Location();
-  void swap(Location &rhs);
+  void swap(Location &rhs) throw();
 
   std::string const &getPath() const;
   AllowMethods const &getAllowMethods() const;
@@ -61,3 +65,8 @@ public:
 
   bool match(std::string const &method, std::string const &path) const;
 };
+
+template <typename T>
+Location::Detail *Location::Detail::create(ftjson::Object const &location) {
+  return new T(location);
+}
