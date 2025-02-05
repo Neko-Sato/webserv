@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 14:28:11 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/05 12:25:45 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/05 16:59:49 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,8 +167,12 @@ ServerConf::Locations::const_iterator
 ServerConf::findLocation(std::string const &method,
                          std::string const &path) const {
   Locations::const_iterator it = _locations.begin();
-  for (; it != _locations.end(); ++it)
-    if (!it->match(method, path))
-      break;
-  return it;
+  while (it != _locations.end() && !it->match(method, path))
+    ++it;
+  if (it == _locations.end())
+    return it;
+  ++it;
+  while (it != _locations.end() && it->match(method, path))
+    ++it;
+  return --it;
 }
