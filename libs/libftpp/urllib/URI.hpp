@@ -6,13 +6,14 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 14:32:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/26 20:03:54 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/08 04:20:40 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <string>
+#include <iostream>
 
 namespace ftpp {
 
@@ -46,5 +47,8 @@ public:
 
   std::string toString() const;
 };
+
+std::ostream &operator<<(std::ostream &os, URI const &uri);
+std::istream &operator>>(std::istream &is, URI &uri);
 
 } // namespace ftpp
