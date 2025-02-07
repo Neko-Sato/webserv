@@ -6,13 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/31 09:45:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/22 07:30:26 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/08 01:28:55 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <Any.hpp>
+#include <Json.hpp>
 
 #include <string>
 
@@ -21,6 +21,6 @@ struct address {
   int port;
 
   address(std::string const &host, int port);
-  address(ftpp::Any const &value);
+  address(ftjson::Object const &addr);
   bool operator<(address const &rhs) const;
 };

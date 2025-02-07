@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/31 09:45:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/23 06:44:19 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/08 01:30:45 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,18 +24,16 @@ address::address(std::string const &host, int port) : host(host), port(port) {
     throw std::runtime_error("port out of range");
 }
 
-address::address(ftpp::Any const &value) {
-  if (!value.isType<ftjson::Object>())
-    throw std::runtime_error("address is not object");
-  ftjson::Object const &addr = value.as_unsafe<ftjson::Object>();
+address::address(ftjson::Object const &addr) {
   {
     ftjson::Object::const_iterator const &it = addr.find("host");
     if (it != addr.end()) {
       if (!it->second.isType<ftjson::String>())
         throw std::runtime_error("host is not string");
-      host = it->second.as_unsafe<ftjson::String>();
-      if (host.empty())
+      std::string const &tmp = it->second.as_unsafe<ftjson::String>();
+      if (tmp.empty())
         throw std::runtime_error("empty host");
+      host = tmp;
     } else
       host = "localhost";
   }

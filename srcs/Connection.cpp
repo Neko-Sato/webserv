@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 01:41:18 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/05 16:48:31 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/08 02:13:17 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ void Connection::_makeResponseTask() {
   if (jt == serverConf.getLocations().end()) {
     std::cerr << "404 Not Found" << std::endl;
   } else {
-   std::cerr << typeid(jt->getDetail()).name() << std::endl;
+   std::cerr << typeid(jt->second.getDetail()).name() << std::endl;
   }
 }
 

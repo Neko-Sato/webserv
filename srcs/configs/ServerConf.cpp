@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 14:28:11 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/05 16:59:49 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/08 02:19:47 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,9 @@
 
 #include <Json.hpp>
 #include <ft_algorithm.hpp>
+#include <ft_string.hpp>
 
-#include <algorithm>
 #include <iostream>
-#include <iterator>
 #include <limits>
 
 std::size_t const ServerConf::default_client_max_body_size = parseSize("1m");
@@ -27,10 +26,7 @@ std::size_t const ServerConf::default_client_max_body_size = parseSize("1m");
 ServerConf::ServerConf() : _client_max_body_size(default_client_max_body_size) {
 }
 
-ServerConf::ServerConf(ftpp::Any const &value) {
-  if (!value.isType<ftjson::Object>())
-    throw std::runtime_error("ServerConf is not an object");
-  ftjson::Object const &server = value.as_unsafe<ftjson::Object>();
+ServerConf::ServerConf(ftjson::Object const &server) {
   _takeServerNames(server);
   _takeAddresses(server);
   _takeClientBodySize(server);
@@ -82,8 +78,12 @@ void ServerConf::_takeAddresses(ftjson::Object const &server) {
     if (!it->second.isType<ftjson::Array>())
       throw std::runtime_error("listen is not array");
     ftjson::Array const &addrs = it->second.as_unsafe<ftjson::Array>();
-    std::copy(addrs.begin(), addrs.end(),
-              std::inserter(_addresses, _addresses.begin()));
+    for (ftjson::Array::const_iterator it = addrs.begin(); it != addrs.end();
+         ++it) {
+      if (!it->isType<ftjson::Object>())
+        throw std::runtime_error("listen element is not object");
+      _addresses.insert(address(it->as_unsafe<ftjson::Object>()));
+    }
   } else
     _addresses.insert(address("0.0.0.0", 8080));
 }
@@ -128,7 +128,10 @@ void ServerConf::_takeErrorPages(ftjson::Object const &server) {
         throw std::runtime_error("error_page without path");
       if (!jt->second.isType<ftjson::String>())
         throw std::runtime_error("error_page path is not string");
-      _error_pages[code] = jt->second.as_unsafe<ftjson::String>();
+      std::string const &path = jt->second.as_unsafe<ftjson::String>();
+      if (path.empty())
+        throw std::runtime_error("error_page path is empty");
+      _error_pages[code] = path;
     }
   }
 }
@@ -139,7 +142,21 @@ void ServerConf::_takeLocations(ftjson::Object const &server) {
     if (!it->second.isType<ftjson::Array>())
       throw std::runtime_error("locations is not array");
     ftjson::Array const &locs = it->second.as_unsafe<ftjson::Array>();
-    std::copy(locs.begin(), locs.end(), std::back_inserter(_locations));
+    for (ftjson::Array::const_iterator it = locs.begin(); it != locs.end();
+         ++it) {
+      if (!it->isType<ftjson::Object>())
+        throw std::runtime_error("location is not object");
+      ftjson::Object const &loc = it->as_unsafe<ftjson::Object>();
+      ftjson::Object::const_iterator const &jt = loc.find("path");
+      if (jt == loc.end())
+        throw std::runtime_error("location without path");
+      if (!jt->second.isType<ftjson::String>())
+        throw std::runtime_error("location path is not string");
+      std::string const &path = jt->second.as_unsafe<ftjson::String>();
+      if (path.empty())
+        throw std::runtime_error("location path is empty");
+      Location(loc).swap(_locations[path]);
+    }
   }
 }
 
@@ -166,13 +183,14 @@ ServerConf::Locations const &ServerConf::getLocations() const {
 ServerConf::Locations::const_iterator
 ServerConf::findLocation(std::string const &method,
                          std::string const &path) const {
-  Locations::const_iterator it = _locations.begin();
-  while (it != _locations.end() && !it->match(method, path))
-    ++it;
-  if (it == _locations.end())
-    return it;
-  ++it;
-  while (it != _locations.end() && it->match(method, path))
-    ++it;
-  return --it;
+  std::string lowered_method = ftpp::tolower(method);
+  Locations::const_iterator res = _locations.end();
+  for (Locations::const_iterator it = _locations.lower_bound(path);
+       it != _locations.end() && ftpp::starts_with(path, it->first); ++it) {
+    Location::AllowMethods const &allowMethods = it->second.getAllowMethods();
+    if (allowMethods.empty() ||
+        allowMethods.find(lowered_method) != allowMethods.end())
+      res = it;
+  }
+  return res;
 }

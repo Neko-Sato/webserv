@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 17:07:45 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/05 02:33:24 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/08 01:19:14 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 #include <Any.hpp>
 #include <Json.hpp>
 
-#include <list>
 #include <map>
 #include <set>
 #include <string>
@@ -30,7 +29,7 @@ public:
   typedef std::set<std::string> ServerNames;
   typedef std::set<address> Addresses;
   typedef std::map<int, std::string> ErrorPages;
-  typedef std::list<Location> Locations;
+  typedef std::map<std::string, Location> Locations;
 
 private:
   ServerNames _server_names;
@@ -47,7 +46,7 @@ private:
 
 public:
   ServerConf();
-  ServerConf(ftpp::Any const &value);
+  ServerConf(ftjson::Object const &server);
   ServerConf(ServerConf const &rhs);
   ServerConf &operator=(ServerConf const &rhs);
   ~ServerConf();

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 14:04:54 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/26 12:11:29 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/08 01:18:50 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ private:
 
 public:
   Configs();
-  Configs(ftpp::Any const &value);
+  Configs(ftjson::Object const &configs);
   Configs(Configs const &rhs);
   ~Configs();
   Configs &operator=(Configs const &rhs);

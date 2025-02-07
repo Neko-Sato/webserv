@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 08:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/05 01:22:03 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/08 02:09:44 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,19 +15,14 @@
 #include <Json.hpp>
 #include <JsonParser.hpp>
 
-#include <algorithm>
 #include <fstream>
-#include <iterator>
 #include <stdexcept>
 #include <string>
 
 Configs::Configs() {
 }
 
-Configs::Configs(ftpp::Any const &value) {
-  if (!value.isType<ftjson::Object>())
-    throw std::runtime_error("configs is not object");
-  ftjson::Object const &configs = value.as_unsafe<ftjson::Object>();
+Configs::Configs(ftjson::Object const &configs) {
   _takeServers(configs);
 }
 
@@ -48,7 +43,11 @@ Configs Configs::load(std::string const &filename) {
   if (!ifs)
     throw std::runtime_error("Could not open configuration file");
   try {
-    return Configs(ftjson::JsonParser::parse(ifs));
+    ftpp::Any configs;
+    ftjson::JsonParser::parse(ifs).swap(configs);
+    if (!configs.isType<ftjson::Object>())
+      throw std::runtime_error("configs is not object");
+    return Configs(configs.as_unsafe<ftjson::Object>());
   } catch (std::exception const &e) {
     throw std::runtime_error("Could not parse configuration file: " +
                              std::string(e.what()));
@@ -65,7 +64,12 @@ void Configs::_takeServers(ftjson::Object const &configs) {
     if (!it->second.isType<ftjson::Array>())
       throw std::runtime_error("servers is not array");
     ftjson::Array const &server = it->second.as_unsafe<ftjson::Array>();
-    std::copy(server.begin(), server.end(), std::back_inserter(_servers));
+    for (ftjson::Array::const_iterator it = server.begin(); it != server.end();
+         ++it) {
+      if (!it->isType<ftjson::Object>())
+        throw std::runtime_error("server is not object");
+      _servers.push_back(ServerConf(it->as_unsafe<ftjson::Object>()));
+    }
   }
 }
 
