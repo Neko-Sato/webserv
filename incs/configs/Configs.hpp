@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 14:04:54 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/08 01:18:50 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/08 05:54:35 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ public:
   Configs(Configs const &rhs);
   ~Configs();
   Configs &operator=(Configs const &rhs);
-  void swap(Configs &rhs);
+  void swap(Configs &rhs) throw();
 
   static Configs load(std::string const &filename);
 

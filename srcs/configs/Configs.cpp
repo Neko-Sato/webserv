@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 08:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/08 02:09:44 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/08 05:55:59 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ Configs Configs::load(std::string const &filename) {
   }
 }
 
-void Configs::swap(Configs &rhs) {
+void Configs::swap(Configs &rhs) throw() {
   _servers.swap(rhs._servers);
 }
 
