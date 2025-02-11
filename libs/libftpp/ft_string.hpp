@@ -6,12 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/31 21:38:23 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/26 22:53:38 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/11 18:38:43 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+#include <sstream>
 #include <string>
 
 namespace ftpp {
@@ -27,5 +28,11 @@ double stod(std::string const &str, std::size_t *idx = NULL);
 
 std::string tolower(std::string const &str);
 std::string toupper(std::string const &str);
+
+template <typename T> std::string to_string(T value) {
+  std::stringstream ss;
+  ss << value;
+  return ss.str();
+}
 
 } // namespace ftpp
