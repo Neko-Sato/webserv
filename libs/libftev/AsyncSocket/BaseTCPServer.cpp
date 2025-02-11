@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:13:47 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/26 12:36:38 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/11 18:42:01 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,19 +14,17 @@
 #include <EventLoop.hpp>
 
 #include <socket/AddrInfos.hpp>
+#include <ft_string.hpp>
 
 #include <cassert>
-#include <cstdio>
 
 namespace ftev {
 
 BaseTCPServer::BaseTCPServer(EventLoop &loop, std::string const &host, int port)
     : loop(loop) {
   try {
-    char service[16];
-    std::snprintf(service, sizeof(service), "%d", port);
     ftpp::AddrInfos::Hints hints(AF_UNSPEC, SOCK_STREAM, 0, AI_PASSIVE);
-    ftpp::AddrInfos infos(host.c_str(), service, hints);
+    ftpp::AddrInfos infos(host.c_str(), ftpp::to_string(port).c_str(), hints);
     for (ftpp::AddrInfos::iterator it = infos.begin(); it != infos.end();
          ++it) {
       Server *server =
