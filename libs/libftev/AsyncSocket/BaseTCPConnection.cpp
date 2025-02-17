@@ -6,13 +6,14 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 23:59:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/17 02:18:51 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/18 01:33:27 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <AsyncSocket/BaseTCPConnection.hpp>
 
 #include <cassert>
+#include <iostream>
 
 namespace ftev {
 
@@ -33,10 +34,12 @@ BaseTCPConnection::~BaseTCPConnection() {
 }
 
 void BaseTCPConnection::on_read() {
-  std::vector<char> chank(_chank_size);
+  std::vector<char> chank;
   try {
+    chank.resize(_chank_size);
     chank.resize(_socket.read(chank.data(), chank.size()));
-  } catch (...) {
+  } catch (std::exception const &e) {
+    std::cerr << "TCPConnection read: " << e.what() << std::endl;
     return;
   }
   if (chank.empty()) {
@@ -52,8 +55,13 @@ void BaseTCPConnection::on_read() {
 }
 
 void BaseTCPConnection::on_write() {
-  size_t size = _socket.write(_buffer.data(), _buffer.size());
-  _buffer.erase(_buffer.begin(), _buffer.begin() + size);
+  try {
+    size_t size = _socket.write(_buffer.data(), _buffer.size());
+    _buffer.erase(_buffer.begin(), _buffer.begin() + size);
+  } catch (std::exception const &e) {
+    std::cerr << "TCPConnection write: " << e.what() << std::endl;
+    return;
+  }
   if (_buffer.empty()) {
     event_t event = get_events() & ~ftpp::BaseSelector::WRITE;
     if (event)
