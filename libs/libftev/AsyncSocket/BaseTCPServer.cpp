@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:13:47 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/18 01:32:14 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/18 04:01:18 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ void BaseTCPServer::Server::on_read() {
     _socket.accept(conn);
     server.on_connect(conn);
   } catch (std::exception const &e) {
-    std::cerr << "TCPServer Connection: " << e.what() << std::endl;
+    std::cerr << "TCPServer on_connect: " << e.what() << std::endl;
   }
 }
 
@@ -92,10 +92,10 @@ void BaseTCPServer::Server::on_except() {
     socklen_t len = sizeof(error);
     _socket.getsockopt(SOL_SOCKET, SO_ERROR, &error, &len);
     if (error)
-      std::cerr << "TCPServer Except: " << strerror(error) << std::endl;
+      std::cerr << "TCPServer: " << strerror(error) << std::endl;
     else
 #else
-    std::cerr << "TCPServer Except" << std::endl;
+    std::cerr << "TCPServer: Unknown exception" << std::endl;
 #endif
   }
   server._servers.remove(this);
