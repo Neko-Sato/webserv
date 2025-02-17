@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 22:21:27 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/18 10:17:11 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/17 23:47:44 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ typedef double Number;
 typedef bool Boolean;
 
 } // namespace ftjson
-
 
 // C++98 does not have extern template.
 // Templates are instantiated for each object file,

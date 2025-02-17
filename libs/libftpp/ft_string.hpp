@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/31 21:38:23 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/16 18:33:01 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/17 23:55:05 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,6 @@ std::string to_string(int val);
 std::string to_string(unsigned int val);
 std::string to_string(long val);
 std::string to_string(unsigned long val);
-std::string to_string(long long val);
-std::string to_string(unsigned long long val);
 std::string to_string(float val);
 std::string to_string(double val);
 std::string to_string(long double val);

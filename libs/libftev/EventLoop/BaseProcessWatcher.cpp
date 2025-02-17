@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 16:23:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/04 15:11:04 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/17 23:52:50 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void EventLoop::BaseProcessWatcher::operator()(int status) {
 
 void EventLoop::BaseProcessWatcher::start(options const &opts) {
   assert(!_is_active);
-  _activate();
+  WaitWatcher::activate(loop);
   pid_t pid = _spawn(opts);
   std::pair<ProcessWatchers::iterator, bool> result =
       loop._process_watchers.insert(std::make_pair(pid, this));
@@ -73,6 +73,13 @@ EventLoop::BaseProcessWatcher::WaitWatcher::~WaitWatcher() {
     stop();
 }
 
+void EventLoop::BaseProcessWatcher::WaitWatcher::activate(EventLoop &loop) {
+  if (unlikely(!loop._wait_watcher))
+    loop._wait_watcher = new WaitWatcher(loop);
+  if (unlikely(!loop._wait_watcher->is_active()))
+    loop._wait_watcher->start(SIGCHLD);
+}
+
 void EventLoop::BaseProcessWatcher::WaitWatcher::on_signal() {
   for (;;) {
     int status;
@@ -95,13 +102,6 @@ void EventLoop::BaseProcessWatcher::WaitWatcher::on_signal() {
       continue;
     (*it->second)(status);
   }
-}
-
-void EventLoop::BaseProcessWatcher::_activate() {
-  if (unlikely(!loop._wait_watcher))
-    loop._wait_watcher = new WaitWatcher(loop);
-  if (unlikely(!loop._wait_watcher->is_active()))
-    loop._wait_watcher->start(SIGCHLD);
 }
 
 pid_t EventLoop::BaseProcessWatcher::_spawn(options const &opts) {

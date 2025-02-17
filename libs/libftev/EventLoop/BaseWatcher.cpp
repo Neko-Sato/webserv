@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 22:48:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/12 15:32:38 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/17 23:37:19 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,12 @@ EventLoop::BaseWatcher::~BaseWatcher() {
   loop._watchers.erase(this);
 }
 
-bool EventLoop::BaseWatcher::is_active() const {
-  return _is_active;
-}
-
 void EventLoop::BaseWatcher::delete_later() {
   loop._pending_deletion_watchers.push(this);
+}
+
+bool EventLoop::BaseWatcher::is_active() const {
+  return _is_active;
 }
 
 void EventLoop::BaseWatcher::on_release() {

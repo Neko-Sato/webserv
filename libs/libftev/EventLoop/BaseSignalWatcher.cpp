@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 00:31:00 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/25 08:03:50 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/17 23:44:47 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void EventLoop::BaseSignalWatcher::operator()() {
 
 void EventLoop::BaseSignalWatcher::start(int signum) {
   assert(!_is_active);
-  _activate();
+  SignalpipeWatcher::activate(loop);
   std::pair<SignalWatchers::iterator, bool> result =
       loop._signal_watchers.insert(std::make_pair(signum, this));
   assert(result.second);
@@ -80,6 +80,16 @@ EventLoop::BaseSignalWatcher::SignalpipeWatcher::~SignalpipeWatcher() {
     stop();
 }
 
+void EventLoop::BaseSignalWatcher::SignalpipeWatcher::activate(
+    EventLoop &loop) {
+  _maybe_init_signalpipe();
+  if (unlikely(!loop._signalpipe_watcher))
+    loop._signalpipe_watcher = new SignalpipeWatcher(loop);
+  if (unlikely(!loop._signalpipe_watcher->is_active()))
+    loop._signalpipe_watcher->start(EventLoop::_signalpipe[0],
+                                    ftpp::BaseSelector::READ);
+}
+
 void EventLoop::BaseSignalWatcher::SignalpipeWatcher::on_read() {
   assert(_signalpipe[0] != -1);
   int signum;
@@ -96,15 +106,6 @@ void EventLoop::BaseSignalWatcher::SignalpipeWatcher::on_write() {
 
 void EventLoop::BaseSignalWatcher::SignalpipeWatcher::on_except() {
   assert(false);
-}
-
-void EventLoop::BaseSignalWatcher::_activate() {
-  EventLoop::_maybe_init_signalpipe();
-  if (unlikely(!loop._signalpipe_watcher))
-    loop._signalpipe_watcher = new SignalpipeWatcher(loop);
-  if (unlikely(!loop._signalpipe_watcher->is_active()))
-    loop._signalpipe_watcher->start(EventLoop::_signalpipe[0],
-                                    ftpp::BaseSelector::READ);
 }
 
 } // namespace ftev

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/16 18:32:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/16 19:04:58 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/17 23:55:01 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,14 +48,6 @@ std::string to_string(long val) {
 
 std::string to_string(unsigned long val) {
   return __to_string_impl("%lu", val);
-}
-
-std::string to_string(long long val) {
-  return __to_string_impl("%lld", val);
-}
-
-std::string to_string(unsigned long long val) {
-  return __to_string_impl("%llu", val);
 }
 
 std::string to_string(float val) {

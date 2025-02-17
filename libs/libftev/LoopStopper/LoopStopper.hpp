@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/31 10:00:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2024/12/31 23:11:37 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/16 20:43:10 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 
 namespace ftev {
 
-class LoopStopper : public ftev::EventLoop::BaseSignalWatcher {
+class LoopStopper : private EventLoop::BaseSignalWatcher {
 public:
   LoopStopper(ftev::EventLoop &loop);
   ~LoopStopper();
