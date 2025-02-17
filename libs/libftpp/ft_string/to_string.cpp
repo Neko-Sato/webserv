@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/16 18:32:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/17 23:55:01 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/18 03:24:04 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 namespace ftpp {
 
 template <typename T>
-static std::string __to_string_impl(char const *fmt, T val) {
+static inline std::string __to_string_impl(char const *fmt, T val) {
   std::vector<char> buffer(32);
   for (;;) {
     int res = snprintf(buffer.data(), buffer.size(), fmt, val);
