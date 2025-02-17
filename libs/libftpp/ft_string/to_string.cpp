@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/16 18:32:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/18 03:24:04 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/18 03:25:55 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,8 @@ static inline std::string __to_string_impl(char const *fmt, T val) {
     int res = snprintf(buffer.data(), buffer.size(), fmt, val);
     if (unlikely(res < 0))
       throw std::runtime_error("snprintf failed");
-    if (static_cast<size_t>(res) >= buffer.size()) {
+    // I don't think it's going to happen.
+    if (unlikely(static_cast<size_t>(res) >= buffer.size())) {
       buffer.resize(res + 1);
       continue;
     }
