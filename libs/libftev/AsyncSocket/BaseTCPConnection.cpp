@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 23:59:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/18 20:10:20 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/18 20:18:56 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,11 @@ void BaseTCPConnection::write(char const *buffer, size_t size) {
     }
   }
 #endif
+  // I was aiming for a strong server.
+  // I could not think of a countermeasure for lack of resources here.
+  // The server terminates with a THROW in the event loop.
   _buffer.insert(_buffer.end(), buffer, buffer + size);
+  // ↑↑↑
   if (is_active()) {
     event_t event = get_events();
     if (!(event & ftpp::BaseSelector::WRITE))
