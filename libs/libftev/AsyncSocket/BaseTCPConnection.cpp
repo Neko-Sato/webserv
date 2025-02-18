@@ -6,11 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 23:59:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/18 03:58:19 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/18 20:00:37 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <AsyncSocket/BaseTCPConnection.hpp>
+
+#include <exceptions/OSError.hpp>
 
 #include <cassert>
 #include <iostream>
@@ -92,6 +94,24 @@ void BaseTCPConnection::write(char const *buffer, size_t size) {
   assert(!_draining);
   if (!size)
     return;
+#if defined(FT_SUBJECT_NOT_COMPLIANT)
+  if (_buffer.empty()) {
+    try {
+      size_t written = _socket.write(buffer, size);
+      if (written == size)
+        return;
+      buffer += written;
+      size -= written;
+    } catch (ftpp::OSError const &e) {
+      switch (e.get_errno()) {
+      case EAGAIN:
+        break;
+      default:
+        std::cerr << "TCPConnection write: " << e.what() << std::endl;
+      }
+    }
+  }
+#endif
   _buffer.insert(_buffer.end(), buffer, buffer + size);
   if (is_active()) {
     event_t event = get_events();
