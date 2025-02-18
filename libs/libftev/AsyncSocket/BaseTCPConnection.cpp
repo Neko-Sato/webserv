@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 23:59:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/18 20:00:37 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/18 20:10:20 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,17 +50,9 @@ void BaseTCPConnection::on_read() {
       modify(event);
     else
       stop();
-    try {
-      on_eof();
-    } catch (std::exception const &e) {
-      std::cerr << "TCPConnection on_eof: " << e.what() << std::endl;
-    }
+    on_eof();
   } else {
-    try {
-      on_data(chank);
-    } catch (std::exception const &e) {
-      std::cerr << "TCPConnection on_data: " << e.what() << std::endl;
-    }
+    on_data(chank);
   }
 }
 
@@ -80,11 +72,7 @@ void BaseTCPConnection::on_write() {
     else
       stop();
     if (_draining) {
-      try {
-        on_drain();
-      } catch (std::exception const &e) {
-        std::cerr << "TCPConnection on_drain: " << e.what() << std::endl;
-      }
+      on_drain();
       _draining = false;
     }
   }
@@ -124,11 +112,7 @@ void BaseTCPConnection::write(char const *buffer, size_t size) {
 void BaseTCPConnection::drain() {
   assert(!_draining);
   if (_buffer.empty()) {
-    try {
-      on_drain();
-    } catch (std::exception const &e) {
-      std::cerr << "TCPConnection on_drain: " << e.what() << std::endl;
-    }
+    on_drain();
   } else
     _draining = true;
 }

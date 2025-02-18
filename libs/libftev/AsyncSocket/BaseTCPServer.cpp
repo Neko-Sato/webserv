@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:13:47 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/18 04:01:18 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/18 20:08:54 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,13 +72,14 @@ void BaseTCPServer::Server::listen(int backlog) {
 }
 
 void BaseTCPServer::Server::on_read() {
+  ftpp::Socket conn;
   try {
-    ftpp::Socket conn;
     _socket.accept(conn);
-    server.on_connect(conn);
   } catch (std::exception const &e) {
-    std::cerr << "TCPServer on_connect: " << e.what() << std::endl;
+    std::cerr << "TCPServer: " << e.what() << std::endl;
+    return;
   }
+  server.on_connect(conn);
 }
 
 void BaseTCPServer::Server::on_write() {
