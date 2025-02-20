@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 23:59:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/18 20:18:56 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/20 16:29:10 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,18 +85,22 @@ void BaseTCPConnection::write(char const *buffer, size_t size) {
 #if defined(FT_SUBJECT_NOT_COMPLIANT)
   if (_buffer.empty()) {
     try {
-      size_t written = _socket.write(buffer, size);
-      if (written == size)
-        return;
-      buffer += written;
-      size -= written;
-    } catch (ftpp::OSError const &e) {
-      switch (e.get_errno()) {
-      case EAGAIN:
-        break;
-      default:
-        std::cerr << "TCPConnection write: " << e.what() << std::endl;
+      try {
+        size_t written = _socket.write(buffer, size);
+        if (written == size)
+          return;
+        buffer += written;
+        size -= written;
+      } catch (ftpp::OSError const &e) {
+        switch (e.get_errno()) {
+        case EAGAIN:
+          break;
+        default:
+          throw;
+        }
       }
+    } catch (std::exception const &e) {
+      std::cerr << "TCPConnection write: " << e.what() << std::endl;
     }
   }
 #endif
@@ -115,9 +119,9 @@ void BaseTCPConnection::write(char const *buffer, size_t size) {
 
 void BaseTCPConnection::drain() {
   assert(!_draining);
-  if (_buffer.empty()) {
+  if (_buffer.empty())
     on_drain();
-  } else
+  else
     _draining = true;
 }
 
