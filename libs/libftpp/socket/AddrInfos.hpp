@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/06 03:43:17 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/25 07:20:21 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/22 07:52:57 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,18 +48,13 @@ public:
     addrinfo const *operator->() const;
   };
 
-  struct Hints : private addrinfo {
+  class Hints : private addrinfo {
   public:
     Hints();
     Hints(int family, int socktype, int protocol, int flags);
     Hints(Hints const &rhs);
     ~Hints();
     Hints &operator=(Hints const &rhs);
-
-    using addrinfo::ai_family;
-    using addrinfo::ai_flags;
-    using addrinfo::ai_protocol;
-    using addrinfo::ai_socktype;
 
     addrinfo const *get_addrinfo() const;
   };
