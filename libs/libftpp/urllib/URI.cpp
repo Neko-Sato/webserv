@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 14:50:24 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/26 04:36:27 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/26 05:01:56 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,7 +137,8 @@ std::ostream &operator<<(std::ostream &os, URI const &uri) {
 std::istream &operator>>(std::istream &is, URI &uri) {
   std::string tmp;
   is >> tmp;
-  URI(tmp).swap(uri);
+  if (!is.fail())
+    URI(tmp).swap(uri);
   return is;
 }
 
