@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 18:20:36 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/11 18:28:11 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/26 04:36:00 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,36 +19,36 @@
 namespace ftpp {
 
 std::string htmlEscape(std::string const &str, bool quote) {
-  std::stringstream ss;
+  std::ostringstream oss;
   for (std::string::const_iterator it = str.begin(); it != str.end(); ++it) {
     switch (*it) {
     case '&':
-      ss << "&amp;";
+      oss << "&amp;";
       break;
     case '<':
-      ss << "&lt;";
+      oss << "&lt;";
       break;
     case '>':
-      ss << "&gt;";
+      oss << "&gt;";
       break;
     default:
       if (quote) {
         if (*it == '"') {
-          ss << "&quot;";
+          oss << "&quot;";
           break;
         } else if (*it == '\'') {
-          ss << "&apos;";
+          oss << "&apos;";
           break;
         }
       }
       if (std::iscntrl(*it))
-        ss << "&#" << static_cast<int>(*it) << ";";
+        oss << "&#" << static_cast<int>(*it) << ";";
       else
-        ss << *it;
+        oss << *it;
       break;
     }
   }
-  return ss.str();
+  return oss.str();
 }
 
 std::string htmlUnescape(std::string const &str) {

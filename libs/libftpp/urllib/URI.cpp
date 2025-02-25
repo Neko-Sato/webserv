@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 14:50:24 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/08 04:21:46 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/26 04:36:27 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void URI::swap(URI &rhs) throw() {
 }
 
 std::string URI::toString() const {
-  std::stringstream tmp;
+  std::ostringstream tmp;
   if (!_scheme.empty())
     tmp << _scheme << ":";
   if (!_netloc.empty())

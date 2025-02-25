@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 04:30:35 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/23 19:10:41 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/26 04:34:38 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -312,7 +312,7 @@ void JsonParser::_insert_array() {
   arr.push_back(value);
 }
 
-static inline void _unicode_escape(std::stringstream &ss,
+static inline void _unicode_escape(std::ostringstream &oss,
                                    std::string const &str, std::size_t &index) {
   ++index;
   bool valid = true;
@@ -333,15 +333,15 @@ static inline void _unicode_escape(std::stringstream &ss,
       valid = false;
   }
   if (valid)
-    ss << ftpp::utf8_codepoint(code);
+    oss << ftpp::utf8_codepoint(code);
   else
-    ss << "\\u" << std::nouppercase << std::setw(4) << std::setfill('0')
-       << std::hex << code;
+    oss << "\\u" << std::nouppercase << std::setw(4) << std::setfill('0')
+        << std::hex << code;
   --index;
 }
 
 std::string JsonParser::_string_dequote(std::string const &str) {
-  std::stringstream ss;
+  std::ostringstream oss;
   std::size_t index = 0;
   assert(str[index++] == '"');
   for (; index < str.size() - 1; ++index) {
@@ -350,37 +350,37 @@ std::string JsonParser::_string_dequote(std::string const &str) {
       assert(index < str.size() - 1);
       switch (str[index]) {
       case 'b':
-        ss.put('\b');
+        oss.put('\b');
         break;
       case 'f':
-        ss.put('\f');
+        oss.put('\f');
         break;
       case 'n':
-        ss.put('\n');
+        oss.put('\n');
         break;
       case 'r':
-        ss.put('\r');
+        oss.put('\r');
         break;
       case 't':
-        ss.put('\t');
+        oss.put('\t');
         break;
       case 'u':
-        _unicode_escape(ss, str, index);
+        _unicode_escape(oss, str, index);
         break;
       default:
-        ss.put(str[index]);
+        oss.put(str[index]);
         break;
       }
     } else
-      ss.put(str[index]);
+      oss.put(str[index]);
   }
   assert(str[index] == '"');
-  return ss.str();
+  return oss.str();
 }
 
 ftpp::Any JsonParser::parse(char const *str) {
-  std::stringstream ss(str);
-  return JsonParser(ss)._parse();
+  std::istringstream iss(str);
+  return JsonParser(iss)._parse();
 }
 
 ftpp::Any JsonParser::parse(std::istream &stream) {

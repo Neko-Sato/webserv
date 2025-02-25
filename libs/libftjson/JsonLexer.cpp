@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/19 02:25:31 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/09 20:58:22 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/26 04:33:10 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,11 +67,11 @@ JsonToken JsonLexer::nextToken() {
 }
 
 JsonToken JsonLexer::_maybe_string() {
-  std::stringstream ss;
+  std::ostringstream oss;
   bool escape = false;
-  ss.put(_stream.get());
+  oss.put(_stream.get());
   for (int c; (c = _stream.peek()) != -1;) {
-    ss.put(_stream.get());
+    oss.put(_stream.get());
     if (std::iscntrl(c))
       throw JsonError("Bad control character in string literal");
     if (!escape) {
@@ -80,13 +80,13 @@ JsonToken JsonLexer::_maybe_string() {
         continue;
       }
       if (c == '"')
-        return JsonToken(JsonToken::STRING, ss.str());
+        return JsonToken(JsonToken::STRING, oss.str());
     } else if (c == 'u') {
       char tmp[4];
       _stream.read(tmp, 4);
       if (_stream.gcount() != 4 || !ftpp::all_of(tmp, tmp + 4, ::isxdigit))
         throw JsonError("Bad Unicode escape");
-      ss.write(tmp, 4);
+      oss.write(tmp, 4);
     }
     escape = false;
   }
@@ -94,9 +94,9 @@ JsonToken JsonLexer::_maybe_string() {
 }
 
 JsonToken JsonLexer::_maybe_number() {
-  std::stringstream ss;
+  std::ostringstream oss;
   if (_stream.peek() == '-') {
-    ss.put(_stream.get());
+    oss.put(_stream.get());
     if (!std::isdigit(_stream.peek()))
       throw JsonError("No number after minus sign");
   }
@@ -105,32 +105,32 @@ JsonToken JsonLexer::_maybe_number() {
   for (int c; (c = _stream.peek()) != -1;) {
     if (!std::isdigit(c))
       break;
-    ss.put(_stream.get());
+    oss.put(_stream.get());
   }
   if (_stream.peek() == '.') {
-    ss.put(_stream.get());
+    oss.put(_stream.get());
     if (!std::isdigit(_stream.peek()))
       throw JsonError("Unterminated fractional number");
     for (int c; (c = _stream.peek()) != -1;) {
       if (!std::isdigit(c))
         break;
-      ss.put(_stream.get());
+      oss.put(_stream.get());
     }
   }
   if (std::tolower(_stream.peek()) == 'e') {
-    ss.put(_stream.get());
+    oss.put(_stream.get());
     if (std::memchr("+-", _stream.peek(), 2)) {
-      ss.put(_stream.get());
+      oss.put(_stream.get());
       if (!std::isdigit(_stream.peek()))
         throw JsonError("Exponent part is missing a number");
     }
     for (int c; (c = _stream.peek()) != -1;) {
       if (!std::isdigit(c))
         break;
-      ss.put(_stream.get());
+      oss.put(_stream.get());
     }
   }
-  return JsonToken(JsonToken::NUMBER, ss.str());
+  return JsonToken(JsonToken::NUMBER, oss.str());
 }
 
 JsonToken JsonLexer::_maybe_keyword() {
