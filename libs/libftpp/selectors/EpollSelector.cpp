@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/03 21:55:40 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/02 08:32:18 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,13 +112,13 @@ void EpollSelector::modify(int fd, event_t events) {
 }
 
 void EpollSelector::select(Events &events, int timeout) const {
-  typedef std::vector<epoll_event> Epoll_events;
-  Epoll_events ev(max_events);
+  typedef std::vector<epoll_event> EpollEvents;
+  EpollEvents ev(max_events);
   int nfds = epoll_wait(_epfd, ev.data(), ev.size(), timeout);
   if (unlikely(nfds == -1))
     throw OSError(errno, "epoll_wait");
   ev.resize(nfds);
-  for (Epoll_events::iterator it = ev.begin(); it != ev.end(); ++it) {
+  for (EpollEvents::iterator it = ev.begin(); it != ev.end(); ++it) {
     event_details tmp;
     tmp.fd = it->data.fd;
     tmp.events = 0;
