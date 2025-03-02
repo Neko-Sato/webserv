@@ -1,26 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   address.hpp                                        :+:      :+:    :+:   */
+/*   Request.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/31 09:45:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/08 01:28:55 by hshimizu         ###   ########.fr       */
+/*   Created: 2025/02/24 21:37:12 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/02/26 06:06:02 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <Json.hpp>
+#include <urllib/URI.hpp>
 
+#include <map>
 #include <string>
+#include <vector>
 
-struct address {
-  std::string host;
-  int port;
+struct Request {
+  typedef std::vector<std::string> HeaderValues;
+  typedef std::map<std::string, HeaderValues> Headers;
 
-  address(std::string const &host, int port);
-  address(ftjson::Object const &addr);
-  bool operator<(address const &rhs) const;
+  std::string method;
+  std::string path;
+  std::string version;
+  std::string query;
+  Headers headers;
+
+  void swap(Request &rhs) throw();
 };
+
+Request parseRequest(std::string const &data);

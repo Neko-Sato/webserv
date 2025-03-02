@@ -6,12 +6,12 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 14:28:11 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/08 02:19:47 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/26 08:17:01 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "configs/ServerConf.hpp"
-#include "structs/address.hpp"
+#include "structs/Address.hpp"
 #include "utility.hpp"
 
 #include <Json.hpp>
@@ -67,7 +67,7 @@ void ServerConf::_takeServerNames(ftjson::Object const &server) {
          ++it) {
       if (!it->isType<ftjson::String>())
         throw std::runtime_error("server_names is not string");
-      _server_names.insert(it->as_unsafe<ftjson::String>());
+      _server_names.insert(ftpp::tolower(it->as_unsafe<ftjson::String>()));
     }
   }
 }
@@ -82,10 +82,10 @@ void ServerConf::_takeAddresses(ftjson::Object const &server) {
          ++it) {
       if (!it->isType<ftjson::Object>())
         throw std::runtime_error("listen element is not object");
-      _addresses.insert(address(it->as_unsafe<ftjson::Object>()));
+      _addresses.insert(Address(it->as_unsafe<ftjson::Object>()));
     }
   } else
-    _addresses.insert(address("0.0.0.0", 8080));
+    _addresses.insert(Address("0.0.0.0", 8080));
 }
 
 void ServerConf::_takeClientBodySize(ftjson::Object const &server) {
@@ -180,9 +180,8 @@ ServerConf::Locations const &ServerConf::getLocations() const {
   return _locations;
 }
 
-ServerConf::Locations::const_iterator
-ServerConf::findLocation(std::string const &method,
-                         std::string const &path) const {
+Location const *ServerConf::findLocation(std::string const &method,
+                                         std::string const &path) const {
   std::string lowered_method = ftpp::tolower(method);
   Locations::const_iterator res = _locations.end();
   for (Locations::const_iterator it = _locations.lower_bound(path);
@@ -192,5 +191,7 @@ ServerConf::findLocation(std::string const &method,
         allowMethods.find(lowered_method) != allowMethods.end())
       res = it;
   }
-  return res;
+  if (res == _locations.end())
+    return NULL;
+  return &res->second;
 }

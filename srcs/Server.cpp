@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 01:40:08 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/05 02:19:07 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/02 09:20:35 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void Server::on_connect(ftpp::Socket &socket) {
   try {
     new Connection(loop, socket, *this);
   } catch (std::exception const &e) {
-    std::cerr << "Connection Error: " << e.what() << std::endl;
+    std::cerr << "Failed to connect: " << e.what() << std::endl;
   }
 }
 
@@ -37,6 +37,6 @@ Configs const &Server::getConfigs() const {
   return _configs;
 }
 
-address const &Server::getAddress() const {
+Address const &Server::getAddress() const {
   return _address;
 }

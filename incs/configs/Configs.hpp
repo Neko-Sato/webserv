@@ -6,14 +6,14 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 14:04:54 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/08 05:54:35 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/22 08:48:57 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "configs/ServerConf.hpp"
-#include "structs/address.hpp"
+#include "structs/Address.hpp"
 
 #include <Any.hpp>
 #include <Json.hpp>
@@ -42,7 +42,7 @@ public:
 
   Servers const &getServers() const;
 
-  ServerConf const &findServer(address const &addr,
+  ServerConf const &findServer(Address const &addr,
                                std::string const &name = "") const;
-  std::set<address> getAddressAll() const;
+  std::set<Address> getAddressAll() const;
 };

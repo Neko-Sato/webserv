@@ -6,14 +6,14 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 17:07:45 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/08 01:19:14 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/02/26 08:16:54 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "configs/Location.hpp"
-#include "structs/address.hpp"
+#include "structs/Address.hpp"
 
 #include <Any.hpp>
 #include <Json.hpp>
@@ -27,7 +27,7 @@ public:
   static std::size_t const default_client_max_body_size;
 
   typedef std::set<std::string> ServerNames;
-  typedef std::set<address> Addresses;
+  typedef std::set<Address> Addresses;
   typedef std::map<int, std::string> ErrorPages;
   typedef std::map<std::string, Location> Locations;
 
@@ -58,6 +58,6 @@ public:
   ErrorPages const &getErrorPages() const;
   Locations const &getLocations() const;
 
-  Locations::const_iterator findLocation(std::string const &method,
-                                         std::string const &path) const;
+  Location const *findLocation(std::string const &method,
+                               std::string const &path) const;
 };

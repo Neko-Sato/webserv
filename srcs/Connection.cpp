@@ -6,149 +6,116 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 01:41:18 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/08 02:13:17 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/02 10:17:49 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Connection.hpp"
 #include "constants.hpp"
 
+#include <ft_iterator.hpp>
 #include <ft_string.hpp>
 #include <urllib/URI.hpp>
 #include <urllib/urlquote.hpp>
 
 #include <algorithm>
+#include <cassert>
 #include <iostream>
 #include <sstream>
 
 Connection::Connection(ftev::EventLoop &loop, ftpp::Socket &socket,
                        Server const &server)
-    : ftev::BaseTCPConnection(loop, socket), _server(server), _state(REQUEST) {
+    : ftev::BaseTCPConnection(loop, socket), _server(server), _state(REQUEST),
+      _receiveRequestPosition(0) {
 }
 
 Connection::~Connection() {
 }
 
-void Connection::on_data(std::vector<char> const &data) {
-  _buffer.insert(_buffer.end(), data.begin(), data.end());
-  for (;;) {
+void Connection::_process() {
+  for (bool flag = true; flag;) {
     switch (_state) {
     case REQUEST:
-    case HEADER:
-      while (_state == REQUEST || _state == HEADER) {
-        std::deque<char>::iterator it = std::search(
-            _buffer.begin(), _buffer.end(), CRLF.begin(), CRLF.end());
-        if (it == _buffer.end())
-          return;
-        std::string line(_buffer.begin(), it);
-        std::transform(line.begin(), line.end(), line.begin(), ::tolower);
-        _buffer.erase(_buffer.begin(), it + CRLF.size());
-        if (_state == REQUEST)
-          _parseRequest(line);
-        else
-          _parseHeader(line);
-      }
+      flag = _receiveRequest();
+      break;
+    case BODY:
+      flag = _receiveBody();
       break;
     case RESPONSE:
-      _sendResponse();
-      return;
-    case ERROR:
-      stop();
+      flag = false;
+      break;
+    case DONE:
+      if (is_active())
+        stop();
       delete_later();
-      return;
+      flag = false;
+      break;
     }
   }
 }
 
+void Connection::on_data(std::vector<char> const &data) {
+  _buffer.insert(_buffer.end(), data.begin(), data.end());
+  _process();
+}
+
 void Connection::on_eof() {
-  std::cout << "on_eof" << std::endl;
+  // 送るもん送ったら切断する
+  // 変なsttｚ7
 }
 
 void Connection::on_drain() {
   switch (_state) {
+  case BODY:
+    // ボディの受信完了待ち、受信内容は破棄される。
+    break;
   case RESPONSE:
-    stop();
-    delete_later();
+    // ここに来たということはresponseを返したという事
+    _state = DONE;
     break;
   default:
-    break;
+    // それ以外はありえない
+    assert(false);
   }
+  _process();
 }
 
 void Connection::on_except() {
-  std::cout << "on_except" << std::endl;
+  if (is_active())
+    stop();
+  delete_later();
 }
 
 void Connection::on_release() {
-  std::cout << "on_release" << std::endl;
   delete this;
 }
 
-void Connection::_parseRequest(std::string const &line) {
-  std::stringstream ss(line);
-  std::string path;
-  ss >> _method >> path >> _version;
-  if (ss.fail()) {
-    _state = ERROR;
-    return;
-  } else {
-    _state = HEADER;
-    ftpp::URI(ftpp::urlunquote(path)).swap(_uri);
-  }
-}
-
-void Connection::_parseHeader(std::string const &line) {
-  if (line.empty()) {
-    _state = RESPONSE;
-    _makeResponseTask();
-    return;
-  }
-  std::size_t pos = line.find(':');
-  if (pos == std::string::npos)
-    _state = ERROR;
-  else
-    _headers[ftpp::tolower(ftpp::strtrim(line.substr(0, pos)))].push_back(
-        ftpp::tolower(ftpp::strtrim(line.substr(pos + 1))));
-}
-
-void Connection::_makeResponseTask() {
-  Headers::const_iterator it = _headers.find("host");
-  ServerConf const &serverConf = _server.getConfigs().findServer(
-      _server.getAddress(), it != _headers.end() ? it->second.back() : "");
-  ServerConf::Locations::const_iterator jt =
-      serverConf.findLocation(_method, _uri.getPath());
-  if (jt == serverConf.getLocations().end()) {
-    std::cerr << "404 Not Found" << std::endl;
-  } else {
-   std::cerr << typeid(jt->second.getDetail()).name() << std::endl;
-  }
-}
-
-void Connection::_sendResponse() {
-  std::stringstream aa;
-  aa << "scheme: " << _uri.getScheme() << std::endl;
-  aa << "netloc: " << _uri.getNetloc() << std::endl;
-  aa << "path: " << _uri.getPath() << std::endl;
-  aa << "query: " << _uri.getQuery() << std::endl;
-  aa << "fragment: " << _uri.getFragment() << std::endl;
-  for (Headers::const_iterator it = _headers.begin(); it != _headers.end();
-       ++it) {
-    aa << it->first << ": ";
-    for (std::vector<std::string>::const_iterator jt = it->second.begin();
-         jt != it->second.end(); ++jt) {
-      if (jt != it->second.begin())
-        aa << ", ";
-      aa << *jt;
+bool Connection::_receiveRequest() {
+  {
+    if (_buffer.size() < DOUBLE_CRLF.size())
+      return false;
+    std::deque<char>::iterator match =
+        std::search(_buffer.begin() + _receiveRequestPosition, _buffer.end(),
+                    DOUBLE_CRLF.begin(), DOUBLE_CRLF.end());
+    if (match == _buffer.end()) {
+      _receiveRequestPosition = _buffer.size() - DOUBLE_CRLF.size();
+      return false;
     }
-    aa << std::endl;
+    _receiveRequestPosition = 0;
+    std::string tmp(_buffer.begin(), match + CRLF.size());
+    _buffer.erase(_buffer.begin(), match + DOUBLE_CRLF.size());
+    parseRequest(tmp).swap(_request);
   }
-  std::stringstream ss;
-  ss << "HTTP/1.1 200 OK" << CRLF;
-  ss << "Content-Type: text/plain" << CRLF;
-  ss << "Content-Length: " << aa.str().size() << CRLF;
-  ss << CRLF;
-  ss << aa.str();
-  std::string const &response = ss.str();
-  write(response.c_str(), response.size());
+  _state = RESPONSE;
+  write("HTTP/1.1 200 OK\r\n", 17);
+  write("Content-Type: text/plain\r\n", 26);
+  write("Content-Length: 5\r\n", 19);
+  write("\r\n", 2);
+  write("Hello", 5);
   drain();
+  return true;
+}
+
+bool Connection::_receiveBody() {
+  return false;
 }

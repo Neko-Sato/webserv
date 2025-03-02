@@ -6,44 +6,42 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 23:06:24 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/05 12:32:19 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/02 09:55:38 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "Server.hpp"
+#include "structs/Request.hpp"
 
 #include <AsyncSocket/BaseTCPConnection.hpp>
+#include <EventLoop/BaseTimerWatcher.hpp>
 #include <urllib/URI.hpp>
 
 #include <map>
 #include <string>
+#include <vector>
 
 class Connection : public ftev::BaseTCPConnection {
 public:
-  enum State { ERROR, REQUEST, HEADER, RESPONSE };
-
-  typedef std::map<std::string, std::vector<std::string> > Headers;
+  enum State { REQUEST, BODY, RESPONSE, DONE };
 
 private:
   Server const &_server;
+
+  void _process();
+
   State _state;
   std::deque<char> _buffer;
 
-  std::string _method;
-  ftpp::URI _uri;
-  std::string _version;
-  Headers _headers;
-
-  void _parseRequest(std::string const &line);
-  void _parseHeader(std::string const &line);
-  void _makeResponseTask();
-  void _sendResponse();
+  std::size_t _receiveRequestPosition;
+  bool _receiveRequest();
+  Request _request;
+  bool _receiveBody();
 
 public:
-  Connection(ftev::EventLoop &loop, ftpp::Socket &socket,
-                 Server const &server);
+  Connection(ftev::EventLoop &loop, ftpp::Socket &socket, Server const &server);
   ~Connection();
 
   void on_data(std::vector<char> const &data);
