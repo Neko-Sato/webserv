@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2025/01/25 10:05:43 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/03/02 10:25:38 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -106,17 +106,17 @@ $(LIBFTJSON): $(LIBFTPP)
 
 tester:
 	@if [ "$(shell uname)" = "Darwin" ]; then \
-		wget -O $@ https://cdn.intra.42.fr/document/document/27562/tester; \
+		wget -O $@ https://cdn.intra.42.fr/document/document/31201/tester; \
 	else \
-		wget -O $@ https://cdn.intra.42.fr/document/document/27565/ubuntu_tester; \
+		wget -O $@ https://cdn.intra.42.fr/document/document/31204/ubuntu_tester; \
 	fi
 	@chmod +x $@
 
 cgi_tester:
 	@if [ "$(shell uname)" = "Darwin" ]; then \
-		wget -O $@ https://cdn.intra.42.fr/document/document/27564/cgi_tester; \
+		wget -O $@ https://cdn.intra.42.fr/document/document/31203/cgi_tester; \
 	else \
-		wget -O $@ https://cdn.intra.42.fr/document/document/27563/ubuntu_cgi_tester; \
+		wget -O $@ https://cdn.intra.42.fr/document/document/31202/ubuntu_cgi_tester; \
 	fi
 	@chmod +x $@
 
