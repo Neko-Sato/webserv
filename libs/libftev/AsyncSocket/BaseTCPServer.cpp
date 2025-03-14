@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:13:47 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/15 03:49:00 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/15 05:20:02 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ void BaseTCPServer::Server::on_except() {
     else
 #else
     msg = "Unknown exception";
-    ftpp::logger.log(ftpp::Logger::DEBUG,
+    ftpp::logger.log(ftpp::Logger::WARN,
                      ftpp::messyformat("TCPServer: %s", msg));
 #endif
   }
