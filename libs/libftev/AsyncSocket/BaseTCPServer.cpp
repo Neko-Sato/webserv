@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:13:47 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/15 01:03:14 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/15 03:49:00 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,6 @@ BaseTCPServer::BaseTCPServer(EventLoop &loop, std::string const &host, int port)
       delete *it;
     throw;
   }
-  ftpp::logger.log(ftpp::Logger::INFO,
-                   ftpp::messyformat("Server created (host: %s, port: %d)",
-                                     host.c_str(), port));
 }
 
 BaseTCPServer::~BaseTCPServer() {
