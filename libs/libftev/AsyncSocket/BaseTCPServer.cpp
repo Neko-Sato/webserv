@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:13:47 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/18 20:08:54 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/15 00:34:12 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 #include <exceptions/OSError.hpp>
 #include <ft_string.hpp>
+#include <logger/Logger.hpp>
+#include <messyformat.hpp>
 #include <socket/AddrInfos.hpp>
 
 #include <cassert>
@@ -48,6 +50,9 @@ BaseTCPServer::BaseTCPServer(EventLoop &loop, std::string const &host, int port)
       delete *it;
     throw;
   }
+  ftpp::logger.log(ftpp::Logger::INFO,
+                   ftpp::messyformat("Server created (host: %s port: %d)",
+                                     host.c_str(), port));
 }
 
 BaseTCPServer::~BaseTCPServer() {
@@ -76,7 +81,8 @@ void BaseTCPServer::Server::on_read() {
   try {
     _socket.accept(conn);
   } catch (std::exception const &e) {
-    std::cerr << "TCPServer: " << e.what() << std::endl;
+    ftpp::logger.log(ftpp::Logger::WARN,
+                     ftpp::messyformat("TCPServer accept: %s", e.what()));
     return;
   }
   server.on_connect(conn);
@@ -88,15 +94,18 @@ void BaseTCPServer::Server::on_write() {
 
 void BaseTCPServer::Server::on_except() {
   {
+    char const *msg;
 #if defined(FT_SUBJECT_NOT_COMPLIANT)
     int error;
     socklen_t len = sizeof(error);
     _socket.getsockopt(SOL_SOCKET, SO_ERROR, &error, &len);
     if (error)
-      std::cerr << "TCPServer: " << strerror(error) << std::endl;
+      msg = strerror(error);
     else
 #else
-    std::cerr << "TCPServer: Unknown exception" << std::endl;
+    msg = "Unknown exception";
+    ftpp::logger.log(ftpp::Logger::DEBUG,
+                     ftpp::messyformat("TCPServer: %s", msg));
 #endif
   }
   server._servers.remove(this);

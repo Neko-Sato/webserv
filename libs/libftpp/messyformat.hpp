@@ -1,32 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   LoopStopper.cpp                                    :+:      :+:    :+:   */
+/*   messyformat.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/31 10:00:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/15 00:37:28 by hshimizu         ###   ########.fr       */
+/*   Created: 2025/03/14 20:55:26 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/03/14 23:39:11 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <LoopStopper/LoopStopper.hpp>
+#pragma once
 
-#include <iostream>
+#include <cstdarg>
+#include <string>
 
-namespace ftev {
+#if !defined(MESSYFORMAT_BUFFERSIZE)
+#define MESSYFORMAT_BUFFERSIZE 1024
+#endif
 
-LoopStopper::LoopStopper(ftev::EventLoop &loop) : BaseSignalWatcher(loop) {
-  start(SIGINT);
-}
+namespace ftpp {
 
-LoopStopper::~LoopStopper() {
-  if (is_active())
-    stop();
-}
+std::string messyformat(char const *fmt, ...);
+std::string vmessyformat(char const *fmt, va_list args);
 
-void LoopStopper::on_signal() {
-  loop.stop();
-}
-
-} // namespace ftev
+} // namespace ftpp

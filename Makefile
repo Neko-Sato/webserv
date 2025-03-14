@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2025/03/02 10:25:38 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/03/14 17:57:01 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -48,7 +48,7 @@ LIBS				:= -Wl,-rpath,$(LD_RUN_PATH) -lftev -lftpp -lftjson
 ifeq ($(DEBUG), 1)
 CXXFLAGS			+= -g -fsanitize=address
 else
-CXXFLAGS			+= -O3
+CXXFLAGS			+= -O3 -DNDEBUG
 endif
 
 ifeq ($(NOT_COMPLIANT), 1)

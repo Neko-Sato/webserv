@@ -6,13 +6,15 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 23:59:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/20 16:29:10 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/15 00:21:48 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <AsyncSocket/BaseTCPConnection.hpp>
 
 #include <exceptions/OSError.hpp>
+#include <logger/Logger.hpp>
+#include <messyformat.hpp>
 
 #include <cassert>
 #include <iostream>
@@ -41,7 +43,8 @@ void BaseTCPConnection::on_read() {
     chank.resize(_chank_size);
     chank.resize(_socket.read(chank.data(), chank.size()));
   } catch (std::exception const &e) {
-    std::cerr << "TCPConnection read: " << e.what() << std::endl;
+    ftpp::logger.log(ftpp::Logger::WARN,
+                     ftpp::messyformat("TCPConnection read: %s", e.what()));
     return;
   }
   if (chank.empty()) {
@@ -62,7 +65,8 @@ void BaseTCPConnection::on_write() {
     size_t size = _socket.write(_buffer.data(), _buffer.size());
     _buffer.erase(_buffer.begin(), _buffer.begin() + size);
   } catch (std::exception const &e) {
-    std::cerr << "TCPConnection write: " << e.what() << std::endl;
+    ftpp::logger.log(ftpp::Logger::WARN,
+                     ftpp::messyformat("TCPConnection write: %s", e.what()));
     return;
   }
   if (_buffer.empty()) {
@@ -100,7 +104,8 @@ void BaseTCPConnection::write(char const *buffer, size_t size) {
         }
       }
     } catch (std::exception const &e) {
-      std::cerr << "TCPConnection write: " << e.what() << std::endl;
+      ftpp::logger.log(ftpp::Logger::WARN,
+                       ftpp::messyformat("TCPConnection write: %s", e.what()));
     }
   }
 #endif

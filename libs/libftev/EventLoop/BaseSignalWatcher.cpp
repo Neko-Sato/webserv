@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 00:31:00 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/17 23:44:47 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/15 00:44:25 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ void EventLoop::BaseSignalWatcher::stop() {
 void EventLoop::BaseSignalWatcher::_signal_handler(int signum) {
   assert(_signalpipe[1] != -1);
   ssize_t size = write(_signalpipe[1], &signum, sizeof(signum));
+  UNUSED(size);
   assert(size == sizeof(signum));
 }
 
@@ -94,6 +95,7 @@ void EventLoop::BaseSignalWatcher::SignalpipeWatcher::on_read() {
   assert(_signalpipe[0] != -1);
   int signum;
   ssize_t size = read(_signalpipe[0], &signum, sizeof(signum));
+  UNUSED(size);
   assert(size == sizeof(signum));
   SignalWatchers::iterator it = loop._signal_watchers.find(signum);
   if (it != loop._signal_watchers.end())

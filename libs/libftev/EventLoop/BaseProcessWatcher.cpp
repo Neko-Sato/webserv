@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 16:23:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/17 23:52:50 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/15 00:36:04 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,6 @@ pid_t EventLoop::BaseProcessWatcher::_spawn(options const &opts) {
     throw ftpp::OSError(errno, "execve");
   } catch (ftpp::OSError const &e) {
     std::cerr << e.what() << std::endl;
-    throw;
   }
   exit(127);
 }

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/25 08:03:43 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/15 00:49:19 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <EventLoop/BaseTimerWatcher.hpp>
 
 #include <exceptions/OSError.hpp>
+#include <logger/Logger.hpp>
 #include <macros.hpp>
 #include <selectors/Selector.hpp>
 
@@ -131,12 +132,19 @@ void EventLoop::operator++() {
 void EventLoop::run() {
   assert(!_running);
   _stop_flag = false;
-  _run_timer();
-  for (; likely(!(_stop_flag ||
-                  (_timer_watchers.empty() && _io_watchers.empty() &&
-                   _signal_watchers.empty() && _process_watchers.empty())));
-       operator++())
-    ;
+  try {
+    ftpp::logger.log(ftpp::Logger::INFO, "loop start");
+    _run_timer();
+    for (; likely(!(_stop_flag ||
+                    (_timer_watchers.empty() && _io_watchers.empty() &&
+                     _signal_watchers.empty() && _process_watchers.empty())));
+         operator++())
+      ;
+  } catch (...) {
+    ftpp::logger.log(ftpp::Logger::INFO, "loop stop");
+    throw;
+  }
+  ftpp::logger.log(ftpp::Logger::INFO, "loop stop");
 }
 
 void EventLoop::stop() {
