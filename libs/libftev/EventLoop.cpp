@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/15 00:49:19 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/15 03:20:30 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,7 @@ void EventLoop::run() {
   assert(!_running);
   _stop_flag = false;
   try {
-    ftpp::logger.log(ftpp::Logger::INFO, "loop start");
+    ftpp::logger.log(ftpp::Logger::INFO, "EventLoop start");
     _run_timer();
     for (; likely(!(_stop_flag ||
                     (_timer_watchers.empty() && _io_watchers.empty() &&
@@ -141,10 +141,10 @@ void EventLoop::run() {
          operator++())
       ;
   } catch (...) {
-    ftpp::logger.log(ftpp::Logger::INFO, "loop stop");
+    ftpp::logger.log(ftpp::Logger::INFO, "EventLoop stop");
     throw;
   }
-  ftpp::logger.log(ftpp::Logger::INFO, "loop stop");
+  ftpp::logger.log(ftpp::Logger::INFO, "EventLoop stop");
 }
 
 void EventLoop::stop() {
