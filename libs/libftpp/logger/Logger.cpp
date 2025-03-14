@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 11:58:37 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/15 00:48:32 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/15 02:33:41 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ void Logger::addLevel(Level level, std::string const &name) {
 }
 
 void Logger::log(Level level, std::string const &msg) {
-  if (level > _level && _ostream) {
+  if (_level <= level && _ostream) {
     LevelNames::const_iterator it = _levelNames.upper_bound(level);
     std::string const &name =
         it == _levelNames.begin() ? "UNKNOWN" : (--it)->second;
