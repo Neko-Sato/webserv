@@ -6,12 +6,15 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 01:40:08 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/02 09:20:35 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/15 03:50:03 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 #include "Connection.hpp"
+
+#include <logger/Logger.hpp>
+#include <messyformat.hpp>
 
 #include <iostream>
 
@@ -19,7 +22,9 @@ Server::Server(ftev::EventLoop &loop, std::string const &host, int port,
                Configs const &configs)
     : ftev::BaseTCPServer(loop, host, port), _configs(configs),
       _address(host, port) {
-  std::cerr << "host: " << host << ", port: " << port << std::endl;
+  ftpp::logger.log(ftpp::Logger::INFO,
+                   ftpp::messyformat("Server created (host: %s, port: %d)",
+                                     _address.host.c_str(), _address.port));
 }
 
 Server::~Server() {

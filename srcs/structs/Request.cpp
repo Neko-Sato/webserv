@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 02:12:43 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/02 10:08:59 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/02 16:13:32 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void Request::swap(Request &rhs) throw() {
 
 Request parseRequest(std::string const &data) {
   bool is_first_line = true;
-  Request req;
+  Request tmp;
   std::string::const_iterator it = data.begin();
   for (;;) {
     std::string::const_iterator match =
@@ -43,20 +43,20 @@ Request parseRequest(std::string const &data) {
       is_first_line = false;
       std::istringstream iss(line);
       ftpp::URI uri;
-      iss >> req.method >> uri >> req.version;
+      iss >> tmp.method >> uri >> tmp.version;
       if (iss.fail())
         throw std::runtime_error("Invalid request");
-      req.path = uri.getPath();
-      req.query = uri.getQuery();
+      tmp.path = uri.getPath();
+      tmp.query = uri.getQuery();
     } else {
       std::string::size_type pos = line.find(":");
       if (pos == std::string::npos)
         throw std::runtime_error("Invalid request");
-      req.headers[ftpp::tolower(ftpp::strtrim(line.substr(0, pos)))].push_back(
+      tmp.headers[ftpp::tolower(ftpp::strtrim(line.substr(0, pos)))].push_back(
           ftpp::strtrim(line.substr(pos + 1)));
     }
     if (it == data.end())
-	  break;
+      break;
   }
-  return req;
+  return tmp;
 }
