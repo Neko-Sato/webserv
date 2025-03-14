@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2025/03/14 17:57:24 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/03/15 03:34:39 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,7 +36,7 @@ CXXFLAGS	+= -O3 -DNDEBUG
 endif
 
 ifeq ($(NOT_COMPLIANT), 1)
-CXXFLAGS	+= -D FT_SUBJECT_NOT_COMPLIANT
+CXXFLAGS	+= -DFT_SUBJECT_NOT_COMPLIANT
 endif
 
 .PHONY: all clean fclean re
