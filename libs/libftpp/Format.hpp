@@ -6,13 +6,11 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:55:26 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/15 23:49:05 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/16 00:24:31 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
-
-#include <macros.hpp>
 
 #include <sstream>
 #include <stdexcept>
@@ -23,15 +21,17 @@
 
 namespace ftpp {
 
+void applyFormat(std::ostream &os, std::string const &format);
+
 template <typename T> struct Formatter {
   std::string format(std::string const &ctx, T const &value) const {
-    UNUSED(ctx);
     std::ostringstream oss;
+    applyFormat(oss, ctx);
     oss << value;
     if (oss.fail())
       throw std::runtime_error("Format: invalid argument");
     return oss.str();
-  }
+  };
 };
 
 class Format {
