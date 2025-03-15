@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 01:41:18 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/02 10:17:49 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/15 23:41:57 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 #include <ft_iterator.hpp>
 #include <ft_string.hpp>
+#include <logger/Logger.hpp>
+#include <Format.hpp>
 #include <urllib/URI.hpp>
 #include <urllib/urlquote.hpp>
 
@@ -25,11 +27,16 @@
 
 Connection::Connection(ftev::EventLoop &loop, ftpp::Socket &socket,
                        Server const &server)
-    : ftev::BaseTCPConnection(loop, socket), _server(server), _state(REQUEST),
-      _receiveRequestPosition(0) {
+    : BaseTCPConnection(loop, socket), _server(server), _state(REQUEST),
+      _bufferClosed(false), _receiveRequestPosition(0)
+// , _cycle(NULL)
+{
+  ftpp::logger.log(ftpp::Logger::INFO, "Connection connected");
 }
 
 Connection::~Connection() {
+  //   delete _cycle;
+  ftpp::logger.log(ftpp::Logger::INFO, "Connection close");
 }
 
 void Connection::_process() {
@@ -38,49 +45,57 @@ void Connection::_process() {
     case REQUEST:
       flag = _receiveRequest();
       break;
-    case BODY:
+    case RESPONSE:
       flag = _receiveBody();
       break;
-    case RESPONSE:
-      flag = false;
-      break;
     case DONE:
-      if (is_active())
-        stop();
-      delete_later();
-      flag = false;
+      flag = _completed();
       break;
     }
   }
 }
 
 void Connection::on_data(std::vector<char> const &data) {
-  _buffer.insert(_buffer.end(), data.begin(), data.end());
-  _process();
+  ftpp::logger.log(ftpp::Logger::INFO, "Connection on_data");
+  try {
+    _buffer.insert(_buffer.end(), data.begin(), data.end());
+    _process();
+  } catch (std::exception const &e) {
+    std::cerr << e.what() << std::endl;
+    if (is_active())
+      stop();
+    delete_later();
+  }
 }
 
 void Connection::on_eof() {
-  // 送るもん送ったら切断する
-  // 変なsttｚ7
+  ftpp::logger.log(ftpp::Logger::INFO, "Connection on_eof");
+  try {
+    _bufferClosed = true;
+    _process();
+  } catch (std::exception const &e) {
+    std::cerr << e.what() << std::endl;
+    if (is_active())
+      stop();
+    delete_later();
+  }
 }
 
 void Connection::on_drain() {
-  switch (_state) {
-  case BODY:
-    // ボディの受信完了待ち、受信内容は破棄される。
-    break;
-  case RESPONSE:
-    // ここに来たということはresponseを返したという事
+  try {
+    assert(_state == RESPONSE);
     _state = DONE;
-    break;
-  default:
-    // それ以外はありえない
-    assert(false);
+    _process();
+  } catch (std::exception const &e) {
+    std::cerr << e.what() << std::endl;
+    if (is_active())
+      stop();
+    delete_later();
   }
-  _process();
 }
 
 void Connection::on_except() {
+  ftpp::logger.log(ftpp::Logger::INFO, "Connection on_except");
   if (is_active())
     stop();
   delete_later();
@@ -91,31 +106,48 @@ void Connection::on_release() {
 }
 
 bool Connection::_receiveRequest() {
-  {
-    if (_buffer.size() < DOUBLE_CRLF.size())
-      return false;
-    std::deque<char>::iterator match =
-        std::search(_buffer.begin() + _receiveRequestPosition, _buffer.end(),
-                    DOUBLE_CRLF.begin(), DOUBLE_CRLF.end());
-    if (match == _buffer.end()) {
-      _receiveRequestPosition = _buffer.size() - DOUBLE_CRLF.size();
-      return false;
-    }
-    _receiveRequestPosition = 0;
-    std::string tmp(_buffer.begin(), match + CRLF.size());
-    _buffer.erase(_buffer.begin(), match + DOUBLE_CRLF.size());
-    parseRequest(tmp).swap(_request);
+  assert(_state == REQUEST);
+  //   assert(!_cycle);
+  if (_buffer.size() < DOUBLE_CRLF.size())
+    return false;
+  std::deque<char>::iterator match =
+      std::search(_buffer.begin() + _receiveRequestPosition, _buffer.end(),
+                  DOUBLE_CRLF.begin(), DOUBLE_CRLF.end());
+  if (match == _buffer.end()) {
+    _receiveRequestPosition = _buffer.size() - DOUBLE_CRLF.size();
+    return false;
   }
+  _receiveRequestPosition = 0;
+  parseRequest(std::string(_buffer.begin(), match + CRLF.size()))
+      .swap(_request);
+  _buffer.erase(_buffer.begin(), match + DOUBLE_CRLF.size());
   _state = RESPONSE;
-  write("HTTP/1.1 200 OK\r\n", 17);
-  write("Content-Type: text/plain\r\n", 26);
-  write("Content-Length: 5\r\n", 19);
-  write("\r\n", 2);
-  write("Hello", 5);
-  drain();
+  // httpのversionを確認1.1それ以外は505
+  // Connection: keep-aliveを確認
+  // transfer-encodingの確認
+  //   chunkedの場合はchunkedを確認
+  //   chunkedでない場合は400
+  // content-lengthの確認
+  // Readerを作成 constructor内で任意のerror　
+  // Taskを作成　constructor内で任意のerror
+  // cathcでstatsuを受け取りerror_pageを返すTaskを作成。Connectionはcloseに
   return true;
 }
 
 bool Connection::_receiveBody() {
+  assert(_state == RESPONSE);
+  //   assert(_cycle);
+  // Readerにデータを渡しreaderは
+  // そこから必要分を取り出す。
+  // eofを迎えているのに足りないときは即座にConnectionをcloseする
+  return false;
+}
+
+bool Connection::_completed() {
+  //   assert(_cycle);
+  // タスクの処理が完了したらここに来る。
+  // responseは正しく返されている。
+  // keepaliveがtrueならstateをREQUESTに戻しタイムアウトの設定。
+  // keepaliveがfalseならこのconnectionをcloseする。
   return false;
 }

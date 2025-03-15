@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:55:26 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/16 00:27:23 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/16 00:28:21 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,10 +52,9 @@ template <typename T> Format &Format::operator%(T const &value) {
   std::size_t match = _fmt.find_first_of("{}", _pos);
   if (match == std::string::npos || _fmt[match] == '{')
     throw std::runtime_error("Format: syntax error");
-  std::string ctx(_fmt, _pos, match - _pos);
   {
     std::ostringstream oss;
-    applyFormat(oss, ctx);
+    applyFormat(oss, std::string(_fmt, _pos, match - _pos));
     oss << value;
     if (oss.fail())
       throw std::runtime_error("Format: invalid argument");

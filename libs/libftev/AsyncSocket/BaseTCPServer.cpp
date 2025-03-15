@@ -6,17 +6,17 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:13:47 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/15 05:20:02 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/15 23:45:12 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <AsyncSocket/BaseTCPServer.hpp>
 #include <EventLoop.hpp>
 
+#include <Format.hpp>
 #include <exceptions/OSError.hpp>
 #include <ft_string.hpp>
 #include <logger/Logger.hpp>
-#include <messyformat.hpp>
 #include <socket/AddrInfos.hpp>
 
 #include <cassert>
@@ -79,7 +79,7 @@ void BaseTCPServer::Server::on_read() {
     _socket.accept(conn);
   } catch (std::exception const &e) {
     ftpp::logger.log(ftpp::Logger::WARN,
-                     ftpp::messyformat("TCPServer accept: %s", e.what()));
+                     ftpp::Format("TCPServer accept: {}") % e.what());
     return;
   }
   server.on_connect(conn);
@@ -101,8 +101,7 @@ void BaseTCPServer::Server::on_except() {
     else
 #else
     msg = "Unknown exception";
-    ftpp::logger.log(ftpp::Logger::WARN,
-                     ftpp::messyformat("TCPServer: %s", msg));
+    ftpp::logger.log(ftpp::Logger::WARN, ftpp::Format("TCPServer: {}") % msg);
 #endif
   }
   server._servers.remove(this);
