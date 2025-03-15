@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:55:26 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/16 00:24:31 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/16 00:27:23 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,17 +22,6 @@
 namespace ftpp {
 
 void applyFormat(std::ostream &os, std::string const &format);
-
-template <typename T> struct Formatter {
-  std::string format(std::string const &ctx, T const &value) const {
-    std::ostringstream oss;
-    applyFormat(oss, ctx);
-    oss << value;
-    if (oss.fail())
-      throw std::runtime_error("Format: invalid argument");
-    return oss.str();
-  };
-};
 
 class Format {
 private:
@@ -64,7 +53,14 @@ template <typename T> Format &Format::operator%(T const &value) {
   if (match == std::string::npos || _fmt[match] == '{')
     throw std::runtime_error("Format: syntax error");
   std::string ctx(_fmt, _pos, match - _pos);
-  _res += Formatter<T>().format(ctx, value);
+  {
+    std::ostringstream oss;
+    applyFormat(oss, ctx);
+    oss << value;
+    if (oss.fail())
+      throw std::runtime_error("Format: invalid argument");
+    _res += oss.str();
+  }
   _pos = match + 1;
   _next();
   return *this;
