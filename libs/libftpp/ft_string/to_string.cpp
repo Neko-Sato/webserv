@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/16 18:32:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/18 03:25:55 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/15 23:35:01 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,18 +20,16 @@
 namespace ftpp {
 
 template <typename T>
-static inline std::string __to_string_impl(char const *fmt, T val) {
-  std::vector<char> buffer(32);
+static inline std::string __to_string_impl(char const *fmt, T const &val) {
+  std::vector<char> buffer(1 << 9);
   for (;;) {
     int res = snprintf(buffer.data(), buffer.size(), fmt, val);
     if (unlikely(res < 0))
       throw std::runtime_error("snprintf failed");
-    // I don't think it's going to happen.
-    if (unlikely(static_cast<size_t>(res) >= buffer.size())) {
-      buffer.resize(res + 1);
-      continue;
-    }
-    return buffer.data();
+    if (unlikely(buffer.size() < static_cast<size_t>(res)))
+      buffer.resize(res);
+    else
+      return std::string(buffer.data(), res);
   }
 }
 
