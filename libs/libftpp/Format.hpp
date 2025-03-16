@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:55:26 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/16 23:32:51 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/17 00:06:50 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@
 // thing properly in c++98, it would be as follows Which is Beautiful, isn't it?
 // ```
 // ftpp::Format("n1: {}, n2: {}") % n1 % n2;
-// (std::ostringstream() << n1: " << n << ", n2: " << n2).str()
+// static_cast<std::ostringstream &>(std::ostringstream() << "n1: " << n << ",
+// n2: " << n2).str()
 // ```
 // It could be a legacy...
 
@@ -56,9 +57,8 @@ template <typename T> Format &Format::operator%(T const &value) {
   std::size_t match = _fmt.find_first_of("{}", _pos);
   if (match == std::string::npos || _fmt[match] == '{')
     throw std::runtime_error("Format: syntax error");
-  std::ostringstream oss;
-  oss << value;
-  _res += oss.str();
+  _res +=
+      static_cast<std::ostringstream &>(std::ostringstream() << value).str();
   _pos = match + 1;
   _next();
   return *this;
