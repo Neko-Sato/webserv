@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:55:26 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/16 00:23:35 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/16 17:37:34 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,6 +120,10 @@ void Format::_next() {
     } else
       break;
   }
+}
+
+std::ostream &operator<<(std::ostream &os, Format const &fmt) {
+  return os << fmt.str();
 }
 
 } // namespace ftpp

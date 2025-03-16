@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:55:26 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/16 00:28:21 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/16 17:37:16 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,5 +64,7 @@ template <typename T> Format &Format::operator%(T const &value) {
   _next();
   return *this;
 }
+
+std::ostream &operator<<(std::ostream &os, Format const &fmt);
 
 } // namespace ftpp
