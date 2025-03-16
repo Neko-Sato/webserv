@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:55:26 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/16 17:37:16 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/16 22:17:08 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,6 @@
 // Like freeing up the order or something...
 
 namespace ftpp {
-
-void applyFormat(std::ostream &os, std::string const &format);
 
 class Format {
 private:
@@ -54,7 +52,6 @@ template <typename T> Format &Format::operator%(T const &value) {
     throw std::runtime_error("Format: syntax error");
   {
     std::ostringstream oss;
-    applyFormat(oss, std::string(_fmt, _pos, match - _pos));
     oss << value;
     if (oss.fail())
       throw std::runtime_error("Format: invalid argument");

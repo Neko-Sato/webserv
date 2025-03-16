@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:55:26 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/16 17:37:34 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/16 22:16:53 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,53 +17,6 @@
 #include <iomanip>
 
 namespace ftpp {
-
-void applyFormat(std::ostream &os, std::string const &format) {
-  std::size_t pos = 0;
-  while (pos < format.size()) {
-    char ch = format[pos];
-    switch (ch) {
-    case '0':
-      os << std::setfill('0');
-      ++pos;
-      break;
-    case '<':
-      os << std::left;
-      ++pos;
-      break;
-    case '>':
-      os << std::right;
-      ++pos;
-      break;
-    case '^':
-      os << std::internal;
-      ++pos;
-      break;
-    case '+':
-    case '-':
-      os << (ch == '+' ? std::showpos : std::noshowpos);
-      ++pos;
-      break;
-    case '#':
-      os << std::showbase;
-      ++pos;
-      break;
-    default:
-      if (std::isdigit(ch)) {
-        std::size_t nextPos;
-        os << std::setw(ftpp::stoul(format.substr(pos), &nextPos));
-        pos += nextPos;
-      } else if (ch == '.') {
-        std::size_t nextPos;
-        os << std::setprecision(ftpp::stoul(format.substr(pos + 1), &nextPos));
-        pos += nextPos + 1;
-      } else {
-        throw std::runtime_error("Format: invalid format");
-      }
-      break;
-    }
-  }
-}
 
 Format::Format(std::string const &fmt) : _fmt(fmt), _pos(0) {
   _next();
