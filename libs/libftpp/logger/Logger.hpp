@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 11:58:37 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/15 00:00:27 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/16 23:43:54 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include <sstream>
 #include <string>
 
-// Not Threat Safe.
+// Not Thread Safe.
 
 namespace ftpp {
 
