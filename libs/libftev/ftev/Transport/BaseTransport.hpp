@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:29:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/19 01:56:33 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/19 02:23:13 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,9 @@ public:
   virtual ~BaseTransport();
 
   void on_except();
+  void on_release();
 
+  using BaseWatcher::delete_later;
   virtual int getFd() const = 0;
   virtual BaseProtocol &getProtocol() = 0;
 };
