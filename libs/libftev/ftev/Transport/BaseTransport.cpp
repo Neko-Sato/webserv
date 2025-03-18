@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:29:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 19:01:35 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/19 01:56:22 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,38 +14,18 @@
 
 namespace ftev {
 
-BaseTransport::Handler::Handler(EventLoop &loop, BaseTransport &transport)
-    : BaseIOWatcher(loop), _transport(transport) {
-}
-
-BaseTransport::Handler::~Handler() {
-}
-
-void BaseTransport::Handler::on_read() {
-  _transport.on_read();
-}
-
-void BaseTransport::Handler::on_write() {
-  _transport.on_write();
-}
-
-void BaseTransport::Handler::on_except() {
-  _transport.on_except();
-}
-
-BaseTransport::BaseTransport(EventLoop &loop) : _handler(loop, *this) {
+BaseTransport::BaseTransport(EventLoop &loop) : EventLoop::BaseIOWatcher(loop) {
 }
 
 BaseTransport::~BaseTransport() {
 }
 
-void BaseTransport::on_read() {
-}
-
-void BaseTransport::on_write() {
+EventLoop::BaseIOWatcher &BaseTransport::_getWatcher() {
+  return *this;
 }
 
 void BaseTransport::on_except() {
+  getProtocol().on_except();
 }
 
 } // namespace ftev

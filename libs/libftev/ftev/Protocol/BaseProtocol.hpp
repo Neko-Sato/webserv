@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 20:31:33 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/19 01:56:17 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ protected:
 
 public:
   virtual ~BaseProtocol();
+
+  virtual void on_except() = 0;
 };
 
 } // namespace ftev

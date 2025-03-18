@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:36:28 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 20:22:41 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/19 01:36:46 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 #include <ftev/Protocol/ReadProtocol.hpp>
 #include <ftev/Transport/BaseTransport.hpp>
+
+#include <vector>
 
 namespace ftev {
 
@@ -31,8 +33,8 @@ public:
 
   void on_read();
 
-  void resume();
-  void pause();
+  void start();
+  void stop();
 
   virtual ReadProtocol &getProtocol() = 0;
 };

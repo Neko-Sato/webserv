@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:36:28 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 20:43:48 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/19 01:38:32 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,12 +37,13 @@ void WriteTransport::on_write() {
     return;
   }
   if (_buffer.empty()) {
+    EventLoop::BaseIOWatcher &_watcher = _getWatcher();
     EventLoop::BaseIOWatcher::event_t event =
-        _handler.get_events() & ~ftpp::BaseSelector::WRITE;
+        _watcher.get_events() & ~ftpp::BaseSelector::WRITE;
     if (event)
-      _handler.modify(event);
+      _watcher.modify(event);
     else
-      _handler.stop();
+      _watcher.stop();
     if (_draining) {
       getProtocol().on_drain();
       _draining = false;
@@ -77,17 +78,14 @@ void WriteTransport::write(char const *buffer, std::size_t size) {
     }
   }
 #endif
-  // I was aiming for a strong server.
-  // I could not think of a countermeasure for lack of resources here.
-  // The server terminates with a THROW in the event loop.
   _buffer.insert(_buffer.end(), buffer, buffer + size);
-  // ↑↑↑
-  if (_handler.is_active()) {
-    EventLoop::BaseIOWatcher::event_t event = _handler.get_events();
+  EventLoop::BaseIOWatcher &_watcher = _getWatcher();
+  if (_watcher.is_active()) {
+    EventLoop::BaseIOWatcher::event_t event = _watcher.get_events();
     if (!(event & ftpp::BaseSelector::WRITE))
-      _handler.modify(event | ftpp::BaseSelector::WRITE);
+      _watcher.modify(event | ftpp::BaseSelector::WRITE);
   } else
-    _handler.start(getFd(), ftpp::BaseSelector::WRITE);
+    _watcher.start(getFd(), ftpp::BaseSelector::WRITE);
 }
 
 void WriteTransport::drain() {

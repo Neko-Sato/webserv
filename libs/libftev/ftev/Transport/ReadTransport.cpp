@@ -6,11 +6,10 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:36:28 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 20:43:54 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/19 01:35:58 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <ftev/Protocol/ReadProtocol.hpp>
 #include <ftev/Transport/ReadTransport.hpp>
 
 #include <ftpp/format/Format.hpp>
@@ -38,31 +37,34 @@ void ReadTransport::on_read() {
                      ftpp::Format("ReadTransport read: {}") % e.what());
     return;
   }
+  ReadProtocol &protocol = getProtocol();
   if (chank.empty()) {
-    pause();
-    getProtocol().on_eof();
+    stop();
+    protocol.on_eof();
   } else {
-    getProtocol().on_data(chank);
+    protocol.on_data(chank);
   }
 }
 
-void ReadTransport::resume() {
-  if (_handler.is_active()) {
-    EventLoop::BaseIOWatcher::event_t event = _handler.get_events();
+void ReadTransport::start() {
+  EventLoop::BaseIOWatcher &_watcher = _getWatcher();
+  if (_watcher.is_active()) {
+    EventLoop::BaseIOWatcher::event_t event = _watcher.get_events();
     if (~event & ftpp::BaseSelector::WRITE)
-      _handler.modify(event | ftpp::BaseSelector::READ);
+      _watcher.modify(event | ftpp::BaseSelector::READ);
   } else
-    _handler.start(getFd(), ftpp::BaseSelector::READ);
+    _watcher.start(getFd(), ftpp::BaseSelector::READ);
 }
 
-void ReadTransport::pause() {
-  if (!_handler.is_active()) {
+void ReadTransport::stop() {
+  EventLoop::BaseIOWatcher &_watcher = _getWatcher();
+  if (!_watcher.is_active()) {
     EventLoop::BaseIOWatcher::event_t event =
-        _handler.get_events() & ~ftpp::BaseSelector::READ;
+        _watcher.get_events() & ~ftpp::BaseSelector::READ;
     if (event)
-      _handler.modify(event);
+      _watcher.modify(event);
     else
-      _handler.stop();
+      _watcher.stop();
   }
 }
 
