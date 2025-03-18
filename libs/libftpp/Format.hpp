@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:55:26 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/17 00:06:50 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/18 10:09:50 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,11 @@ template <typename T> Format &Format::operator%(T const &value) {
   std::size_t match = _fmt.find_first_of("{}", _pos);
   if (match == std::string::npos || _fmt[match] == '{')
     throw std::runtime_error("Format: syntax error");
-  _res +=
-      static_cast<std::ostringstream &>(std::ostringstream() << value).str();
+  {
+    std::ostringstream oss;
+    oss << value;
+    _res += oss.str();
+  }
   _pos = match + 1;
   _next();
   return *this;
