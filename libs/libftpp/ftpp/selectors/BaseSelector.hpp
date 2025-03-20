@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:20:10 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 17:55:34 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/20 21:36:59 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,10 @@ public:
   static event_t const WRITE;
   static event_t const EXCEPT;
 
-protected:
+private:
   Mapping _fds;
+
+protected:
   BaseSelector();
 
 public:
@@ -46,7 +48,7 @@ public:
   virtual void remove(int fd);
   virtual void modify(int fd, event_t events);
 
-  Mapping const &get_map() const;
+  Mapping const &getMap() const;
 
   virtual void select(Events &events, int timeout) const = 0;
 

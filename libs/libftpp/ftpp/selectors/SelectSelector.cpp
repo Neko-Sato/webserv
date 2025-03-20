@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 23:35:50 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 17:55:34 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/20 21:09:09 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,13 @@ SelectSelector::~SelectSelector() {
 }
 
 void SelectSelector::select(Events &events, int timeout) const {
+  Mapping const &map = getMap();
   fd_set readfds, writefds, exceptfds;
   int maxfd = 0;
   FD_ZERO(&readfds);
   FD_ZERO(&writefds);
   FD_ZERO(&exceptfds);
-  for (Mapping::const_iterator it = _fds.begin(); it != _fds.end(); it++) {
+  for (Mapping::const_iterator it = map.begin(); it != map.end(); it++) {
     if (maxfd < it->first)
       maxfd = it->first;
     if (it->second & READ)
@@ -50,7 +51,7 @@ void SelectSelector::select(Events &events, int timeout) const {
   }
   if (unlikely(nfds == -1))
     throw OSError(errno, "select");
-  for (Mapping::const_iterator it = _fds.begin(); nfds && it != _fds.end();
+  for (Mapping::const_iterator it = map.begin(); nfds && it != map.end();
        it++) {
     event_details tmp;
     tmp.fd = it->first;

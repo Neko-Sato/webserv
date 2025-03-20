@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 17:55:34 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/20 21:36:54 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,16 +45,16 @@ void BaseSelector::modify(int fd, event_t events) {
   it->second = events & (READ | WRITE);
 }
 
-BaseSelector::Mapping const &BaseSelector::get_map() const {
+BaseSelector::Mapping const &BaseSelector::getMap() const {
   return _fds;
 }
 
 char const *BaseSelector::RegisteredError::what() const throw() {
-  return "File descriptor already registered for selector.";
+  return "already registered";
 }
 
 char const *BaseSelector::NotRegisteredError::what() const throw() {
-  return "File descriptor not registered in selector.";
+  return "not registered";
 }
 
 } // namespace ftpp

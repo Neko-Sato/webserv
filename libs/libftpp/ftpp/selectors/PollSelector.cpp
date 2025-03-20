@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 17:55:34 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/20 21:35:23 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,11 @@ PollSelector::~PollSelector() {
 }
 
 void PollSelector::select(Events &events, int timeout) const {
+  Mapping const &map = getMap();
   typedef std::vector<pollfd> Pollfds;
   Pollfds fds;
-  fds.reserve(_fds.size());
-  for (Mapping::const_iterator it = _fds.begin(); it != _fds.end(); ++it) {
+  fds.reserve(map.size());
+  for (Mapping::const_iterator it = map.begin(); it != map.end(); ++it) {
     pollfd fd;
     fd.fd = it->first;
     fd.events = POLLERR | POLLHUP;

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 17:55:34 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/21 02:53:11 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int EpollSelector::_create_epollfd() {
       throw ftpp::OSError(errno, "fcntl");
     if (unlikely(fcntl(epfd, F_SETFD, flags | FD_CLOEXEC) == -1))
       throw ftpp::OSError(errno, "fcntl");
-  } catch (OSError const &e) {
+  } catch (...) {
     close(epfd);
     throw;
   }
@@ -52,6 +52,7 @@ EpollSelector::~EpollSelector() {
 
 void EpollSelector::add(int fd, event_t events) {
   events &= READ | WRITE;
+  BaseSelector::add(fd, events);
   try {
     epoll_event ev;
     ev.events = 0;
@@ -62,53 +63,39 @@ void EpollSelector::add(int fd, event_t events) {
     ev.data.fd = fd;
     if (unlikely(epoll_ctl(_epfd, EPOLL_CTL_ADD, fd, &ev) == -1))
       throw OSError(errno, "epoll_ctl");
-  } catch (OSError const &e) {
-    switch (e.get_errno()) {
-    case EEXIST:
-      throw RegisteredError();
-    default:
-      throw;
-    }
+  } catch (...) {
+    BaseSelector::remove(fd);
+    throw;
   }
-  _fds[fd] = events;
 }
 
 void EpollSelector::remove(int fd) {
+  BaseSelector::remove(fd);
   try {
     if (unlikely(epoll_ctl(_epfd, EPOLL_CTL_DEL, fd, NULL) == -1))
       throw OSError(errno, "epoll_ctl");
   } catch (OSError const &e) {
-    switch (e.get_errno()) {
-    case ENOENT:
-      throw NotRegisteredError();
-    default:
-      throw;
-    }
+    UNUSED(e);
   }
-  _fds.erase(fd);
 }
 
 void EpollSelector::modify(int fd, event_t events) {
   events &= READ | WRITE;
+  BaseSelector::modify(fd, events);
+  epoll_event ev;
+  ev.events = 0;
+  if (events & READ)
+    ev.events |= EPOLLIN;
+  if (events & WRITE)
+    ev.events |= EPOLLOUT;
+  ev.data.fd = fd;
   try {
-    epoll_event ev;
-    ev.events = 0;
-    if (events & READ)
-      ev.events |= EPOLLIN;
-    if (events & WRITE)
-      ev.events |= EPOLLOUT;
-    ev.data.fd = fd;
     if (unlikely(epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, &ev) == -1))
       throw OSError(errno, "epoll_ctl");
-  } catch (OSError const &e) {
-    switch (e.get_errno()) {
-    case ENOENT:
-      throw NotRegisteredError();
-    default:
-      throw;
-    }
+  } catch (...) {
+    BaseSelector::remove(fd);
+    throw;
   }
-  _fds[fd] = events;
 }
 
 void EpollSelector::select(Events &events, int timeout) const {
