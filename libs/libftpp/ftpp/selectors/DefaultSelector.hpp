@@ -1,42 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   EpollSelector.hpp                                  :+:      :+:    :+:   */
+/*   DefaultSelector.hpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/09 17:23:36 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/23 00:00:26 by hshimizu         ###   ########.fr       */
+/*   Created: 2025/03/23 00:04:05 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/03/23 00:04:08 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
-
-#include <ftpp/selectors/Selector.hpp>
-
-#if defined(__linux__)
+#include <ftpp/selectors/EpollSelector.hpp>
+#include <ftpp/selectors/KqueueSelector.hpp>
+#include <ftpp/selectors/PollSelector.hpp>
+#include <ftpp/selectors/SelectSelector.hpp>
 
 namespace ftpp {
 
-class EpollSelector : public Selector {
-public:
-  static int const max_events;
-
-private:
-  int _epfd;
-
-  static int _create_epollfd();
-
-public:
-  EpollSelector();
-  ~EpollSelector();
-
-  void add(int fd, event_t events);
-  void remove(int fd);
-  void modify(int fd, event_t events);
-  void select(Events &events, int timeout) const;
-};
+#if defined(__linux__)
+typedef EpollSelector DefaultSelector;
+#elif defined(__APPLE__) || defined(__FreeBSD__)
+// typedef KqueueSelector DefaultSelector;
+typedef PollSelector DefaultSelector;
+#else
+typedef PollSelector DefaultSelector;
+#endif
 
 } // namespace ftpp
-
-#endif

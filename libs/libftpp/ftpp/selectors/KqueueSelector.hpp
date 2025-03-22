@@ -6,19 +6,19 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 17:23:36 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/20 21:35:08 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/23 00:00:55 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <ftpp/selectors/BaseSelector.hpp>
+#include <ftpp/selectors/Selector.hpp>
 
 #if defined(__APPLE__) || defined(__FreeBSD__)
 
 namespace ftpp {
 
-class KqueueSelector : public BaseSelector {
+class KqueueSelector : public Selector {
 public:
   static int const max_events;
 

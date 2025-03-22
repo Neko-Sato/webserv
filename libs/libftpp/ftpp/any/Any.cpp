@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:17:50 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 17:55:34 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/23 00:10:20 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,19 +19,19 @@
 
 namespace ftpp {
 
-Any::BaseValue::BaseValue() {
+Any::AnyValue::AnyValue() {
 }
 
-Any::BaseValue::BaseValue(BaseValue const &rhs) {
+Any::AnyValue::AnyValue(AnyValue const &rhs) {
   UNUSED(rhs);
 }
 
-Any::BaseValue &Any::BaseValue::operator=(BaseValue const &rhs) {
+Any::AnyValue &Any::AnyValue::operator=(AnyValue const &rhs) {
   UNUSED(rhs);
   return *this;
 }
 
-Any::BaseValue::~BaseValue() {
+Any::AnyValue::~AnyValue() {
 }
 
 Any::Any() : _value(NULL) {

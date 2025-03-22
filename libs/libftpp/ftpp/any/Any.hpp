@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:17:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 17:55:34 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/23 00:10:06 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,19 +21,19 @@ namespace ftpp {
 
 class Any {
 private:
-  class BaseValue {
+  class AnyValue {
   protected:
-    BaseValue();
-    BaseValue(BaseValue const &rhs);
-    BaseValue &operator=(BaseValue const &rhs);
+    AnyValue();
+    AnyValue(AnyValue const &rhs);
+    AnyValue &operator=(AnyValue const &rhs);
 
   public:
-    virtual ~BaseValue();
-    virtual BaseValue *clone() const = 0;
+    virtual ~AnyValue();
+    virtual AnyValue *clone() const = 0;
     virtual std::type_info const &type() const = 0;
   };
 
-  template <typename T> class Value : public BaseValue {
+  template <typename T> class Value : public AnyValue {
   private:
     T _value;
 
@@ -49,7 +49,7 @@ private:
     std::type_info const &type() const;
   };
 
-  ScopedPtr<BaseValue> _value;
+  ScopedPtr<AnyValue> _value;
 
 public:
   Any();

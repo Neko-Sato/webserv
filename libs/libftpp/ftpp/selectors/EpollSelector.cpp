@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/21 02:53:11 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/23 00:00:47 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ EpollSelector::~EpollSelector() {
 
 void EpollSelector::add(int fd, event_t events) {
   events &= READ | WRITE;
-  BaseSelector::add(fd, events);
+  Selector::add(fd, events);
   try {
     epoll_event ev;
     ev.events = 0;
@@ -64,13 +64,13 @@ void EpollSelector::add(int fd, event_t events) {
     if (unlikely(epoll_ctl(_epfd, EPOLL_CTL_ADD, fd, &ev) == -1))
       throw OSError(errno, "epoll_ctl");
   } catch (...) {
-    BaseSelector::remove(fd);
+    Selector::remove(fd);
     throw;
   }
 }
 
 void EpollSelector::remove(int fd) {
-  BaseSelector::remove(fd);
+  Selector::remove(fd);
   try {
     if (unlikely(epoll_ctl(_epfd, EPOLL_CTL_DEL, fd, NULL) == -1))
       throw OSError(errno, "epoll_ctl");
@@ -81,7 +81,7 @@ void EpollSelector::remove(int fd) {
 
 void EpollSelector::modify(int fd, event_t events) {
   events &= READ | WRITE;
-  BaseSelector::modify(fd, events);
+  Selector::modify(fd, events);
   epoll_event ev;
   ev.events = 0;
   if (events & READ)
@@ -93,7 +93,7 @@ void EpollSelector::modify(int fd, event_t events) {
     if (unlikely(epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, &ev) == -1))
       throw OSError(errno, "epoll_ctl");
   } catch (...) {
-    BaseSelector::remove(fd);
+    Selector::remove(fd);
     throw;
   }
 }
