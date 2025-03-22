@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 00:31:00 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 19:04:11 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/21 03:23:58 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,11 @@
 namespace ftev {
 
 EventLoop::BaseSignalWatcher::BaseSignalWatcher(EventLoop &loop)
-    : BaseWatcher(loop) {
+    : BaseWatcher(loop), _is_active(false) {
 }
 
 EventLoop::BaseSignalWatcher::~BaseSignalWatcher() {
+  assert(!_is_active);
 }
 
 void EventLoop::BaseSignalWatcher::operator()() {
@@ -108,6 +109,10 @@ void EventLoop::BaseSignalWatcher::SignalpipeWatcher::on_write() {
 
 void EventLoop::BaseSignalWatcher::SignalpipeWatcher::on_except() {
   assert(false);
+}
+
+bool EventLoop::BaseSignalWatcher::is_active() const {
+  return _is_active;
 }
 
 } // namespace ftev

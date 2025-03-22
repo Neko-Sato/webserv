@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 19:04:42 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/22 15:15:36 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 #include <ftpp/noncopyable/NonCopyable.hpp>
 #include <ftpp/selectors/BaseSelector.hpp>
-#include <ftpp/smart_ptr/ScopedPtr.hpp>
 
 #include <csignal>
 #include <ctime>
@@ -47,11 +46,12 @@ public:
   class BaseProcessWatcher;
 
 private:
-  ftpp::ScopedPtr<ftpp::BaseSelector> _selector;
+  ftpp::BaseSelector *_selector;
   time_t _time;
-  bool _running : 1;
-  bool _stop_flag : 1;
+  bool _running;
+  bool _stop_flag;
 
+  void _cleanup();
   void _update_time();
   int _backend_timeout() const;
   void _run_timer();

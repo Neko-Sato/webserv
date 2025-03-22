@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 22:48:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 20:41:57 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/22 15:18:18 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,12 @@
 
 namespace ftev {
 
-EventLoop::BaseIOWatcher::BaseIOWatcher(EventLoop &loop) : BaseWatcher(loop) {
+EventLoop::BaseIOWatcher::BaseIOWatcher(EventLoop &loop)
+    : BaseWatcher(loop), _is_active(false) {
 }
 
 EventLoop::BaseIOWatcher::~BaseIOWatcher() {
+  assert(!_is_active);
 }
 
 void EventLoop::BaseIOWatcher::operator()(event_t events) {
@@ -32,6 +34,11 @@ void EventLoop::BaseIOWatcher::operator()(event_t events) {
     on_read();
   if (_is_active && events & ftpp::BaseSelector::WRITE)
     on_write();
+}
+
+EventLoop::BaseIOWatcher::event_t EventLoop::BaseIOWatcher::get_events() const {
+  assert(_is_active);
+  return loop._selector->getMap().find(_it->first)->second;
 }
 
 void EventLoop::BaseIOWatcher::start(int fd, event_t events) {
@@ -61,9 +68,8 @@ void EventLoop::BaseIOWatcher::stop() {
   _is_active = false;
 }
 
-EventLoop::BaseIOWatcher::event_t EventLoop::BaseIOWatcher::get_events() const {
-  assert(_is_active);
-  return loop._selector->get_map().find(_it->first)->second;
+bool EventLoop::BaseIOWatcher::is_active() const {
+  return _is_active;
 }
 
 } // namespace ftev

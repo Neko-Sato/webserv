@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 05:31:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 19:03:43 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/21 03:24:10 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,11 @@
 namespace ftev {
 
 EventLoop::BaseTimerWatcher::BaseTimerWatcher(EventLoop &loop)
-    : BaseWatcher(loop) {
+    : BaseWatcher(loop), _is_active(false) {
 }
 
 EventLoop::BaseTimerWatcher::~BaseTimerWatcher() {
+  assert(!_is_active);
 }
 
 void EventLoop::BaseTimerWatcher::operator()() {
@@ -42,6 +43,10 @@ void EventLoop::BaseTimerWatcher::cancel() {
   assert(_is_active);
   loop._timer_watchers.erase(_it);
   _is_active = false;
+}
+
+bool EventLoop::BaseTimerWatcher::is_active() const {
+  return _is_active;
 }
 
 } // namespace ftev

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 17:58:00 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/22 17:09:51 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,22 +46,23 @@ EventLoop::EventLoop(selector_factory_t factory)
 }
 
 EventLoop::~EventLoop() {
-  delete _signalpipe_watcher;
   delete _wait_watcher;
-  /*
-  The fact that destructor is called means that all watchers are released except
-  the dynamically allocated ones. This is because watchers are dependent on the
-  EventLoop and are never released after the loop.
-  If loop is dynamically allocated?
-  Why is it that watcher has a dependency on loop but loop is removed first?
-  That's a shitty code!
-  */
+  delete _signalpipe_watcher;
   std::for_each(_watchers.begin(), _watchers.end(),
-                std::mem_fun(&BaseWatcher::on_release));
+                std::mem_fun(&BaseWatcher::release));
+  _cleanup();
   if (_signalpipe[0] != -1)
     close(_signalpipe[0]);
   if (_signalpipe[1] != -1)
     close(_signalpipe[1]);
+  delete _selector;
+}
+
+void EventLoop::_cleanup() {
+  while (!_pending_deletion_watchers.empty()) {
+    _pending_deletion_watchers.front()->on_release();
+    _pending_deletion_watchers.pop();
+  }
 }
 
 void EventLoop::_update_time() {
@@ -120,11 +121,14 @@ void EventLoop::_run_io_poll(int timeout) {
 
 void EventLoop::operator++() {
   _running = true;
-  _run_io_poll(_backend_timeout());
-  _run_timer();
-  while (!_pending_deletion_watchers.empty()) {
-    _pending_deletion_watchers.front()->on_release();
-    _pending_deletion_watchers.pop();
+  try {
+    ftpp::logger.log(ftpp::Logger::INFO, "EventLoop once");
+    _run_io_poll(_backend_timeout());
+    _run_timer();
+    _cleanup();
+  } catch (...) {
+    _running = false;
+    throw;
   }
   _running = false;
 }
