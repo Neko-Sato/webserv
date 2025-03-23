@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   BaseProcessWatcher.cpp                             :+:      :+:    :+:   */
+/*   ProcessWatcher.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 16:23:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/21 03:23:49 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/23 00:17:54 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ftev/EventLoop.hpp>
-#include <ftev/EventLoop/BaseProcessWatcher.hpp>
+#include <ftev/Watchers/ProcessWatcher.hpp>
 
 #include <ftpp/exceptions/OSError.hpp>
 #include <ftpp/macros.hpp>
@@ -24,15 +24,15 @@
 
 namespace ftev {
 
-EventLoop::BaseProcessWatcher::BaseProcessWatcher(EventLoop &loop)
-    : BaseWatcher(loop), _is_active(false) {
+EventLoop::ProcessWatcher::ProcessWatcher(EventLoop &loop)
+    : Watcher(loop), _is_active(false) {
 }
 
-EventLoop::BaseProcessWatcher::~BaseProcessWatcher() {
+EventLoop::ProcessWatcher::~ProcessWatcher() {
   assert(!_is_active);
 }
 
-void EventLoop::BaseProcessWatcher::operator()(int status) {
+void EventLoop::ProcessWatcher::operator()(int status) {
   if (!_is_active)
     return;
   loop._process_watchers.erase(_it);
@@ -43,7 +43,7 @@ void EventLoop::BaseProcessWatcher::operator()(int status) {
     on_signaled(WTERMSIG(status));
 }
 
-void EventLoop::BaseProcessWatcher::start(pid_t pid) {
+void EventLoop::ProcessWatcher::start(pid_t pid) {
   assert(!_is_active);
   WaitWatcher::activate(loop);
   std::pair<ProcessWatchers::iterator, bool> result =
@@ -53,34 +53,34 @@ void EventLoop::BaseProcessWatcher::start(pid_t pid) {
   _is_active = true;
 }
 
-void EventLoop::BaseProcessWatcher::kill(int signum) {
+void EventLoop::ProcessWatcher::kill(int signum) {
   assert(_is_active);
   ::kill(_it->first, signum);
 }
 
-void EventLoop::BaseProcessWatcher::detach() {
+void EventLoop::ProcessWatcher::detach() {
   assert(_is_active);
   loop._process_watchers.erase(_it);
   _is_active = false;
 }
 
-EventLoop::BaseProcessWatcher::WaitWatcher::WaitWatcher(EventLoop &loop)
-    : BaseSignalWatcher(loop) {
+EventLoop::ProcessWatcher::WaitWatcher::WaitWatcher(EventLoop &loop)
+    : SignalWatcher(loop) {
 }
 
-EventLoop::BaseProcessWatcher::WaitWatcher::~WaitWatcher() {
+EventLoop::ProcessWatcher::WaitWatcher::~WaitWatcher() {
   if (is_active())
     stop();
 }
 
-void EventLoop::BaseProcessWatcher::WaitWatcher::activate(EventLoop &loop) {
+void EventLoop::ProcessWatcher::WaitWatcher::activate(EventLoop &loop) {
   if (unlikely(!loop._wait_watcher))
     loop._wait_watcher = new WaitWatcher(loop);
   if (unlikely(!loop._wait_watcher->is_active()))
     loop._wait_watcher->start(SIGCHLD);
 }
 
-void EventLoop::BaseProcessWatcher::WaitWatcher::on_signal() {
+void EventLoop::ProcessWatcher::WaitWatcher::on_signal() {
   for (;;) {
     int status;
     pid_t pid;
@@ -104,7 +104,7 @@ void EventLoop::BaseProcessWatcher::WaitWatcher::on_signal() {
   }
 }
 
-bool EventLoop::BaseProcessWatcher::is_active() const {
+bool EventLoop::ProcessWatcher::is_active() const {
   return _is_active;
 }
 

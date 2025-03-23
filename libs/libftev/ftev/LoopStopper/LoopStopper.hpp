@@ -6,18 +6,18 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/31 10:00:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 19:03:02 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/23 00:18:51 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <ftev/EventLoop.hpp>
-#include <ftev/EventLoop/BaseSignalWatcher.hpp>
+#include <ftev/Watchers/SignalWatcher.hpp>
 
 namespace ftev {
 
-class LoopStopper : private EventLoop::BaseSignalWatcher {
+class LoopStopper : private EventLoop::SignalWatcher {
 public:
   LoopStopper(ftev::EventLoop &loop);
   ~LoopStopper();

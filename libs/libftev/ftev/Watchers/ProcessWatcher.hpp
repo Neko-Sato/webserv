@@ -1,31 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   BaseProcessWatcher.hpp                             :+:      :+:    :+:   */
+/*   ProcessWatcher.hpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/21 03:17:54 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/23 00:16:29 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <ftev/EventLoop.hpp>
-#include <ftev/EventLoop/BaseSignalWatcher.hpp>
-#include <ftev/EventLoop/BaseWatcher.hpp>
+#include <ftev/Watchers/SignalWatcher.hpp>
+#include <ftev/Watchers/Watcher.hpp>
 
 #include <csignal>
 
 namespace ftev {
 
-class EventLoop::BaseProcessWatcher : public EventLoop::BaseWatcher {
+class EventLoop::ProcessWatcher : public EventLoop::Watcher {
 private:
   bool _is_active;
   ProcessWatchers::iterator _it;
 
-  class WaitWatcher : private BaseSignalWatcher {
+  class WaitWatcher : private SignalWatcher {
   private:
     WaitWatcher(EventLoop &loop);
 
@@ -38,10 +38,10 @@ private:
   };
 
 protected:
-  BaseProcessWatcher(EventLoop &loop);
+  ProcessWatcher(EventLoop &loop);
 
 public:
-  virtual ~BaseProcessWatcher();
+  virtual ~ProcessWatcher();
   void operator()(int status);
 
   void start(pid_t pid);

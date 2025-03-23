@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2025/03/21 02:49:38 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/03/24 04:29:50 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ NAME_SO		:= $(addsuffix .so, $(NAME))
 DIR			:= .
 OUT_DIR		:= $(DIR)/.out
 
-SRCS		:= $(shell find $(DIR) -name "*.cpp")
+SRCS		:= $(shell find $(DIR)/ftev -name "*.cpp")
 OBJS		:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=.o))
 DEPS		:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=.d))
 

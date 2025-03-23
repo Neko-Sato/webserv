@@ -6,14 +6,14 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/22 15:15:36 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/23 00:14:06 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <ftpp/noncopyable/NonCopyable.hpp>
-#include <ftpp/selectors/BaseSelector.hpp>
+#include <ftpp/selectors/DefaultSelector.hpp>
 
 #include <csignal>
 #include <ctime>
@@ -39,14 +39,14 @@ namespace ftev {
 
 class EventLoop : private ftpp::NonCopyable {
 public:
-  class BaseWatcher;
-  class BaseTimerWatcher;
-  class BaseIOWatcher;
-  class BaseSignalWatcher;
-  class BaseProcessWatcher;
+  class Watcher;
+  class TimerWatcher;
+  class IOWatcher;
+  class SignalWatcher;
+  class ProcessWatcher;
 
 private:
-  ftpp::BaseSelector *_selector;
+  ftpp::Selector *_selector;
   time_t _time;
   bool _running;
   bool _stop_flag;
@@ -61,8 +61,8 @@ private:
 public:
   static EventLoop default_loop;
 
-  typedef ftpp::BaseSelector *(selector_factory_t)();
-  static ftpp::BaseSelector *default_selector_factory();
+  typedef ftpp::Selector *(selector_factory_t)();
+  static ftpp::Selector *default_selector_factory();
   EventLoop(selector_factory_t factory = default_selector_factory);
   ~EventLoop();
 
@@ -70,26 +70,26 @@ public:
   void stop();
 
 private:
-  typedef std::queue<BaseWatcher *> PendingDeletionWatchers;
+  typedef std::queue<Watcher *> PendingDeletionWatchers;
   PendingDeletionWatchers _pending_deletion_watchers;
 
-  typedef std::set<BaseWatcher *> Watchers;
+  typedef std::set<Watcher *> Watchers;
   Watchers _watchers;
 
-  typedef std::multimap<time_t, BaseTimerWatcher *> TimerWatchers;
+  typedef std::multimap<time_t, TimerWatcher *> TimerWatchers;
   TimerWatchers _timer_watchers;
 
-  typedef std::map<int, BaseIOWatcher *> IOWatchers;
+  typedef std::map<int, IOWatcher *> IOWatchers;
   IOWatchers _io_watchers;
 
   static void _maybe_init_signalpipe();
   static int _signalpipe[2];
-  BaseIOWatcher *_signalpipe_watcher;
-  typedef std::map<int, BaseSignalWatcher *> SignalWatchers;
+  IOWatcher *_signalpipe_watcher;
+  typedef std::map<int, SignalWatcher *> SignalWatchers;
   SignalWatchers _signal_watchers;
 
-  BaseSignalWatcher *_wait_watcher;
-  typedef std::map<pid_t, BaseProcessWatcher *> ProcessWatchers;
+  SignalWatcher *_wait_watcher;
+  typedef std::map<pid_t, ProcessWatcher *> ProcessWatchers;
   ProcessWatchers _process_watchers;
 };
 

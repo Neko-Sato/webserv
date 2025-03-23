@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   BaseWatcher.hpp                                    :+:      :+:    :+:   */
+/*   Watcher.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/17 02:16:25 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/22 17:14:35 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/23 00:16:07 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,17 +18,17 @@
 
 namespace ftev {
 
-class EventLoop::BaseWatcher : private ftpp::NonCopyable {
+class EventLoop::Watcher : private ftpp::NonCopyable {
 public:
   EventLoop &loop;
 
-  BaseWatcher();
+  Watcher();
 
 protected:
-  BaseWatcher(EventLoop &loop);
+  Watcher(EventLoop &loop);
 
 public:
-  virtual ~BaseWatcher();
+  virtual ~Watcher();
 
   /*
   It can only be used when allocating with new.

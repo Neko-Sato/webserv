@@ -1,43 +1,42 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   WriteTransport.hpp                                 :+:      :+:    :+:   */
+/*   TimerWatcher.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/18 16:36:28 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/19 01:39:06 by hshimizu         ###   ########.fr       */
+/*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/03/23 00:16:49 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <ftev/Protocol/WriteProtocol.hpp>
-#include <ftev/Transport/BaseTransport.hpp>
+#include <ftev/EventLoop.hpp>
+#include <ftev/Watchers/Watcher.hpp>
 
-#include <vector>
+#include <ctime>
 
 namespace ftev {
 
-class WriteTransport : virtual public BaseTransport {
+class EventLoop::TimerWatcher : public EventLoop::Watcher {
 private:
-  std::vector<char> _buffer;
-  bool _draining : 1;
-
-  virtual std::size_t _write(char const *buf, std::size_t size) = 0;
+  bool _is_active;
+  TimerWatchers::iterator _it;
 
 protected:
-  WriteTransport(EventLoop &loop);
+  TimerWatcher(EventLoop &loop);
 
 public:
-  virtual ~WriteTransport();
+  virtual ~TimerWatcher();
+  void operator()();
 
-  void on_write();
+  void start(time_t timeout);
+  void cancel();
 
-  void write(char const *buffer, std::size_t size);
-  void drain();
+  virtual void on_timeout() = 0;
 
-  virtual WriteProtocol &getProtocol() = 0;
+  bool is_active() const;
 };
 
 } // namespace ftev

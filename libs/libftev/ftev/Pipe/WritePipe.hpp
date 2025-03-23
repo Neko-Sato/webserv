@@ -1,32 +1,42 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ReadProtocol.hpp                                   :+:      :+:    :+:   */
+/*   WritePipe.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/18 20:39:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 23:04:47 by hshimizu         ###   ########.fr       */
+/*   Created: 2025/03/24 03:45:51 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/03/24 04:26:07 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <ftev/Protocol/BaseProtocol.hpp>
-
-#include <vector>
+#include <ftev/EventLoop.hpp>
+#include <ftev/Watchers/IOWatcher.hpp>
 
 namespace ftev {
 
-class ReadProtocol : virtual public BaseProtocol {
-protected:
-  ReadProtocol();
+class WritePipe : private EventLoop::IOWatcher {
+private:
+  int _fd;
+  std::vector<char> _buffer;
+  bool _draining;
 
 public:
-  virtual ~ReadProtocol();
+  WritePipe(EventLoop &loop, int fd);
+  virtual ~WritePipe();
 
-  virtual void on_data(std::vector<char> const &data) = 0;
-  virtual void on_eof() = 0;
+  using IOWatcher::loop;
+  using IOWatcher::release;
+
+  void on_read();
+  void on_write();
+
+  void write(char const *data, size_t size);
+  void drain();
+
+  virtual void on_drain() = 0;
 };
 
-} // namespace ftev
+}; // namespace ftev

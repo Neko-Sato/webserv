@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/31 10:00:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 19:03:05 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/23 00:19:00 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 
 namespace ftev {
 
-LoopStopper::LoopStopper(ftev::EventLoop &loop) : BaseSignalWatcher(loop) {
+LoopStopper::LoopStopper(ftev::EventLoop &loop) : SignalWatcher(loop) {
   start(SIGINT);
 }
 

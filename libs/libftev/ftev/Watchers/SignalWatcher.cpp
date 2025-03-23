@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   BaseSignalWatcher.cpp                              :+:      :+:    :+:   */
+/*   SignalWatcher.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 00:31:00 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/21 03:23:58 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/23 00:17:44 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ftev/EventLoop.hpp>
-#include <ftev/EventLoop/BaseSignalWatcher.hpp>
+#include <ftev/Watchers/SignalWatcher.hpp>
 
 #include <ftpp/exceptions/OSError.hpp>
 #include <ftpp/macros.hpp>
@@ -23,21 +23,21 @@
 
 namespace ftev {
 
-EventLoop::BaseSignalWatcher::BaseSignalWatcher(EventLoop &loop)
-    : BaseWatcher(loop), _is_active(false) {
+EventLoop::SignalWatcher::SignalWatcher(EventLoop &loop)
+    : Watcher(loop), _is_active(false) {
 }
 
-EventLoop::BaseSignalWatcher::~BaseSignalWatcher() {
+EventLoop::SignalWatcher::~SignalWatcher() {
   assert(!_is_active);
 }
 
-void EventLoop::BaseSignalWatcher::operator()() {
+void EventLoop::SignalWatcher::operator()() {
   if (!_is_active)
     return;
   on_signal();
 }
 
-void EventLoop::BaseSignalWatcher::start(int signum) {
+void EventLoop::SignalWatcher::start(int signum) {
   assert(!_is_active);
   SignalpipeWatcher::activate(loop);
   std::pair<SignalWatchers::iterator, bool> result =
@@ -56,7 +56,7 @@ void EventLoop::BaseSignalWatcher::start(int signum) {
   _is_active = true;
 }
 
-void EventLoop::BaseSignalWatcher::stop() {
+void EventLoop::SignalWatcher::stop() {
   assert(_is_active);
   sighandler_t old_handler = signal(_it->first, _old_handler);
   if (unlikely(old_handler == SIG_ERR))
@@ -65,34 +65,32 @@ void EventLoop::BaseSignalWatcher::stop() {
   _is_active = false;
 }
 
-void EventLoop::BaseSignalWatcher::_signal_handler(int signum) {
+void EventLoop::SignalWatcher::_signal_handler(int signum) {
   assert(_signalpipe[1] != -1);
   ssize_t size = write(_signalpipe[1], &signum, sizeof(signum));
   UNUSED(size);
   assert(size == sizeof(signum));
 }
 
-EventLoop::BaseSignalWatcher::SignalpipeWatcher::SignalpipeWatcher(
-    EventLoop &loop)
-    : BaseIOWatcher(loop) {
+EventLoop::SignalWatcher::SignalpipeWatcher::SignalpipeWatcher(EventLoop &loop)
+    : IOWatcher(loop) {
 }
 
-EventLoop::BaseSignalWatcher::SignalpipeWatcher::~SignalpipeWatcher() {
+EventLoop::SignalWatcher::SignalpipeWatcher::~SignalpipeWatcher() {
   if (is_active())
     stop();
 }
 
-void EventLoop::BaseSignalWatcher::SignalpipeWatcher::activate(
-    EventLoop &loop) {
+void EventLoop::SignalWatcher::SignalpipeWatcher::activate(EventLoop &loop) {
   _maybe_init_signalpipe();
   if (unlikely(!loop._signalpipe_watcher))
     loop._signalpipe_watcher = new SignalpipeWatcher(loop);
   if (unlikely(!loop._signalpipe_watcher->is_active()))
     loop._signalpipe_watcher->start(EventLoop::_signalpipe[0],
-                                    ftpp::BaseSelector::READ);
+                                    ftpp::Selector::READ);
 }
 
-void EventLoop::BaseSignalWatcher::SignalpipeWatcher::on_read() {
+void EventLoop::SignalWatcher::SignalpipeWatcher::on_read() {
   assert(_signalpipe[0] != -1);
   int signum;
   ssize_t size = read(_signalpipe[0], &signum, sizeof(signum));
@@ -103,15 +101,15 @@ void EventLoop::BaseSignalWatcher::SignalpipeWatcher::on_read() {
     (*it->second)();
 }
 
-void EventLoop::BaseSignalWatcher::SignalpipeWatcher::on_write() {
+void EventLoop::SignalWatcher::SignalpipeWatcher::on_write() {
   assert(false);
 }
 
-void EventLoop::BaseSignalWatcher::SignalpipeWatcher::on_except() {
+void EventLoop::SignalWatcher::SignalpipeWatcher::on_except() {
   assert(false);
 }
 
-bool EventLoop::BaseSignalWatcher::is_active() const {
+bool EventLoop::SignalWatcher::is_active() const {
   return _is_active;
 }
 

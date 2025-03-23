@@ -1,25 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ReadProtocol.cpp                                   :+:      :+:    :+:   */
+/*   ReadPipe.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/18 22:58:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 23:05:21 by hshimizu         ###   ########.fr       */
+/*   Created: 2025/03/24 03:37:58 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/03/24 04:26:02 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <ftev/Protocol/ReadProtocol.hpp>
+#pragma once
 
-#include <vector>
+#include <ftev/EventLoop.hpp>
+#include <ftev/Watchers/IOWatcher.hpp>
 
 namespace ftev {
 
-ReadProtocol::ReadProtocol() {
-}
+class ReadPipe : private EventLoop::IOWatcher {
+private:
+  static std::size_t const _chank_size;
+  int _fd;
 
-ReadProtocol::~ReadProtocol() {
-}
+public:
+  ReadPipe(EventLoop &loop, int fd);
+  virtual ~ReadPipe();
+
+  using IOWatcher::loop;
+  using IOWatcher::release;
+
+  void on_read();
+  void on_write();
+
+  virtual void on_data(std::vector<char> const &data) = 0;
+  virtual void on_eof() = 0;
+};
 
 } // namespace ftev

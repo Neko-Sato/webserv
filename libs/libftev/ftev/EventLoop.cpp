@@ -6,15 +6,15 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/22 17:09:51 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/24 04:13:54 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ftev/EventLoop.hpp>
-#include <ftev/EventLoop/BaseIOWatcher.hpp>
-#include <ftev/EventLoop/BaseProcessWatcher.hpp>
-#include <ftev/EventLoop/BaseSignalWatcher.hpp>
-#include <ftev/EventLoop/BaseTimerWatcher.hpp>
+#include <ftev/Watchers/IOWatcher.hpp>
+#include <ftev/Watchers/ProcessWatcher.hpp>
+#include <ftev/Watchers/SignalWatcher.hpp>
+#include <ftev/Watchers/TimerWatcher.hpp>
 
 #include <ftpp/exceptions/OSError.hpp>
 #include <ftpp/logger/Logger.hpp>
@@ -35,8 +35,8 @@ EventLoop EventLoop::default_loop;
 
 int EventLoop::_signalpipe[2] = {-1, -1};
 
-ftpp::BaseSelector *EventLoop::default_selector_factory() {
-  return new ftpp::Selector;
+ftpp::Selector *EventLoop::default_selector_factory() {
+  return new ftpp::DefaultSelector;
 }
 
 EventLoop::EventLoop(selector_factory_t factory)
@@ -49,7 +49,7 @@ EventLoop::~EventLoop() {
   delete _wait_watcher;
   delete _signalpipe_watcher;
   std::for_each(_watchers.begin(), _watchers.end(),
-                std::mem_fun(&BaseWatcher::release));
+                std::mem_fun(&Watcher::release));
   _cleanup();
   if (_signalpipe[0] != -1)
     close(_signalpipe[0]);
@@ -60,7 +60,9 @@ EventLoop::~EventLoop() {
 
 void EventLoop::_cleanup() {
   while (!_pending_deletion_watchers.empty()) {
-    _pending_deletion_watchers.front()->on_release();
+    Watcher *watcher = _pending_deletion_watchers.front();
+    if (_watchers.find(watcher) != _watchers.end())
+      delete watcher;
     _pending_deletion_watchers.pop();
   }
 }
@@ -94,8 +96,8 @@ void EventLoop::_run_timer() {
 }
 
 void EventLoop::_run_io_poll(int timeout) {
-  typedef ftpp::BaseSelector::Events Events;
-  typedef ftpp::BaseSelector::event_details event_details;
+  typedef ftpp::Selector::Events Events;
+  typedef ftpp::Selector::event_details event_details;
   Events events;
   for (;;) {
     try {
@@ -122,7 +124,7 @@ void EventLoop::_run_io_poll(int timeout) {
 void EventLoop::operator++() {
   _running = true;
   try {
-    ftpp::logger.log(ftpp::Logger::INFO, "EventLoop once");
+    ftpp::logger(ftpp::Logger::INFO, "EventLoop once");
     _run_io_poll(_backend_timeout());
     _run_timer();
     _cleanup();
@@ -137,7 +139,7 @@ void EventLoop::run() {
   assert(!_running);
   _stop_flag = false;
   try {
-    ftpp::logger.log(ftpp::Logger::INFO, "EventLoop start");
+    ftpp::logger(ftpp::Logger::INFO, "EventLoop start");
     _run_timer();
     for (; likely(!(_stop_flag ||
                     (_timer_watchers.empty() && _io_watchers.empty() &&
@@ -145,10 +147,10 @@ void EventLoop::run() {
          operator++())
       ;
   } catch (...) {
-    ftpp::logger.log(ftpp::Logger::INFO, "EventLoop stop");
+    ftpp::logger(ftpp::Logger::INFO, "EventLoop stop");
     throw;
   }
-  ftpp::logger.log(ftpp::Logger::INFO, "EventLoop stop");
+  ftpp::logger(ftpp::Logger::INFO, "EventLoop stop");
 }
 
 void EventLoop::stop() {

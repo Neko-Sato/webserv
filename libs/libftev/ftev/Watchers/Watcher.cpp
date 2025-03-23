@@ -1,35 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   BaseTransport.cpp                                  :+:      :+:    :+:   */
+/*   Watcher.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/18 15:29:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/19 02:22:41 by hshimizu         ###   ########.fr       */
+/*   Created: 2024/11/15 22:48:55 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/03/24 05:16:51 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <ftev/Transport/BaseTransport.hpp>
+#include <ftev/EventLoop.hpp>
+#include <ftev/Watchers/Watcher.hpp>
 
 namespace ftev {
 
-BaseTransport::BaseTransport(EventLoop &loop) : EventLoop::BaseIOWatcher(loop) {
+EventLoop::Watcher::Watcher(EventLoop &loop) : loop(loop) {
+  loop._watchers.insert(this);
 }
 
-BaseTransport::~BaseTransport() {
+EventLoop::Watcher::~Watcher() {
+  loop._watchers.erase(this);
 }
 
-EventLoop::BaseIOWatcher &BaseTransport::_getWatcher() {
-  return *this;
+void EventLoop::Watcher::release() {
+  loop._pending_deletion_watchers.push(this);
 }
 
-void BaseTransport::on_except() {
-  getProtocol().on_except();
-}
-
-void BaseTransport::on_release() {
-  getProtocol().on_release();
+void EventLoop::Watcher::on_release() {
 }
 
 } // namespace ftev

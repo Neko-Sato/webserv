@@ -1,32 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   BaseSignalWatcher.hpp                              :+:      :+:    :+:   */
+/*   SignalWatcher.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 00:22:29 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/21 03:18:30 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/23 00:16:40 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <ftev/EventLoop.hpp>
-#include <ftev/EventLoop/BaseIOWatcher.hpp>
-#include <ftev/EventLoop/BaseWatcher.hpp>
+#include <ftev/Watchers/IOWatcher.hpp>
+#include <ftev/Watchers/Watcher.hpp>
 
 #include <csignal>
 
 namespace ftev {
 
-class EventLoop::BaseSignalWatcher : public EventLoop::BaseWatcher {
+class EventLoop::SignalWatcher : public EventLoop::Watcher {
 private:
   bool _is_active;
   SignalWatchers::iterator _it;
   sighandler_t _old_handler;
 
-  class SignalpipeWatcher : private BaseIOWatcher {
+  class SignalpipeWatcher : private IOWatcher {
   private:
     SignalpipeWatcher(EventLoop &loop);
 
@@ -43,10 +43,10 @@ private:
   static void _signal_handler(int signum);
 
 protected:
-  BaseSignalWatcher(EventLoop &loop);
+  SignalWatcher(EventLoop &loop);
 
 public:
-  virtual ~BaseSignalWatcher();
+  virtual ~SignalWatcher();
   void operator()();
 
   void start(int signum);
