@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 04:36:16 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 06:56:53 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/24 07:05:09 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,14 @@ void SimpleClient::Timer::on_timeout() {
 
 SimpleClient::SimpleClient(EventLoop &loop, std::string const &host, int port)
     : TCPConnection(loop, host, port), _timer(NULL) {
+  ftpp::logger(ftpp::Logger::INFO,
+               ftpp::Format("SimpleClient connected: (host: {}, port: {})") %
+                   host % port);
   _timer = new Timer(loop, *this);
 }
 
 SimpleClient::~SimpleClient() {
+  ftpp::logger(ftpp::Logger::INFO, "SimpleClient destroy");
   delete _timer;
 }
 
