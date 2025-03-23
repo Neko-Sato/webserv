@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 11:58:37 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 17:32:43 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/24 01:12:12 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ public:
 
   static void addLevel(Level level, std::string const &name);
 
-  void log(Level Level, std::string const &msg);
+  void operator()(Level Level, std::string const &msg);
 };
 
 extern Logger logger;
