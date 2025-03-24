@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 23:50:15 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 04:46:17 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/24 20:37:20 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ class StreamConnection : private EventLoop::IOWatcher {
 private:
   static std::size_t const _chank_size;
   ftpp::Socket _socket;
+  bool _received_eof;
   std::vector<char> _buffer;
   bool _draining;
 
@@ -37,6 +38,8 @@ public:
   void on_write();
   void on_except();
 
+  void resume();
+  void pause();
   void write(char const *data, size_t size);
   void drain();
 

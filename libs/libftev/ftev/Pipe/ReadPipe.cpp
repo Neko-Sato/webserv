@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 03:37:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 06:07:28 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/24 20:46:08 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@ namespace ftev {
 
 std::size_t const ReadPipe::_chank_size = 4096;
 
-ReadPipe::ReadPipe(EventLoop &loop, int fd) : IOWatcher(loop), _fd(fd) {
+ReadPipe::ReadPipe(EventLoop &loop, int fd)
+    : IOWatcher(loop), _fd(fd), _received_eof(false) {
   int flags;
   flags = fcntl(_fd, F_GETFL);
   if (unlikely(flags == -1))
@@ -65,6 +66,28 @@ void ReadPipe::on_read() {
 
 void ReadPipe::on_write() {
   assert(false);
+}
+
+void ReadPipe::resume() {
+  assert(!_received_eof);
+  if (is_active()) {
+    event_t event = get_events();
+    if (!(event & ftpp::Selector::READ))
+      modify(event | ftpp::Selector::READ);
+  } else
+    start(_fd, ftpp::Selector::READ);
+}
+
+void ReadPipe::pause() {
+  assert(!_received_eof);
+  if (is_active()) {
+    event_t event = get_events() & ~ftpp::Selector::READ;
+    if (event)
+      modify(event);
+    else
+      stop();
+  } else
+    start(_fd, ftpp::Selector::READ);
 }
 
 } // namespace ftev

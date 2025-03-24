@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 23:50:15 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 06:09:42 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/24 20:43:07 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ namespace ftev {
 std::size_t const StreamConnection::_chank_size = 4096;
 
 StreamConnection::StreamConnection(EventLoop &loop, ftpp::Socket &socket)
-    : IOWatcher(loop), _draining(false) {
+    : IOWatcher(loop), _received_eof(false), _draining(false) {
   _socket.swap(socket);
   int fd = _socket.getSockfd();
   int flags;
@@ -58,6 +58,7 @@ void StreamConnection::on_read() {
       modify(event);
     else
       stop();
+    _received_eof = true;
     on_eof();
   } else
     on_data(chank);
@@ -96,6 +97,28 @@ void StreamConnection::on_except() {
   else
 #endif
     on_error(std::runtime_error("unkown error"));
+}
+
+void StreamConnection::resume() {
+  assert(!_received_eof);
+  if (is_active()) {
+    event_t event = get_events();
+    if (!(event & ftpp::Selector::READ))
+      modify(event | ftpp::Selector::READ);
+  } else
+    start(_socket.getSockfd(), ftpp::Selector::READ);
+}
+
+void StreamConnection::pause() {
+  assert(!_received_eof);
+  if (is_active()) {
+    event_t event = get_events() & ~ftpp::Selector::READ;
+    if (event)
+      modify(event);
+    else
+      stop();
+  } else
+    start(_socket.getSockfd(), ftpp::Selector::READ);
 }
 
 void StreamConnection::write(char const *buffer, size_t size) {
