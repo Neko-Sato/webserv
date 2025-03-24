@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2025/03/21 02:54:56 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/03/24 23:29:32 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,13 +46,13 @@ LDFLAGS				:=
 LIBS				:= -lftev -lftpp -lftjson
 
 ifneq ($(CPLUS_INCLUDE_PATH),)
-IDFLAGS		+= -I$(CPLUS_INCLUDE_PATH)
+IDFLAGS				+= -I$(CPLUS_INCLUDE_PATH)
 endif
 ifneq ($(LIBRARY_PATH),)
-LDFLAGS		+= -L$(LIBRARY_PATH)
+LDFLAGS				+= -L$(LIBRARY_PATH)
 endif
 ifneq ($(LD_RUN_PATH),)
-LIBS		+= -Wl,-rpath,$(LD_RUN_PATH)
+LIBS				+= -Wl,-rpath,$(LD_RUN_PATH)
 endif
 
 ifeq ($(DEBUG), 1)
