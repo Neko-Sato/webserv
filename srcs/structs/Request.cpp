@@ -6,14 +6,14 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 02:12:43 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/02 16:13:32 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/24 14:18:52 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "structs/Request.hpp"
 #include "constants.hpp"
 
-#include <ft_string.hpp>
+#include <ftpp/string/string.hpp>
 
 #include <algorithm>
 #include <sstream>

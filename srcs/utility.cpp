@@ -6,11 +6,11 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/31 21:52:35 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/02 09:49:43 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/24 14:18:35 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <ft_string.hpp>
+#include <ftpp/string/string.hpp>
 
 #include <cmath>
 #include <limits>

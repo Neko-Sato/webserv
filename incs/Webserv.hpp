@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/26 07:59:54 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/05 01:18:41 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/24 13:58:48 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,9 @@
 #include "Server.hpp"
 #include "configs/Configs.hpp"
 
-#include <EventLoop.hpp>
-#include <LoopStopper/LoopStopper.hpp>
-#include <NonCopyable.hpp>
+#include <ftev/EventLoop.hpp>
+#include <ftev/LoopStopper/LoopStopper.hpp>
+#include <ftpp/noncopyable/NonCopyable.hpp>
 
 #include <list>
 

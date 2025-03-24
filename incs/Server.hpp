@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 01:40:37 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/22 08:48:43 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/24 14:07:50 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 #include "configs/Configs.hpp"
 #include "structs/Address.hpp"
 
-#include <AsyncSocket/BaseTCPServer.hpp>
-#include <socket/Socket.hpp>
+#include <ftev/Stream/TCPServer.hpp>
+#include <ftpp/socket/Socket.hpp>
 
-class Server : public ftev::BaseTCPServer {
+class Server : public ftev::TCPServer {
 private:
   Configs const &_configs;
   Address _address;
@@ -30,6 +30,4 @@ public:
   ~Server();
 
   void on_connect(ftpp::Socket &socket);
-  Configs const &getConfigs() const;
-  Address const &getAddress() const;
 };

@@ -6,19 +6,19 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 01:41:18 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/15 23:41:57 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/24 14:31:53 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Connection.hpp"
 #include "constants.hpp"
 
-#include <ft_iterator.hpp>
-#include <ft_string.hpp>
-#include <logger/Logger.hpp>
-#include <Format.hpp>
-#include <urllib/URI.hpp>
-#include <urllib/urlquote.hpp>
+#include <ftpp/format/Format.hpp>
+#include <ftpp/iterator.hpp>
+#include <ftpp/logger/Logger.hpp>
+#include <ftpp/string/string.hpp>
+#include <ftpp/urllib/URI.hpp>
+#include <ftpp/urllib/urlquote.hpp>
 
 #include <algorithm>
 #include <cassert>
@@ -26,17 +26,14 @@
 #include <sstream>
 
 Connection::Connection(ftev::EventLoop &loop, ftpp::Socket &socket,
-                       Server const &server)
-    : BaseTCPConnection(loop, socket), _server(server), _state(REQUEST),
-      _bufferClosed(false), _receiveRequestPosition(0)
-// , _cycle(NULL)
-{
-  ftpp::logger.log(ftpp::Logger::INFO, "Connection connected");
+                       Address const &address, Configs const &configs)
+    : StreamConnection(loop, socket), _address(address), _configs(configs),
+      _state(REQUEST), _bufferClosed(false), _receiveRequestPosition(0) {
+  ftpp::logger(ftpp::Logger::INFO, "Connection connected");
 }
 
 Connection::~Connection() {
-  //   delete _cycle;
-  ftpp::logger.log(ftpp::Logger::INFO, "Connection close");
+  ftpp::logger(ftpp::Logger::INFO, "Connection close");
 }
 
 void Connection::_process() {
@@ -56,28 +53,24 @@ void Connection::_process() {
 }
 
 void Connection::on_data(std::vector<char> const &data) {
-  ftpp::logger.log(ftpp::Logger::INFO, "Connection on_data");
+  ftpp::logger(ftpp::Logger::INFO, "Connection on_data");
   try {
     _buffer.insert(_buffer.end(), data.begin(), data.end());
     _process();
   } catch (std::exception const &e) {
     std::cerr << e.what() << std::endl;
-    if (is_active())
-      stop();
-    delete_later();
+    release();
   }
 }
 
 void Connection::on_eof() {
-  ftpp::logger.log(ftpp::Logger::INFO, "Connection on_eof");
+  ftpp::logger(ftpp::Logger::INFO, "Connection on_eof");
   try {
     _bufferClosed = true;
     _process();
   } catch (std::exception const &e) {
     std::cerr << e.what() << std::endl;
-    if (is_active())
-      stop();
-    delete_later();
+    release();
   }
 }
 
@@ -88,17 +81,14 @@ void Connection::on_drain() {
     _process();
   } catch (std::exception const &e) {
     std::cerr << e.what() << std::endl;
-    if (is_active())
-      stop();
-    delete_later();
+    release();
   }
 }
 
-void Connection::on_except() {
-  ftpp::logger.log(ftpp::Logger::INFO, "Connection on_except");
-  if (is_active())
-    stop();
-  delete_later();
+void Connection::on_error(std::exception const &exce) {
+  ftpp::logger(ftpp::Logger::ERROR,
+               ftpp::Format("Connection error: {}") % exce.what());
+  release();
 }
 
 void Connection::on_release() {
@@ -107,7 +97,6 @@ void Connection::on_release() {
 
 bool Connection::_receiveRequest() {
   assert(_state == REQUEST);
-  //   assert(!_cycle);
   if (_buffer.size() < DOUBLE_CRLF.size())
     return false;
   std::deque<char>::iterator match =

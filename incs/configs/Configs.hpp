@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 14:04:54 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/22 08:48:57 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/24 13:56:30 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 #include "configs/ServerConf.hpp"
 #include "structs/Address.hpp"
 
-#include <Any.hpp>
-#include <Json.hpp>
+#include <ftjson/Json.hpp>
+#include <ftpp/any/Any.hpp>
 
 #include <list>
 #include <set>

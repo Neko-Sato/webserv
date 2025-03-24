@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:18:19 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/08 02:17:28 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/24 14:19:45 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,11 @@
 #include "locations/LocationRedirect.hpp"
 #include "locations/LocationUpload.hpp"
 
-#include <Any.hpp>
-#include <Json.hpp>
-#include <ft_algorithm.hpp>
-#include <ft_string.hpp>
-#include <macros.hpp>
+#include <ftjson/Json.hpp>
+#include <ftpp/algorithm.hpp>
+#include <ftpp/any/Any.hpp>
+#include <ftpp/macros.hpp>
+#include <ftpp/string/string.hpp>
 
 #include <stdexcept>
 
