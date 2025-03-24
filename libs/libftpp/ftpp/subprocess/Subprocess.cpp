@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 12:13:15 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 13:33:42 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/24 14:37:32 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <ftpp/subprocess/Subprocess.hpp>
 
 #include <cassert>
+#include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <signal.h>
@@ -90,7 +91,7 @@ int Subprocess::wait() {
     return WEXITSTATUS(status);
   if (WIFSIGNALED(status))
     throw Signaled(WTERMSIG(status));
-  assert(false);
+  abort();
 }
 
 pid_t Subprocess::spawn(options const &opts) {
