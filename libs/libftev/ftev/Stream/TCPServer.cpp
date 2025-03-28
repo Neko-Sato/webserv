@@ -6,11 +6,12 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 02:03:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/28 22:32:04 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/29 03:08:57 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ftev/Stream/TCPServer.hpp>
+#include <ftev/utils/utils.hpp>
 
 #include <ftpp/exceptions/OSError.hpp>
 #include <ftpp/format/Format.hpp>
@@ -35,6 +36,7 @@ TCPServer::Handler::~Handler() {
 
 void TCPServer::Handler::on_connect(ftpp::Socket &conn) {
   try {
+    setblocking(conn.getSockfd(), false);
     _server.on_connect(conn);
   } catch (std::exception const &e) {
     ftpp::logger(ftpp::Logger::ERROR, ftpp::Format("TCPServer: {}") % e.what());
@@ -62,6 +64,7 @@ TCPServer::TCPServer(EventLoop &loop, std::string const &host, int port)
           throw ftpp::OSError(sockfd, "fcntl");
         int opt = 1;
         socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+        setblocking(sockfd, false);
       }
       socket.bind(it->ai_addr, it->ai_addrlen);
       socket.listen();

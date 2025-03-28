@@ -6,11 +6,12 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 02:03:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/29 02:37:40 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/29 03:06:38 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ftev/Stream/TCPConnection.hpp>
+#include <ftev/utils/utils.hpp>
 
 #include <ftpp/exceptions/OSError.hpp>
 #include <ftpp/format/Format.hpp>
@@ -62,6 +63,7 @@ TCPConnection::TCPConnection(EventLoop &loop, std::string const &host, int port)
         throw ftpp::OSError(sockfd, "fcntl");
       if (unlikely(fcntl(sockfd, F_SETFD, flags | FD_CLOEXEC) == -1))
         throw ftpp::OSError(sockfd, "fcntl");
+      setblocking(sockfd, false);
     }
     try {
       socket.connect(it->ai_addr, it->ai_addrlen);
