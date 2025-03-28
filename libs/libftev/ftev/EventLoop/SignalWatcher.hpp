@@ -6,15 +6,15 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 00:22:29 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/23 00:16:40 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/28 22:15:01 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <ftev/EventLoop.hpp>
-#include <ftev/Watchers/IOWatcher.hpp>
-#include <ftev/Watchers/Watcher.hpp>
+#include <ftev/EventLoop/IOWatcher.hpp>
+#include <ftev/EventLoop/Watcher.hpp>
 
 #include <csignal>
 

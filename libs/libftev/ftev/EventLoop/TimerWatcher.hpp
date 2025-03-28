@@ -1,42 +1,42 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ReadPipe.hpp                                       :+:      :+:    :+:   */
+/*   TimerWatcher.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/24 03:37:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/28 22:17:18 by hshimizu         ###   ########.fr       */
+/*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/03/28 22:15:01 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <ftev/EventLoop.hpp>
-#include <ftev/EventLoop/IOWatcher.hpp>
+#include <ftev/EventLoop/Watcher.hpp>
+
+#include <ctime>
 
 namespace ftev {
 
-class ReadPipe : private EventLoop::IOWatcher {
+class EventLoop::TimerWatcher : public EventLoop::Watcher {
 private:
-  static std::size_t const _chank_size;
-  int _fd;
-  bool _received_eof;
+  bool _is_active;
+  TimerWatchers::iterator _it;
+
+protected:
+  TimerWatcher(EventLoop &loop);
 
 public:
-  ReadPipe(EventLoop &loop, int fd);
-  virtual ~ReadPipe();
+  virtual ~TimerWatcher();
+  void operator()();
 
-  using IOWatcher::loop;
+  void start(time_t timeout);
+  void cancel();
 
-  void on_read();
-  void on_write();
+  virtual void on_timeout() = 0;
 
-  void resume();
-  void pause();
-
-  virtual void on_data(std::vector<char> const &data) = 0;
-  virtual void on_eof() = 0;
+  bool is_active() const;
 };
 
 } // namespace ftev

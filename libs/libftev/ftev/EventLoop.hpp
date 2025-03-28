@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/23 00:14:06 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/28 22:11:02 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ namespace ftev {
 
 class EventLoop : private ftpp::NonCopyable {
 public:
+  class DeferredDelete;
   class Watcher;
   class TimerWatcher;
   class IOWatcher;
@@ -70,11 +71,11 @@ public:
   void stop();
 
 private:
-  typedef std::queue<Watcher *> PendingDeletionWatchers;
-  PendingDeletionWatchers _pending_deletion_watchers;
+  typedef std::set<DeferredDelete *> DeferredDeletes;
+  DeferredDeletes _deferred_deletes;
 
-  typedef std::set<Watcher *> Watchers;
-  Watchers _watchers;
+  typedef std::queue<DeferredDelete *> PendingDeletes;
+  PendingDeletes _pending_deletes;
 
   typedef std::multimap<time_t, TimerWatcher *> TimerWatchers;
   TimerWatchers _timer_watchers;

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 03:45:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 06:08:09 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/28 15:24:00 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,6 @@ namespace ftev {
 
 WritePipe::WritePipe(EventLoop &loop, int fd)
     : IOWatcher(loop), _fd(fd), _draining(false) {
-  int flags;
-  flags = fcntl(_fd, F_GETFL);
-  if (unlikely(flags == -1))
-    throw ftpp::OSError(_fd, "fcntl");
-  if (unlikely(fcntl(_fd, F_SETFL, flags | O_NONBLOCK) == -1))
-    throw ftpp::OSError(_fd, "fcntl");
 }
 
 WritePipe::~WritePipe() {

@@ -6,14 +6,14 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 03:45:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 04:26:07 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/28 22:17:18 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <ftev/EventLoop.hpp>
-#include <ftev/Watchers/IOWatcher.hpp>
+#include <ftev/EventLoop/IOWatcher.hpp>
 
 namespace ftev {
 
@@ -28,7 +28,6 @@ public:
   virtual ~WritePipe();
 
   using IOWatcher::loop;
-  using IOWatcher::release;
 
   void on_read();
   void on_write();

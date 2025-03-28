@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 03:37:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 20:46:08 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/28 15:23:51 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,6 @@ std::size_t const ReadPipe::_chank_size = 4096;
 
 ReadPipe::ReadPipe(EventLoop &loop, int fd)
     : IOWatcher(loop), _fd(fd), _received_eof(false) {
-  int flags;
-  flags = fcntl(_fd, F_GETFL);
-  if (unlikely(flags == -1))
-    throw ftpp::OSError(_fd, "fcntl");
-  if (unlikely(fcntl(_fd, F_SETFL, flags | O_NONBLOCK) == -1))
-    throw ftpp::OSError(_fd, "fcntl");
   start(fd, ftpp::Selector::READ);
 }
 

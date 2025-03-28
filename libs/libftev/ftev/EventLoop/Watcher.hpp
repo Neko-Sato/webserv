@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/17 02:16:25 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/23 00:16:07 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/28 21:57:37 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,16 +29,6 @@ protected:
 
 public:
   virtual ~Watcher();
-
-  /*
-  It can only be used when allocating with new.
-  This is to avoid “use-after-free” when you want to discard in the callback.
-  Also, this is the same as delete, which must not be called more than once.
-  Using this, on_release is called at the appropriate time, and the opportunity
-  for resource release is given by this virtual function.
-  */
-  void release();
-  virtual void on_release();
 };
 
 } // namespace ftev

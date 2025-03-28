@@ -6,11 +6,12 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 23:50:15 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 20:43:07 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/28 18:25:20 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ftev/Stream/StreamConnection.hpp>
+#include <ftev/utils/utils.hpp>
 
 #include <ftpp/exceptions/OSError.hpp>
 #include <ftpp/format/Format.hpp>
@@ -27,14 +28,9 @@ std::size_t const StreamConnection::_chank_size = 4096;
 StreamConnection::StreamConnection(EventLoop &loop, ftpp::Socket &socket)
     : IOWatcher(loop), _received_eof(false), _draining(false) {
   _socket.swap(socket);
-  int fd = _socket.getSockfd();
-  int flags;
-  flags = fcntl(fd, F_GETFL);
-  if (unlikely(flags == -1))
-    throw ftpp::OSError(fd, "fcntl");
-  if (unlikely(fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1))
-    throw ftpp::OSError(fd, "fcntl");
-  start(fd, ftpp::Selector::READ);
+  int sockfd = _socket.getSockfd();
+  setblocking(sockfd, false);
+  start(sockfd, ftpp::Selector::READ);
 }
 
 StreamConnection::~StreamConnection() {
@@ -85,18 +81,6 @@ void StreamConnection::on_write() {
       on_drain();
     }
   }
-}
-
-void StreamConnection::on_except() {
-#if defined(FT_SUBJECT_NOT_COMPLIANT)
-  int error = 0;
-  socklen_t len = sizeof(error);
-  _socket.getsockopt(SOL_SOCKET, SO_ERROR, &error, &len);
-  if (error)
-    on_error(ftpp::OSError(error));
-  else
-#endif
-    on_error(std::runtime_error("unkown error"));
 }
 
 void StreamConnection::resume() {

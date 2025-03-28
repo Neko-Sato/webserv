@@ -6,12 +6,12 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 00:31:00 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/23 00:17:44 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/28 22:15:01 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ftev/EventLoop.hpp>
-#include <ftev/Watchers/SignalWatcher.hpp>
+#include <ftev/EventLoop/SignalWatcher.hpp>
 
 #include <ftpp/exceptions/OSError.hpp>
 #include <ftpp/macros.hpp>
