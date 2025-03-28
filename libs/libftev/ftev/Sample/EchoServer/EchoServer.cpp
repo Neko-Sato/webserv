@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 04:11:13 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 06:38:30 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/29 02:28:36 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 namespace ftev {
 
 EchoConnection::EchoConnection(EventLoop &loop, ftpp::Socket &socket)
-    : StreamConnection(loop, socket) {
+    : TCPConnection(loop, socket), DeferredDelete(loop) {
   ftpp::logger(ftpp::Logger::INFO, "EchoConnection create");
 }
 
@@ -27,22 +27,22 @@ EchoConnection::~EchoConnection() {
 }
 
 void EchoConnection::on_data(std::vector<char> const &data) {
-  write(data.data(), data.size());
+  StreamConnection &conn = getHandler();
+  conn.write(data.data(), data.size());
   ftpp::logger(ftpp::Logger::INFO, ftpp::Format("EchoConnection: recv: {}") %
                                        std::string(data.begin(), data.end()));
 }
 
 void EchoConnection::on_eof() {
-  drain();
+  StreamConnection &conn = getHandler();
+  conn.drain();
 }
 
 void EchoConnection::on_drain() {
   release();
 }
 
-void EchoConnection::on_error(std::exception const &exce) {
-  ftpp::logger(ftpp::Logger::ERROR,
-               ftpp::Format("EchoConnection: {}") % exce.what());
+void EchoConnection::on_except() {
   release();
 }
 

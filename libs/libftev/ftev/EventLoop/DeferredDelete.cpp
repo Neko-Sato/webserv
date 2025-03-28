@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 21:58:01 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/28 22:15:01 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/28 22:29:13 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,6 @@ EventLoop::DeferredDelete::~DeferredDelete() {
 
 void EventLoop::DeferredDelete::release() {
   loop._pending_deletes.push(this);
-}
-
-void EventLoop::DeferredDelete::on_release() {
-  delete this;
 }
 
 } // namespace ftev

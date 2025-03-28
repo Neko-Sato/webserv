@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 04:36:16 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 07:05:09 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/29 02:31:52 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,9 @@ SimpleClient::Timer::~Timer() {
 
 void SimpleClient::Timer::on_timeout() {
   std::string tmp = ftpp::Format("Timer: {}") % _count++;
-  Handler &handler = _connection.getHandler();
-  handler.write(tmp.data(), tmp.size());
-  handler.drain();
+  StreamConnection &conn = _connection.getHandler();
+  conn.write(tmp.data(), tmp.size());
+  conn.drain();
 }
 
 SimpleClient::SimpleClient(EventLoop &loop, std::string const &host, int port)
@@ -57,12 +57,10 @@ void SimpleClient::on_eof() {
   ftpp::logger(ftpp::Logger::INFO, "recv: eof");
 }
 
-// on_error must guarantee that no more calls to the handler will occur
-void SimpleClient::on_error(std::exception const &exce) {
+void SimpleClient::on_except() {
   if (_timer->is_active())
     _timer->cancel();
-  ftpp::logger(ftpp::Logger::ERROR,
-               ftpp::Format("SimpleClient: {}") % exce.what());
+  ftpp::logger(ftpp::Logger::ERROR, "SimpleClient: error");
   loop.stop();
 }
 

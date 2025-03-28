@@ -6,18 +6,19 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 04:11:13 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 06:38:16 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/28 22:38:43 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <ftev/Stream/StreamConnection.hpp>
+#include <ftev/EventLoop/DeferredDelete.hpp>
+#include <ftev/Stream/TCPConnection.hpp>
 #include <ftev/Stream/TCPServer.hpp>
 
 namespace ftev {
 
-class EchoConnection : public StreamConnection {
+class EchoConnection : public TCPConnection, public EventLoop::DeferredDelete {
 public:
   EchoConnection(EventLoop &loop, ftpp::Socket &socket);
   ~EchoConnection();
@@ -25,7 +26,7 @@ public:
   void on_data(std::vector<char> const &data);
   void on_eof();
   void on_drain();
-  void on_error(std::exception const &exce);
+  void on_except();
   void on_release();
 };
 

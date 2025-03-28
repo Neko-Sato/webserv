@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 02:03:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 06:47:23 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/29 02:37:40 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,14 +45,8 @@ void TCPConnection::Handler::on_drain() {
   _connection.on_drain();
 }
 
-void TCPConnection::Handler::on_error(std::exception const &exce) {
-  _connection.on_error(exce);
-  _connection._handler = NULL;
-  release();
-}
-
-void TCPConnection::Handler::on_release() {
-  delete this;
+void TCPConnection::Handler::on_except() {
+  _connection.on_except();
 }
 
 TCPConnection::TCPConnection(EventLoop &loop, std::string const &host, int port)
@@ -81,11 +75,16 @@ TCPConnection::TCPConnection(EventLoop &loop, std::string const &host, int port)
   throw std::runtime_error("TCPConnection");
 }
 
+TCPConnection::TCPConnection(EventLoop &loop, ftpp::Socket &socket)
+    : loop(loop), _handler(NULL) {
+  _handler = new Handler(loop, socket, *this);
+}
+
 TCPConnection::~TCPConnection() {
   delete _handler;
 }
 
-TCPConnection::Handler &TCPConnection::getHandler() {
+StreamConnection &TCPConnection::getHandler() {
   assert(_handler);
   return *_handler;
 }

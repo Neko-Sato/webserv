@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 02:03:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 06:33:43 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/28 22:45:00 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 namespace ftev {
 
 class TCPConnection : private ftpp::NonCopyable {
-public:
+private:
   class Handler : public StreamConnection {
   private:
     TCPConnection &_connection;
@@ -33,10 +33,10 @@ public:
     void on_data(std::vector<char> const &data);
     void on_eof();
     void on_drain();
-    void on_error(std::exception const &exce);
-    void on_release();
+    void on_except();
   };
 
+public:
   EventLoop &loop;
 
 private:
@@ -44,14 +44,17 @@ private:
 
   TCPConnection();
 
-public:
+protected:
   TCPConnection(EventLoop &loop, std::string const &host, int port);
+  TCPConnection(EventLoop &loop, ftpp::Socket &socket);
+
+public:
   virtual ~TCPConnection();
 
-  Handler &getHandler();
+  StreamConnection &getHandler();
   virtual void on_data(std::vector<char> const &data) = 0;
   virtual void on_eof() = 0;
-  virtual void on_error(std::exception const &exce) = 0;
+  virtual void on_except() = 0;
   virtual void on_drain() = 0;
 };
 

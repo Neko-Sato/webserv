@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 23:50:15 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/28 22:17:18 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/28 22:44:15 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,10 @@ class StreamServer : private EventLoop::IOWatcher {
 private:
   ftpp::Socket _socket;
 
-public:
+protected:
   StreamServer(EventLoop &loop, ftpp::Socket &socket);
+
+public:
   virtual ~StreamServer();
 
   using IOWatcher::loop;

@@ -6,14 +6,14 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 04:36:16 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 06:42:34 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/29 02:31:19 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <ftev/Stream/TCPConnection.hpp>
-#include <ftev/Watchers/TimerWatcher.hpp>
+#include <ftev/EventLoop/TimerWatcher.hpp>
 
 namespace ftev {
 
@@ -39,8 +39,8 @@ public:
 
   void on_data(std::vector<char> const &data);
   void on_eof();
-  void on_error(std::exception const &exce);
   void on_drain();
+  void on_except();
 };
 
 } // namespace ftev

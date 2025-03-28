@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 02:03:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 06:26:30 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/28 22:32:04 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 #include <ftpp/socket/Socket.hpp>
 #include <ftpp/string/string.hpp>
 
+#include <cassert>
 #include <fcntl.h>
 
 namespace ftev {
@@ -40,15 +41,8 @@ void TCPServer::Handler::on_connect(ftpp::Socket &conn) {
   }
 }
 
-void TCPServer::Handler::on_error(std::exception const &exce) {
-  ftpp::logger(ftpp::Logger::ERROR,
-               ftpp::Format("TCPServer: {}") % exce.what());
-  release();
-  _server._handlers.remove(this);
-}
-
-void TCPServer::Handler::on_release() {
-  delete this;
+void TCPServer::Handler::on_except() {
+  assert(false);
 }
 
 TCPServer::TCPServer(EventLoop &loop, std::string const &host, int port)
