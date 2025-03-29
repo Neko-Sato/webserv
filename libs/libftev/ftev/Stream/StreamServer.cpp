@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 23:50:15 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/28 18:25:35 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/30 02:13:24 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void StreamServer::on_read() {
     ftpp::logger(ftpp::Logger::ERROR,
                  ftpp::Format("StreamServer: {}") % e.what());
     return;
-  } 
+  }
   on_connect(conn);
 }
 
