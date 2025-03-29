@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 23:58:20 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/22 23:58:56 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/30 01:20:07 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,9 @@ Selector::~Selector() {
 }
 
 void Selector::add(int fd, event_t events) {
-  if (!_fds.insert(std::make_pair(fd, events & (READ | WRITE))).second)
+  events &= READ | WRITE;
+  events |= EXCEPT;
+  if (!_fds.insert(std::make_pair(fd, events)).second)
     throw RegisteredError();
 }
 
@@ -42,7 +44,9 @@ void Selector::modify(int fd, event_t events) {
   Mapping::iterator it = _fds.find(fd);
   if (it == _fds.end())
     throw NotRegisteredError();
-  it->second = events & (READ | WRITE);
+  events &= READ | WRITE;
+  events |= EXCEPT;
+  it->second = events;
 }
 
 Selector::Mapping const &Selector::getMap() const {

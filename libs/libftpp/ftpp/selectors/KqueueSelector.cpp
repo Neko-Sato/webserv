@@ -6,15 +6,15 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/23 00:01:02 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/30 01:46:45 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#if defined(__APPLE__) || defined(__FreeBSD__)
 
 #include <ftpp/exceptions/OSError.hpp>
 #include <ftpp/macros.hpp>
 #include <ftpp/selectors/KqueueSelector.hpp>
-
-#if defined(__APPLE__) || defined(__FreeBSD__)
 
 #include <stdexcept>
 #include <sys/event.h>

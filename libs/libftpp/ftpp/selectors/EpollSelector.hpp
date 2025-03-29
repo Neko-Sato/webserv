@@ -6,15 +6,15 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 17:23:36 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/23 00:00:26 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/30 01:46:31 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <ftpp/selectors/Selector.hpp>
-
 #if defined(__linux__)
+
+#include <ftpp/selectors/Selector.hpp>
 
 namespace ftpp {
 

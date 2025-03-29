@@ -6,15 +6,15 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/23 00:00:47 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/30 01:46:23 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#if defined(__linux__)
 
 #include <ftpp/exceptions/OSError.hpp>
 #include <ftpp/macros.hpp>
 #include <ftpp/selectors/EpollSelector.hpp>
-
-#if defined(__linux__)
 
 #include <fcntl.h>
 #include <sys/epoll.h>
@@ -51,16 +51,15 @@ EpollSelector::~EpollSelector() {
 }
 
 void EpollSelector::add(int fd, event_t events) {
-  events &= READ | WRITE;
   Selector::add(fd, events);
   try {
     epoll_event ev;
-    ev.events = 0;
+    ev.data.fd = fd;
+    ev.events = EPOLLHUP | EPOLLERR;
     if (events & READ)
       ev.events |= EPOLLIN;
     if (events & WRITE)
       ev.events |= EPOLLOUT;
-    ev.data.fd = fd;
     if (unlikely(epoll_ctl(_epfd, EPOLL_CTL_ADD, fd, &ev) == -1))
       throw OSError(errno, "epoll_ctl");
   } catch (...) {
@@ -80,15 +79,14 @@ void EpollSelector::remove(int fd) {
 }
 
 void EpollSelector::modify(int fd, event_t events) {
-  events &= READ | WRITE;
   Selector::modify(fd, events);
   epoll_event ev;
-  ev.events = 0;
+  ev.data.fd = fd;
+  ev.events = EPOLLHUP | EPOLLERR;
   if (events & READ)
     ev.events |= EPOLLIN;
   if (events & WRITE)
     ev.events |= EPOLLOUT;
-  ev.data.fd = fd;
   try {
     if (unlikely(epoll_ctl(_epfd, EPOLL_CTL_MOD, fd, &ev) == -1))
       throw OSError(errno, "epoll_ctl");
@@ -115,7 +113,8 @@ void EpollSelector::select(Events &events, int timeout) const {
       tmp.events |= WRITE;
     if (it->events & (EPOLLERR | EPOLLHUP))
       tmp.events |= EXCEPT;
-    events.push(tmp);
+    if (tmp.events)
+      events.push(tmp);
   }
 }
 

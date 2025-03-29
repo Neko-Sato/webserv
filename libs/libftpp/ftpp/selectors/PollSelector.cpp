@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/20 21:35:23 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/30 01:24:01 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,13 @@ void PollSelector::select(Events &events, int timeout) const {
   for (Mapping::const_iterator it = map.begin(); it != map.end(); ++it) {
     pollfd fd;
     fd.fd = it->first;
-    fd.events = POLLERR | POLLHUP;
+    fd.events = 0;
     if (it->second & READ)
       fd.events |= POLLIN;
     if (it->second & WRITE)
       fd.events |= POLLOUT;
+	if (it->second & EXCEPT)
+	  fd.events |= POLLERR | POLLHUP;
     fds.push_back(fd);
   }
   int nfds = poll(fds.data(), fds.size(), timeout);

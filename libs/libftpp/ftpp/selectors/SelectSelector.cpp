@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 23:35:50 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/20 21:09:09 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/30 01:22:49 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,8 @@ void SelectSelector::select(Events &events, int timeout) const {
       FD_SET(it->first, &readfds);
     if (it->second & WRITE)
       FD_SET(it->first, &writefds);
-    FD_SET(it->first, &exceptfds);
+    if (it->second & EXCEPT)
+      FD_SET(it->first, &exceptfds);
   }
   int nfds;
   if (timeout < 0)
