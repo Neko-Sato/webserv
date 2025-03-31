@@ -5,14 +5,14 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/01 01:07:13 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/01 01:44:45 by hshimizu         ###   ########.fr       */
+/*   Created: 2025/03/24 02:03:41 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/03/29 03:08:57 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ftev/Stream/TCPServer.hpp>
-
 #include <ftev/utils/utils.hpp>
+
 #include <ftpp/exceptions/OSError.hpp>
 #include <ftpp/format/Format.hpp>
 #include <ftpp/logger/Logger.hpp>
@@ -26,42 +26,67 @@
 
 namespace ftev {
 
-TCPServer::TCPServer(EventLoop &loop, const std::string &host, int port)
+TCPServer::Handler::Handler(EventLoop &loop, ftpp::Socket &socket,
+                            TCPServer &server)
+    : StreamServer(loop, socket), _server(server) {
+}
+
+TCPServer::Handler::~Handler() {
+}
+
+void TCPServer::Handler::on_connect(ftpp::Socket &conn) {
+  try {
+    setblocking(conn.getSockfd(), false);
+    _server.on_connect(conn);
+  } catch (std::exception const &e) {
+    ftpp::logger(ftpp::Logger::ERROR, ftpp::Format("TCPServer: {}") % e.what());
+  }
+}
+
+void TCPServer::Handler::on_except() {
+  assert(false);
+}
+
+TCPServer::TCPServer(EventLoop &loop, std::string const &host, int port)
     : loop(loop) {
   try {
     ftpp::AddrInfos::Hints hints(AF_UNSPEC, SOCK_STREAM, 0, AI_PASSIVE);
     ftpp::AddrInfos infos(host.c_str(), ftpp::to_string(port).c_str(), hints);
     for (ftpp::AddrInfos::iterator it = infos.begin(); it != infos.end();
          ++it) {
-      ftpp::Socket socket(it->ai_family, it->ai_socktype | SOCK_CLOEXEC,
-                          it->ai_protocol);
+      ftpp::Socket socket(it->ai_family, it->ai_socktype, it->ai_protocol);
       {
+        int sockfd = socket.getSockfd();
+        int flags = fcntl(sockfd, F_GETFD);
+        if (unlikely(flags == -1))
+          throw ftpp::OSError(sockfd, "fcntl");
+        if (unlikely(fcntl(sockfd, F_SETFD, flags | FD_CLOEXEC) == -1))
+          throw ftpp::OSError(sockfd, "fcntl");
         int opt = 1;
         socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+        setblocking(sockfd, false);
       }
-      setblocking(socket.getSockfd(), false);
       socket.bind(it->ai_addr, it->ai_addrlen);
       socket.listen();
-      StreamServerTransport *transport =
-          new StreamServerTransport(loop, *this, socket);
+      Handler *handler = new Handler(loop, socket, *this);
       try {
-        _transports.push_back(transport);
+        _handlers.push_back(handler);
       } catch (...) {
-        delete transport;
+        delete handler;
         throw;
       }
     }
   } catch (...) {
-    for (Transports::iterator it = _transports.begin(); it != _transports.end();
-         it = _transports.erase(it))
+    for (Handlers::iterator it = _handlers.begin(); it != _handlers.end();
+         it = _handlers.erase(it))
       delete *it;
     throw;
   }
 }
 
 TCPServer::~TCPServer() {
-  for (Transports::iterator it = _transports.begin(); it != _transports.end();
-       it = _transports.erase(it))
+  for (Handlers::iterator it = _handlers.begin(); it != _handlers.end();
+       it = _handlers.erase(it))
     delete *it;
 }
 

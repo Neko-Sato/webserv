@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   StreamConnection.cpp                               :+:      :+:    :+:   */
+/*   StreamTransport.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/22 23:50:15 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/28 18:25:20 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/31 18:03:36 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,29 +23,25 @@
 
 namespace ftev {
 
-std::size_t const StreamConnection::_chank_size = 4096;
-
-StreamConnection::StreamConnection(EventLoop &loop, ftpp::Socket &socket)
-    : IOWatcher(loop), _received_eof(false), _draining(false) {
-  _socket.swap(socket);
-  int sockfd = _socket.getSockfd();
-  setblocking(sockfd, false);
-  start(sockfd, ftpp::Selector::READ);
+StreamConnectionTransport::Handler::Handler(
+    EventLoop &loop, StreamConnectionTransport &transport)
+    : IOWatcher(loop), _transport(transport) {
+  start(transport._socket.getSockfd(), ftpp::Selector::READ);
 }
 
-StreamConnection::~StreamConnection() {
+StreamConnectionTransport::Handler::~Handler() {
   if (is_active())
     stop();
 }
 
-void StreamConnection::on_read() {
+void StreamConnectionTransport::Handler::on_read() {
   std::vector<char> chank;
   try {
-    chank.resize(_chank_size);
-    chank.resize(_socket.read(chank.data(), chank.size()));
+    chank.resize(_transport._chank_size);
+    chank.resize(_transport._socket.read(chank.data(), chank.size()));
   } catch (std::exception const &e) {
     ftpp::logger(ftpp::Logger::WARN,
-                 ftpp::Format("StreamConnection: {}") % e.what());
+                 ftpp::Format("StreamTransport: {}") % e.what());
     return;
   }
   if (chank.empty()) {
@@ -54,58 +50,77 @@ void StreamConnection::on_read() {
       modify(event);
     else
       stop();
-    _received_eof = true;
-    on_eof();
+    _transport._protocol.on_eof();
   } else
-    on_data(chank);
+    _transport._protocol.on_data(chank);
 }
 
-void StreamConnection::on_write() {
-  assert(!_buffer.empty());
+void StreamConnectionTransport::Handler::on_write() {
+  assert(!_transport._buffer.empty());
   try {
-    size_t size = _socket.write(_buffer.data(), _buffer.size());
-    _buffer.erase(_buffer.begin(), _buffer.begin() + size);
+    size_t size = _transport._socket.write(_transport._buffer.data(),
+                                           _transport._buffer.size());
+    _transport._buffer.erase(_transport._buffer.begin(),
+                             _transport._buffer.begin() + size);
   } catch (std::exception const &e) {
     ftpp::logger(ftpp::Logger::WARN,
-                 ftpp::Format("StreamConnection: {}") % e.what());
+                 ftpp::Format("StreamTransport: {}") % e.what());
     return;
   }
-  if (_buffer.empty()) {
+  if (_transport._buffer.empty()) {
     event_t event = get_events() & ~ftpp::Selector::WRITE;
     if (event)
       modify(event);
     else
       stop();
-    if (_draining) {
-      _draining = false;
-      on_drain();
+    if (_transport._draining) {
+      _transport._draining = false;
+      _transport._protocol.on_drain();
     }
   }
 }
 
-void StreamConnection::resume() {
-  assert(!_received_eof);
-  if (is_active()) {
-    event_t event = get_events();
+void StreamConnectionTransport::Handler::on_except() {
+  _transport._protocol.on_except();
+}
+
+std::size_t const StreamConnectionTransport::_chank_size = 4096;
+
+StreamConnectionTransport::StreamConnectionTransport(
+    EventLoop &loop, StreamConnectionProtocol &protocol, ftpp::Socket &socket)
+    : _protocol(protocol), _handler(NULL), _draining(false) {
+  _socket.swap(socket);
+  _handler = new Handler(loop, *this);
+}
+
+StreamConnectionTransport::~StreamConnectionTransport() {
+  delete _handler;
+}
+
+void StreamConnectionTransport::resume() {
+  assert(_handler);
+  if (_handler->is_active()) {
+    Handler::event_t event = _handler->get_events();
     if (!(event & ftpp::Selector::READ))
-      modify(event | ftpp::Selector::READ);
+      _handler->modify(event | ftpp::Selector::READ);
   } else
-    start(_socket.getSockfd(), ftpp::Selector::READ);
+    _handler->start(_socket.getSockfd(), ftpp::Selector::READ);
 }
 
-void StreamConnection::pause() {
-  assert(!_received_eof);
-  if (is_active()) {
-    event_t event = get_events() & ~ftpp::Selector::READ;
+void StreamConnectionTransport::pause() {
+  assert(_handler);
+  if (_handler->is_active()) {
+    Handler::event_t event = _handler->get_events() & ~ftpp::Selector::READ;
     if (event)
-      modify(event);
+      _handler->modify(event);
     else
-      stop();
+      _handler->stop();
   } else
-    start(_socket.getSockfd(), ftpp::Selector::READ);
+    _handler->start(_socket.getSockfd(), ftpp::Selector::READ);
 }
 
-void StreamConnection::write(char const *buffer, size_t size) {
+void StreamConnectionTransport::write(char const *buffer, size_t size) {
+  assert(_handler);
   assert(!_draining);
   if (!size)
     return;
@@ -128,25 +143,33 @@ void StreamConnection::write(char const *buffer, size_t size) {
       }
     } catch (std::exception const &e) {
       ftpp::logger(ftpp::Logger::WARN,
-                   ftpp::Format("StreamConnection: {}") % e.what());
+                   ftpp::Format("StreamTransport: {}") % e.what());
     }
   }
 #endif
   _buffer.insert(_buffer.end(), buffer, buffer + size);
-  if (is_active()) {
-    event_t event = get_events();
+  if (_handler->is_active()) {
+    Handler::event_t event = _handler->get_events();
     if (!(event & ftpp::Selector::WRITE))
-      modify(event | ftpp::Selector::WRITE);
+      _handler->modify(event | ftpp::Selector::WRITE);
   } else
-    start(_socket.getSockfd(), ftpp::Selector::WRITE);
+    _handler->start(_socket.getSockfd(), ftpp::Selector::WRITE);
 }
 
-void StreamConnection::drain() {
+void StreamConnectionTransport::drain() {
+  assert(_handler);
   assert(!_draining);
   if (_buffer.empty())
-    on_drain();
+    _protocol.on_drain();
   else
     _draining = true;
+}
+
+void StreamConnectionTransport::close() {
+  assert(_handler);
+  delete _handler;
+  _handler = NULL;
+  _socket.close();
 }
 
 } // namespace ftev

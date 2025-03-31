@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 02:03:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/29 03:06:38 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/03/31 10:42:39 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,8 +87,16 @@ TCPConnection::~TCPConnection() {
 }
 
 StreamConnection &TCPConnection::getHandler() {
-  assert(_handler);
+  if (!_handler)
+    throw std::runtime_error("TCPConnection: closed");
   return *_handler;
+}
+
+void TCPConnection::close() {
+  if (_handler) {
+    delete _handler;
+    _handler = NULL;
+  }
 }
 
 } // namespace ftev

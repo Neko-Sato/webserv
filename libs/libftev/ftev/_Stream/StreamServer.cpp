@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/01 00:47:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/01 01:17:44 by hshimizu         ###   ########.fr       */
+/*   Created: 2025/03/22 23:50:15 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/03/30 02:13:24 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,23 +23,26 @@
 
 namespace ftev {
 
-StreamServerTransport::Handler::Handler(EventLoop &loop,
-                                        StreamServerTransport &transport)
-    : IOWatcher(loop), _transport(transport) {
-  start(transport._socket.getSockfd(), ftpp::Selector::READ);
+StreamServer::StreamServer(EventLoop &loop, ftpp::Socket &socket)
+    : IOWatcher(loop) {
+  _socket.swap(socket);
+  int sockfd = _socket.getSockfd();
+  setblocking(sockfd, false);
+  start(sockfd, ftpp::Selector::READ);
 }
 
-StreamServerTransport::Handler::~Handler() {
+StreamServer::~StreamServer() {
   if (is_active())
     stop();
 }
 
-void StreamServerTransport::Handler::on_read() {
+void StreamServer::on_read() {
   ftpp::Socket conn;
   try {
-    _transport._socket.accept(conn);
+    _socket.accept(conn);
     int sockfd = conn.getSockfd();
-    int flags = fcntl(sockfd, F_GETFD);
+    int flags;
+    flags = fcntl(sockfd, F_GETFD);
     if (unlikely(flags == -1))
       throw ftpp::OSError(sockfd, "fcntl");
     if (unlikely(fcntl(sockfd, F_SETFD, flags | FD_CLOEXEC) == -1))
@@ -49,34 +52,15 @@ void StreamServerTransport::Handler::on_read() {
                  ftpp::Format("StreamServer: {}") % e.what());
     return;
   }
-  _transport._protocol.on_connect(conn);
+  on_connect(conn);
 }
 
-void StreamServerTransport::Handler::on_write() {
+void StreamServer::on_write() {
   assert(false);
 }
 
-void StreamServerTransport::Handler::on_except() {
+void StreamServer::on_except() {
   assert(false);
-}
-
-StreamServerTransport::StreamServerTransport(EventLoop &loop,
-                                             StreamServerProtocol &protocol,
-                                             ftpp::Socket &socket)
-    : _protocol(protocol), _handler(NULL) {
-  _socket.swap(socket);
-  _handler = new Handler(loop, *this);
-}
-
-StreamServerTransport::~StreamServerTransport() {
-  delete _handler;
-}
-
-void StreamServerTransport::close() {
-  assert(_handler);
-  delete _handler;
-  _handler = NULL;
-  _socket.close();
 }
 
 } // namespace ftev

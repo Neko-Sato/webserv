@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/01 01:07:13 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/01 01:44:29 by hshimizu         ###   ########.fr       */
+/*   Created: 2025/03/24 02:03:41 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/04/01 01:07:10 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,19 +21,36 @@
 
 namespace ftev {
 
-class TCPServer : public StreamServerProtocol, private ftpp::NonCopyable {
+class TCPServer : private ftpp::NonCopyable {
 private:
-  typedef std::list<StreamServerTransport *> Transports;
-  Transports _transports;
+  class Handler : public StreamServer {
+  private:
+    TCPServer &_server;
 
-  TCPServer();
+  public:
+    Handler(EventLoop &loop, ftpp::Socket &socket, TCPServer &server);
+    ~Handler();
+
+    void on_connect(ftpp::Socket &conn);
+    void on_except();
+  };
 
 public:
   EventLoop &loop;
 
+private:
+  typedef std::list<Handler *> Handlers;
+  Handlers _handlers;
+
+  TCPServer();
+
 protected:
-  TCPServer(EventLoop &loop, const std::string &host, int port);
-  ~TCPServer();
+  TCPServer(EventLoop &loop, std::string const &host, int port);
+
+public:
+  virtual ~TCPServer();
+
+  virtual void on_connect(ftpp::Socket &conn) = 0;
 };
 
 } // namespace ftev

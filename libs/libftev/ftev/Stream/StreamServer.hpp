@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/22 23:50:15 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/28 22:44:15 by hshimizu         ###   ########.fr       */
+/*   Created: 2025/04/01 00:47:33 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/04/01 01:04:17 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,27 +15,40 @@
 #include <ftev/EventLoop.hpp>
 #include <ftev/EventLoop/IOWatcher.hpp>
 
+#include <ftpp/noncopyable/NonCopyable.hpp>
 #include <ftpp/socket/Socket.hpp>
 
 namespace ftev {
 
-class StreamServer : private EventLoop::IOWatcher {
-private:
-  ftpp::Socket _socket;
-
-protected:
-  StreamServer(EventLoop &loop, ftpp::Socket &socket);
-
-public:
-  virtual ~StreamServer();
-
-  using IOWatcher::loop;
-
-  void on_read();
-  void on_write();
-  void on_except();
-
+struct StreamServerProtocol {
   virtual void on_connect(ftpp::Socket &conn) = 0;
 };
 
-}; // namespace ftev
+class StreamServerTransport : private ftpp::NonCopyable {
+private:
+  class Handler : public EventLoop::IOWatcher {
+  private:
+    StreamServerTransport &_transport;
+
+  public:
+    Handler(EventLoop &loop, StreamServerTransport &transport);
+    ~Handler();
+
+    void on_read();
+    void on_write();
+    void on_except();
+  };
+
+  StreamServerProtocol &_protocol;
+  ftpp::Socket _socket;
+  Handler *_handler;
+
+public:
+  StreamServerTransport(EventLoop &loop, StreamServerProtocol &protocol,
+                        ftpp::Socket &socket);
+  ~StreamServerTransport();
+
+  void close();
+};
+
+} // namespace ftev

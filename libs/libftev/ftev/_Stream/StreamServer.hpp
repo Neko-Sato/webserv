@@ -1,39 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   TCPServer.hpp                                      :+:      :+:    :+:   */
+/*   StreamServer.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/01 01:07:13 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/01 01:44:29 by hshimizu         ###   ########.fr       */
+/*   Created: 2025/03/22 23:50:15 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/03/28 22:44:15 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <ftev/Stream/StreamServer.hpp>
+#include <ftev/EventLoop.hpp>
+#include <ftev/EventLoop/IOWatcher.hpp>
 
-#include <ftpp/noncopyable/NonCopyable.hpp>
-
-#include <list>
-#include <string>
+#include <ftpp/socket/Socket.hpp>
 
 namespace ftev {
 
-class TCPServer : public StreamServerProtocol, private ftpp::NonCopyable {
+class StreamServer : private EventLoop::IOWatcher {
 private:
-  typedef std::list<StreamServerTransport *> Transports;
-  Transports _transports;
-
-  TCPServer();
-
-public:
-  EventLoop &loop;
+  ftpp::Socket _socket;
 
 protected:
-  TCPServer(EventLoop &loop, const std::string &host, int port);
-  ~TCPServer();
+  StreamServer(EventLoop &loop, ftpp::Socket &socket);
+
+public:
+  virtual ~StreamServer();
+
+  using IOWatcher::loop;
+
+  void on_read();
+  void on_write();
+  void on_except();
+
+  virtual void on_connect(ftpp::Socket &conn) = 0;
 };
 
-} // namespace ftev
+}; // namespace ftev
