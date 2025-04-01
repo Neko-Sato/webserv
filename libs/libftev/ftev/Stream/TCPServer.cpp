@@ -6,17 +6,14 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 01:07:13 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/01 01:44:45 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/02 08:26:19 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ftev/Stream/TCPServer.hpp>
-
 #include <ftev/utils/utils.hpp>
+
 #include <ftpp/exceptions/OSError.hpp>
-#include <ftpp/format/Format.hpp>
-#include <ftpp/logger/Logger.hpp>
-#include <ftpp/macros.hpp>
 #include <ftpp/socket/AddrInfos.hpp>
 #include <ftpp/socket/Socket.hpp>
 #include <ftpp/string/string.hpp>
