@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 01:07:13 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/01 22:59:38 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/02 08:22:08 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ protected:
   TCPServer(EventLoop &loop, const std::string &host, int port);
 
 public:
-  ~TCPServer();
+  virtual ~TCPServer();
 };
 
 } // namespace ftev

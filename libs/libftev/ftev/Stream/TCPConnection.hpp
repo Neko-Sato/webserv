@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 01:47:05 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/01 23:48:17 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/02 08:21:58 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ protected:
   TCPConnection(EventLoop &loop, ftpp::Socket &socket);
 
 public:
-  ~TCPConnection();
+  virtual ~TCPConnection();
 
   StreamConnectionTransport &get_transport();
 };
