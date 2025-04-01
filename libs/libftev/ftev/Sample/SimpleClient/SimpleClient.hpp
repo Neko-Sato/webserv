@@ -6,14 +6,14 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 04:36:16 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/29 02:31:19 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/01 23:56:30 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <ftev/Stream/TCPConnection.hpp>
 #include <ftev/EventLoop/TimerWatcher.hpp>
+#include <ftev/Stream/TCPConnection.hpp>
 
 namespace ftev {
 
@@ -21,11 +21,11 @@ class SimpleClient : public TCPConnection {
 private:
   class Timer : public EventLoop::TimerWatcher {
   private:
-    SimpleClient &_connection;
+    StreamConnectionTransport &_transport;
     std::size_t _count;
 
   public:
-    Timer(EventLoop &loop, SimpleClient &connection);
+    Timer(EventLoop &loop, StreamConnectionTransport &transport);
     ~Timer();
 
     void on_timeout();

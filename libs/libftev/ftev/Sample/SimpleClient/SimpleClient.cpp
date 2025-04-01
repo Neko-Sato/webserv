@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 04:36:16 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/29 02:31:52 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/02 00:08:37 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,9 @@
 
 namespace ftev {
 
-SimpleClient::Timer::Timer(EventLoop &loop, SimpleClient &connection)
-    : EventLoop::TimerWatcher(loop), _connection(connection), _count(0) {
+SimpleClient::Timer::Timer(EventLoop &loop,
+                           StreamConnectionTransport &transport)
+    : EventLoop::TimerWatcher(loop), _transport(transport), _count(0) {
   start(0);
 }
 
@@ -30,9 +31,8 @@ SimpleClient::Timer::~Timer() {
 
 void SimpleClient::Timer::on_timeout() {
   std::string tmp = ftpp::Format("Timer: {}") % _count++;
-  StreamConnection &conn = _connection.getHandler();
-  conn.write(tmp.data(), tmp.size());
-  conn.drain();
+  _transport.write(tmp.data(), tmp.size());
+  _transport.drain();
 }
 
 SimpleClient::SimpleClient(EventLoop &loop, std::string const &host, int port)
@@ -40,7 +40,7 @@ SimpleClient::SimpleClient(EventLoop &loop, std::string const &host, int port)
   ftpp::logger(ftpp::Logger::INFO,
                ftpp::Format("SimpleClient connected: (host: {}, port: {})") %
                    host % port);
-  _timer = new Timer(loop, *this);
+  _timer = new Timer(loop, get_transport());
 }
 
 SimpleClient::~SimpleClient() {
@@ -58,9 +58,11 @@ void SimpleClient::on_eof() {
 }
 
 void SimpleClient::on_except() {
+  ftpp::logger(ftpp::Logger::ERROR, "SimpleClient: error");
+  StreamConnectionTransport &transport = get_transport();
   if (_timer->is_active())
     _timer->cancel();
-  ftpp::logger(ftpp::Logger::ERROR, "SimpleClient: error");
+  transport.close();
   loop.stop();
 }
 

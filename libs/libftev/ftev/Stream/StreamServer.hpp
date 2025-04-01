@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:47:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/01 01:04:17 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/01 22:53:42 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ private:
   StreamServerProtocol &_protocol;
   ftpp::Socket _socket;
   Handler *_handler;
+  bool _closed;
 
 public:
   StreamServerTransport(EventLoop &loop, StreamServerProtocol &protocol,

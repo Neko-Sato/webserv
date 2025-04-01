@@ -47,6 +47,7 @@ private:
   StreamConnectionProtocol &_protocol;
   ftpp::Socket _socket;
   Handler *_handler;
+  bool _closed;
   std::vector<char> _buffer;
   bool _draining;
 

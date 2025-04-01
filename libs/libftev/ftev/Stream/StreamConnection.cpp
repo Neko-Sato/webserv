@@ -88,7 +88,7 @@ std::size_t const StreamConnectionTransport::_chank_size = 4096;
 
 StreamConnectionTransport::StreamConnectionTransport(
     EventLoop &loop, StreamConnectionProtocol &protocol, ftpp::Socket &socket)
-    : _protocol(protocol), _handler(NULL), _draining(false) {
+    : _protocol(protocol), _handler(NULL), _closed(false), _draining(false) {
   _socket.swap(socket);
   _handler = new Handler(loop, *this);
 }
@@ -98,7 +98,8 @@ StreamConnectionTransport::~StreamConnectionTransport() {
 }
 
 void StreamConnectionTransport::resume() {
-  assert(_handler);
+  if (_closed)
+    throw std::runtime_error("already closed");
   if (_handler->is_active()) {
     Handler::event_t event = _handler->get_events();
     if (!(event & ftpp::Selector::READ))
@@ -108,7 +109,8 @@ void StreamConnectionTransport::resume() {
 }
 
 void StreamConnectionTransport::pause() {
-  assert(_handler);
+  if (_closed)
+    throw std::runtime_error("already closed");
   if (_handler->is_active()) {
     Handler::event_t event = _handler->get_events() & ~ftpp::Selector::READ;
     if (event)
@@ -120,7 +122,8 @@ void StreamConnectionTransport::pause() {
 }
 
 void StreamConnectionTransport::write(char const *buffer, size_t size) {
-  assert(_handler);
+  if (_closed)
+    throw std::runtime_error("already closed");
   assert(!_draining);
   if (!size)
     return;
@@ -157,7 +160,8 @@ void StreamConnectionTransport::write(char const *buffer, size_t size) {
 }
 
 void StreamConnectionTransport::drain() {
-  assert(_handler);
+  if (_closed)
+    throw std::runtime_error("already closed");
   assert(!_draining);
   if (_buffer.empty())
     _protocol.on_drain();
@@ -166,10 +170,12 @@ void StreamConnectionTransport::drain() {
 }
 
 void StreamConnectionTransport::close() {
-  assert(_handler);
-  delete _handler;
-  _handler = NULL;
+  if (_closed)
+    throw std::runtime_error("already closed");
+  if (_handler->is_active())
+    _handler->stop();
   _socket.close();
+  _closed = true;
 }
 
 } // namespace ftev

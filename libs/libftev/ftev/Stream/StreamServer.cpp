@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:47:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/01 01:17:44 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/02 00:00:35 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void StreamServerTransport::Handler::on_except() {
 StreamServerTransport::StreamServerTransport(EventLoop &loop,
                                              StreamServerProtocol &protocol,
                                              ftpp::Socket &socket)
-    : _protocol(protocol), _handler(NULL) {
+    : _protocol(protocol), _handler(NULL), _closed(false) {
   _socket.swap(socket);
   _handler = new Handler(loop, *this);
 }
@@ -73,10 +73,12 @@ StreamServerTransport::~StreamServerTransport() {
 }
 
 void StreamServerTransport::close() {
-  assert(_handler);
-  delete _handler;
-  _handler = NULL;
+  if (_closed)
+    throw std::runtime_error("already closed");
+  if (_handler->is_active())
+    _handler->stop();
   _socket.close();
+  _closed = true;
 }
 
 } // namespace ftev

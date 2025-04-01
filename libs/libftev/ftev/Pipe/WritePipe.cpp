@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 03:45:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/28 15:24:00 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/02 00:27:18 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,47 +19,75 @@
 
 #include <cassert>
 #include <fcntl.h>
+#include <stdexcept>
 
 namespace ftev {
 
-WritePipe::WritePipe(EventLoop &loop, int fd)
-    : IOWatcher(loop), _fd(fd), _draining(false) {
+WritePipeTransport::Handler::Handler(EventLoop &loop,
+                                     WritePipeTransport &transport)
+    : IOWatcher(loop), _transport(transport) {
 }
 
-WritePipe::~WritePipe() {
+WritePipeTransport::Handler::~Handler() {
   if (is_active())
     stop();
 }
 
-void WritePipe::on_read() {
+void WritePipeTransport::Handler::on_read() {
   assert(false);
 }
 
-void WritePipe::on_write() {
-  assert(!_buffer.empty());
+void WritePipeTransport::Handler::on_write() {
+  assert(!_transport._buffer.empty());
   try {
-    ssize_t size = ::write(_fd, _buffer.data(), _buffer.size());
-    if (size < 0)
+    ssize_t size = ::write(_transport._fd, _transport._buffer.data(),
+                           _transport._buffer.size());
+    if (unlikely(size == -1))
+#if defined(FT_SUBJECT_NOT_COMPLIANT)
       throw ftpp::OSError(errno, "write");
-    _buffer.erase(_buffer.begin(), _buffer.begin() + size);
+#else
+      throw std::runtime_error("write: No access to error details");
+#endif
+    _transport._buffer.erase(_transport._buffer.begin(),
+                             _transport._buffer.begin() + size);
   } catch (std::exception const &e) {
-    ftpp::logger(ftpp::Logger::WARN, ftpp::Format("WritePipe: {}") % e.what());
+    ftpp::logger(ftpp::Logger::WARN,
+                 ftpp::Format("StreamTransport: {}") % e.what());
     return;
   }
-  if (_buffer.empty()) {
+  if (_transport._buffer.empty()) {
     event_t event = get_events() & ~ftpp::Selector::WRITE;
     if (event)
       modify(event);
     else
       stop();
-    if (_draining) {
-      _draining = false;
-      on_drain();
+    if (_transport._draining) {
+      _transport._draining = false;
+      _transport._protocol.on_drain();
     }
   }
 }
 
-void WritePipe::write(char const *buffer, size_t size) {
+void WritePipeTransport::Handler::on_except() {
+  _transport._protocol.on_except();
+}
+
+WritePipeTransport::WritePipeTransport(EventLoop &loop,
+                                       WritePipeProtocol &protocol, int fd)
+    : _protocol(protocol), _fd(fd), _handler(NULL), _closed(false),
+      _draining(false) {
+  _handler = new Handler(loop, *this);
+}
+
+WritePipeTransport::~WritePipeTransport() {
+  delete _handler;
+  if (!_closed)
+    ::close(_fd);
+}
+
+void WritePipeTransport::write(char const *buffer, size_t size) {
+  if (_closed)
+    throw std::runtime_error("already closed");
   assert(!_draining);
   if (!size)
     return;
@@ -68,9 +96,9 @@ void WritePipe::write(char const *buffer, size_t size) {
     try {
       try {
         ssize_t written = ::write(_fd, buffer, size);
-        if (written < 0)
+        if (unlikely(written == -1))
           throw ftpp::OSError(errno, "write");
-        if (static_cast<std::size_t>(written) == size)
+        else if (static_cast<size_t>(written) == size)
           return;
         buffer += written;
         size -= written;
@@ -84,25 +112,36 @@ void WritePipe::write(char const *buffer, size_t size) {
       }
     } catch (std::exception const &e) {
       ftpp::logger(ftpp::Logger::WARN,
-                   ftpp::Format("Write Pipe: {}") % e.what());
+                   ftpp::Format("StreamTransport: {}") % e.what());
     }
   }
 #endif
   _buffer.insert(_buffer.end(), buffer, buffer + size);
-  if (is_active()) {
-    event_t event = get_events();
+  if (_handler->is_active()) {
+    Handler::event_t event = _handler->get_events();
     if (!(event & ftpp::Selector::WRITE))
-      modify(event | ftpp::Selector::WRITE);
+      _handler->modify(event | ftpp::Selector::WRITE);
   } else
-    start(_fd, ftpp::Selector::WRITE);
+    _handler->start(_fd, ftpp::Selector::WRITE);
 }
 
-void WritePipe::drain() {
+void WritePipeTransport::drain() {
+  if (_closed)
+    throw std::runtime_error("already closed");
   assert(!_draining);
   if (_buffer.empty())
-    on_drain();
+    _protocol.on_drain();
   else
     _draining = true;
+}
+
+void WritePipeTransport::close() {
+  if (_closed)
+    throw std::runtime_error("already closed");
+  if (_handler->is_active())
+    _handler->stop();
+  ::close(_fd);
+  _closed = true;
 }
 
 } // namespace ftev

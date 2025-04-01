@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 04:11:13 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/29 02:28:36 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/01 23:54:45 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,22 +27,26 @@ EchoConnection::~EchoConnection() {
 }
 
 void EchoConnection::on_data(std::vector<char> const &data) {
-  StreamConnection &conn = getHandler();
-  conn.write(data.data(), data.size());
+  StreamConnectionTransport &transport = get_transport();
+  transport.write(data.data(), data.size());
   ftpp::logger(ftpp::Logger::INFO, ftpp::Format("EchoConnection: recv: {}") %
                                        std::string(data.begin(), data.end()));
 }
 
 void EchoConnection::on_eof() {
-  StreamConnection &conn = getHandler();
-  conn.drain();
+  StreamConnectionTransport &transport = get_transport();
+  transport.drain();
 }
 
 void EchoConnection::on_drain() {
+  StreamConnectionTransport &transport = get_transport();
+  transport.close();
   release();
 }
 
 void EchoConnection::on_except() {
+  StreamConnectionTransport &transport = get_transport();
+  transport.close();
   release();
 }
 

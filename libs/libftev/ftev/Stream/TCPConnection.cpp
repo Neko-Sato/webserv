@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/24 02:03:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/31 10:42:39 by hshimizu         ###   ########.fr       */
+/*   Created: 2025/04/01 01:47:05 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/04/02 00:05:00 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,77 +26,38 @@
 
 namespace ftev {
 
-TCPConnection::Handler::Handler(EventLoop &loop, ftpp::Socket &socket,
-                                TCPConnection &connection)
-    : StreamConnection(loop, socket), _connection(connection) {
-}
-
-TCPConnection::Handler::~Handler() {
-}
-
-void TCPConnection::Handler::on_data(std::vector<char> const &data) {
-  _connection.on_data(data);
-}
-
-void TCPConnection::Handler::on_eof() {
-  _connection.on_eof();
-}
-
-void TCPConnection::Handler::on_drain() {
-  _connection.on_drain();
-}
-
-void TCPConnection::Handler::on_except() {
-  _connection.on_except();
-}
-
 TCPConnection::TCPConnection(EventLoop &loop, std::string const &host, int port)
-    : loop(loop), _handler(NULL) {
+    : loop(loop), _transport(NULL) {
   ftpp::AddrInfos::Hints hints(AF_UNSPEC, SOCK_STREAM, 0, AI_PASSIVE);
   ftpp::AddrInfos infos(host.c_str(), ftpp::to_string(port).c_str(), hints);
   for (ftpp::AddrInfos::iterator it = infos.begin(); it != infos.end(); ++it) {
-    ftpp::Socket socket(it->ai_family, it->ai_socktype, it->ai_protocol);
-    {
-      int sockfd = socket.getSockfd();
-      int flags = fcntl(sockfd, F_GETFD);
-      if (unlikely(flags == -1))
-        throw ftpp::OSError(sockfd, "fcntl");
-      if (unlikely(fcntl(sockfd, F_SETFD, flags | FD_CLOEXEC) == -1))
-        throw ftpp::OSError(sockfd, "fcntl");
-      setblocking(sockfd, false);
-    }
+    ftpp::Socket socket(it->ai_family, it->ai_socktype | SOCK_CLOEXEC,
+                        it->ai_protocol);
+    setblocking(socket.getSockfd(), false);
     try {
       socket.connect(it->ai_addr, it->ai_addrlen);
     } catch (ftpp::OSError const &e) {
       if (e.get_errno() != EINPROGRESS)
         continue;
     }
-    _handler = new Handler(loop, socket, *this);
+    _transport = new StreamConnectionTransport(loop, *this, socket);
     return;
   }
   throw std::runtime_error("TCPConnection");
 }
 
 TCPConnection::TCPConnection(EventLoop &loop, ftpp::Socket &socket)
-    : loop(loop), _handler(NULL) {
-  _handler = new Handler(loop, socket, *this);
+    : loop(loop), _transport(NULL) {
+  setblocking(socket.getSockfd(), false);
+  _transport = new StreamConnectionTransport(loop, *this, socket);
 }
 
 TCPConnection::~TCPConnection() {
-  delete _handler;
+  delete _transport;
 }
 
-StreamConnection &TCPConnection::getHandler() {
-  if (!_handler)
-    throw std::runtime_error("TCPConnection: closed");
-  return *_handler;
-}
-
-void TCPConnection::close() {
-  if (_handler) {
-    delete _handler;
-    _handler = NULL;
-  }
+StreamConnectionTransport &TCPConnection::get_transport() {
+  return *_transport;
 }
 
 } // namespace ftev
