@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 04:11:13 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/01 23:54:45 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/03 15:46:44 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,12 @@ EchoServer::~EchoServer() {
 }
 
 void EchoServer::on_connect(ftpp::Socket &conn) {
-  new EchoConnection(loop, conn);
+  try {
+    new EchoConnection(loop, conn);
+  } catch (std::exception const &e) {
+    ftpp::logger(ftpp::Logger::ERROR,
+                 ftpp::Format("EchoServer: {}") % e.what());
+  }
 }
 
 } // namespace ftev
