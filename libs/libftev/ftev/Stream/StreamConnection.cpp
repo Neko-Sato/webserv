@@ -117,8 +117,7 @@ void StreamConnectionTransport::pause() {
       _handler->modify(event);
     else
       _handler->stop();
-  } else
-    _handler->start(_socket.getSockfd(), ftpp::Selector::READ);
+  }
 }
 
 void StreamConnectionTransport::write(char const *buffer, size_t size) {

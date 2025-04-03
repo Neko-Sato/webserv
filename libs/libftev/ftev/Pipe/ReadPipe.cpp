@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 03:37:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/02 00:21:06 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/03 14:59:41 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,8 +99,7 @@ void ReadPipeTransport::pause() {
       _handler->modify(event);
     else
       _handler->stop();
-  } else
-    _handler->start(_fd, ftpp::Selector::READ);
+  }
 }
 
 void ReadPipeTransport::close() {
