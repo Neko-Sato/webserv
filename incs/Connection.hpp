@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 23:06:24 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 14:14:42 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/02 11:27:38 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,17 @@
 #include "structs/Address.hpp"
 #include "structs/Request.hpp"
 
-#include <ftev/Stream/StreamConnection.hpp>
+#include <ftev/EventLoop/DeferredDelete.hpp>
+#include <ftev/EventLoop/TimerWatcher.hpp>
+#include <ftev/Stream/TCPConnection.hpp>
 #include <ftpp/urllib/URI.hpp>
 
 #include <map>
 #include <string>
 #include <vector>
 
-class Connection : public ftev::StreamConnection {
+class Connection : public ftev::TCPConnection,
+                   public ftev::EventLoop::DeferredDelete {
 public:
   enum State { REQUEST, RESPONSE, DONE };
 
@@ -35,13 +38,11 @@ private:
   std::deque<char> _buffer;
   bool _bufferClosed;
 
-  void _process();
-
   std::size_t _receiveRequestPosition;
-  bool _receiveRequest();
   Request _request;
-  bool _receiveBody();
-  bool _completed();
+
+  void _process();
+  bool _process_request();
 
 public:
   Connection(ftev::EventLoop &loop, ftpp::Socket &socket,
@@ -51,6 +52,6 @@ public:
   void on_data(std::vector<char> const &data);
   void on_eof();
   void on_drain();
-  void on_error(std::exception const &exce);
+  void on_except();
   void on_release();
 };
