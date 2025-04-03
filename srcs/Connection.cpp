@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 01:41:18 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/03 16:24:19 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/03 16:32:58 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,13 +30,14 @@ Connection::Connection(ftev::EventLoop &loop, ftpp::Socket &socket,
                        Address const &address, Configs const &configs)
     : TCPConnection(loop, socket), DeferredDelete(loop), _address(address),
       _configs(configs), _state(REQUEST), _bufferClosed(false),
-      _receiveRequestPosition(0) {
+      _receiveRequestPosition(0), _task(NULL) {
   ftpp::logger(ftpp::Logger::INFO, "Connection connected");
   UNUSED(_configs);
 }
 
 Connection::~Connection() {
   ftpp::logger(ftpp::Logger::INFO, "Connection close");
+  delete _task;
 }
 
 void Connection::on_data(std::vector<char> const &data) {
@@ -59,6 +60,7 @@ void Connection::on_eof() {
 }
 
 void Connection::on_drain() {
+  assert(_state == RESPONSE);
   _state = DONE;
   _process();
 }
@@ -88,14 +90,11 @@ void Connection::_process() {
         flag = false;
         break;
       case DONE:
+        delete _task;
+        _task = NULL;
+        _state = REQUEST;
         ftev::StreamConnectionTransport &transport = get_transport();
-        if (_bufferClosed) {
-          transport.close();
-          release();
-        } else {
-          _state = REQUEST;
-          transport.resume();
-        }
+        transport.resume();
         break;
       };
     }
