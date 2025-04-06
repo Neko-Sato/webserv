@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 01:41:18 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/03 16:32:58 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/06 20:07:32 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,14 +30,14 @@ Connection::Connection(ftev::EventLoop &loop, ftpp::Socket &socket,
                        Address const &address, Configs const &configs)
     : TCPConnection(loop, socket), DeferredDelete(loop), _address(address),
       _configs(configs), _state(REQUEST), _bufferClosed(false),
-      _receiveRequestPosition(0), _task(NULL) {
+      _receiveRequestPosition(0), _cycle(NULL) {
   ftpp::logger(ftpp::Logger::INFO, "Connection connected");
   UNUSED(_configs);
 }
 
 Connection::~Connection() {
   ftpp::logger(ftpp::Logger::INFO, "Connection close");
-  delete _task;
+  delete _cycle;
 }
 
 void Connection::on_data(std::vector<char> const &data) {
@@ -86,12 +86,12 @@ void Connection::_process() {
           throw std::runtime_error("closed");
         break;
       case RESPONSE:
-        (*_task)(_buffer);
+        _cycle->bufferUpdate(_buffer, _bufferClosed);
         flag = false;
         break;
       case DONE:
-        delete _task;
-        _task = NULL;
+        delete _cycle;
+        _cycle = NULL;
         _state = REQUEST;
         ftev::StreamConnectionTransport &transport = get_transport();
         transport.resume();
@@ -123,6 +123,6 @@ bool Connection::_process_request() {
       .swap(_request);
   _buffer.erase(_buffer.begin(), match + DOUBLE_CRLF.size());
   _state = RESPONSE;
-  _task = new Task(get_transport(), _configs, _request, _address);
+  _cycle = new Cycle(get_transport(), _configs, _request, _address);
   return true;
 }
