@@ -6,12 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 23:06:24 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/03 16:18:52 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/06 17:55:09 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+#include "Cycle.hpp"
 #include "configs/Configs.hpp"
 #include "structs/Address.hpp"
 #include "structs/Request.hpp"
@@ -29,11 +30,6 @@ class Connection : public ftev::TCPConnection,
                    public ftev::EventLoop::DeferredDelete {
 public:
   enum State { REQUEST, RESPONSE, DONE };
-  struct Task {
-    Task(ftev::StreamConnectionTransport &transport, Configs const &configs,
-         Request const &request, Address const &address);
-    bool operator()(std::deque<char> &buffer);
-  };
 
 private:
   Address _address;
@@ -45,7 +41,7 @@ private:
 
   std::size_t _receiveRequestPosition;
   Request _request;
-  Task *_task;
+  Cycle *_cycle;
 
   void _process();
   bool _process_request();
