@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 19:20:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/06 19:33:24 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/10 04:03:04 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,9 @@
 class Reader : private ftpp::NonCopyable {
 public:
   Reader();
-  ~Reader();
+  virtual ~Reader();
 
-  virtual bool completed() = 0;
+  virtual bool completed() const = 0;
   virtual void read(std::deque<char> &buffer, std::vector<char> &tmp) = 0;
 };
 
@@ -34,15 +34,21 @@ public:
   ContentLengthReader(std::size_t size = 0);
   ~ContentLengthReader();
 
-  bool completed();
-  void read(std::deque<char> &buffer, std::vector<char> &tmp);
+  void read(std::deque<char> &buffer, std::vector<char> &res);
+  bool completed() const;
 };
 
-class ChankReader : public Reader {
-public:
-  ChankReader();
-  ~ChankReader();
+class ChankedReader : public Reader {
+private:
+  enum State { READ_SIZE, READ_DATA, READ_CRLF, END };
+  State _state;
+  std::size_t _pos;
+  std::size_t _size;
 
-  bool completed();
-  void read(std::deque<char> &buffer, std::vector<char> &tmp);
+public:
+  ChankedReader();
+  ~ChankedReader();
+
+  void read(std::deque<char> &buffer, std::vector<char> &res);
+  bool completed() const;
 };
