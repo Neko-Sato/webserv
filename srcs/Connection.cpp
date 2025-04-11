@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 01:41:18 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/12 00:21:48 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/12 00:29:00 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,22 +100,25 @@ void Connection::_process() {
       switch (_state) {
       case REQUEST:
         flag = _process_request();
-        if (!flag && _bufferClosed)
-          throw std::runtime_error("incomplete request");
+        if (!flag && _bufferClosed) {
+          ftev::StreamConnectionTransport &transport = get_transport();
+          transport.close();
+          release();
+        }
         break;
       case RESPONSE:
         _cycle->bufferUpdate(_buffer, _bufferClosed);
         flag = false;
         break;
       case DONE:
-        ftpp::logger(ftpp::Logger::INFO, "Connection done");
         _timeout->cancel();
         bool keep = _cycle->getKeepAlive();
         delete _cycle;
         _cycle = NULL;
         ftev::StreamConnectionTransport &transport = get_transport();
-   ftpp::logger(ftpp::Logger::INFO,
-					 ftpp::Format("Connection keep alive: {}") % (keep ? "true" : "false"));
+        ftpp::logger(ftpp::Logger::INFO,
+                     ftpp::Format("Connection keep alive: {}") %
+                         (keep ? "true" : "false"));
         if (keep) {
           _state = REQUEST;
           transport.resume();
