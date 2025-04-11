@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/12 00:17:04 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/12 00:24:57 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ void LocationUpload::Task::on_data(std::vector<char> const &) {
 
 void LocationUpload::Task::on_eof() {
   ftev::StreamConnectionTransport &transport = getTransport();
-  transport.write("http/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello World!\n",
+  transport.write("HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello World!\n",
 				  52);
   transport.drain();
 }

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 01:41:18 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/12 00:15:11 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/12 00:21:48 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,8 @@ void Connection::_process() {
         delete _cycle;
         _cycle = NULL;
         ftev::StreamConnectionTransport &transport = get_transport();
+   ftpp::logger(ftpp::Logger::INFO,
+					 ftpp::Format("Connection keep alive: {}") % (keep ? "true" : "false"));
         if (keep) {
           _state = REQUEST;
           transport.resume();
