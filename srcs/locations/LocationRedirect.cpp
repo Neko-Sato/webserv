@@ -6,12 +6,17 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/05 12:25:24 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/11 23:22:03 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <locations/LocationRedirect.hpp>
+#include "locations/LocationRedirect.hpp"
+#include "constants.hpp"
 
+#include <ftpp/macros.hpp>
+#include <ftpp/string/string.hpp>
+
+#include <sstream>
 #include <stdexcept>
 
 LocationRedirect::LocationRedirect() : _code(0) {
@@ -74,4 +79,32 @@ int LocationRedirect::getCode() const {
 
 std::string const &LocationRedirect::getRedirect() const {
   return _redirect;
+}
+
+LocationRedirect::Task *
+LocationRedirect::createTask(ftev::StreamConnectionTransport &transport) const {
+  return new LocationRedirect::Task(transport, *this);
+}
+
+LocationRedirect::Task::Task(ftev::StreamConnectionTransport &transport,
+                             LocationRedirect const &location)
+    : Location::Task(transport), _location(location) {
+}
+
+LocationRedirect::Task::~Task() {
+}
+
+void LocationRedirect::Task::on_data(std::vector<char> const &data) {
+  UNUSED(data);
+}
+
+void LocationRedirect::Task::on_eof() {
+  std::ostringstream oss;
+  oss << "HTTP/1.1 " << _location.getCode() << " Moved Permanently" << CRLF;
+  oss << "Location: " << _location.getRedirect() << CRLF;
+  oss << CRLF;
+  std::string const &response = oss.str();
+  ftev::StreamConnectionTransport &transport = getTransport();
+  transport.write(response.c_str(), response.size());
+  transport.drain();
 }

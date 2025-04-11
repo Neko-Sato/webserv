@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/05 12:27:22 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/12 00:16:54 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,4 +127,28 @@ LocationDefault::Indexes const &LocationDefault::getIndex() const {
 
 bool LocationDefault::getAutoindex() const {
   return _autoindex;
+}
+
+LocationDefault::Task *
+LocationDefault::createTask(ftev::StreamConnectionTransport &transport) const {
+  return new Task(transport, *this);
+}
+
+LocationDefault::Task::Task(ftev::StreamConnectionTransport &transport,
+                            LocationDefault const &location)
+    : Location::Task(transport), _location(location) {
+  (void)_location;
+}
+
+LocationDefault::Task::~Task() {
+}
+
+void LocationDefault::Task::on_data(std::vector<char> const &) {
+}
+
+void LocationDefault::Task::on_eof() {
+  ftev::StreamConnectionTransport &transport = getTransport();
+  transport.write("http/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello World!\n",
+				  52);
+  transport.drain();
 }

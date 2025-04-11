@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/02/05 12:25:33 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/12 00:17:04 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,4 +56,28 @@ void LocationUpload::_takeStore(ftjson::Object const &location) {
 
 std::string const &LocationUpload::getStore() const {
   return _store;
+}
+
+LocationUpload::Task *
+LocationUpload::createTask(ftev::StreamConnectionTransport &transport) const {
+  return new Task(transport, *this);
+}
+
+LocationUpload::Task::Task(ftev::StreamConnectionTransport &transport,
+                           LocationUpload const &location)
+    : Location::Task(transport), _location(location) {
+  (void)_location;
+}
+
+LocationUpload::Task::~Task() {
+}
+
+void LocationUpload::Task::on_data(std::vector<char> const &) {
+}
+
+void LocationUpload::Task::on_eof() {
+  ftev::StreamConnectionTransport &transport = getTransport();
+  transport.write("http/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello World!\n",
+				  52);
+  transport.drain();
 }

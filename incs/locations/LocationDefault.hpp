@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 13:57:20 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/11 23:20:03 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,18 @@ class LocationDefault : public Location::Detail {
 public:
   typedef std::set<std::string> Indexes;
   typedef std::map<std::string, std::string> Cgis;
+
+  class Task : public Location::Task {
+  private:
+    LocationDefault const &_location;
+
+  public:
+    Task(ftev::StreamConnectionTransport &transport,
+         LocationDefault const &location);
+    ~Task();
+    void on_data(std::vector<char> const &data);
+    void on_eof();
+  };
 
 private:
   std::string _root;
@@ -42,4 +54,6 @@ public:
   std::string const &getRoot() const;
   Indexes const &getIndex() const;
   bool getAutoindex() const;
+
+  Task *createTask(ftev::StreamConnectionTransport &transport) const;
 };

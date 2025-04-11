@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 01:41:18 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/06 20:07:32 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/12 00:15:11 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,18 +26,36 @@
 #include <iostream>
 #include <sstream>
 
+Connection::Timeout::Timeout(ftev::EventLoop &loop, Connection &connection)
+    : TimerWatcher(loop), _connection(connection) {
+}
+
+Connection::Timeout::~Timeout() {
+  if (is_active())
+    cancel();
+}
+
+void Connection::Timeout::on_timeout() {
+  ftpp::logger(ftpp::Logger::INFO, "Connection timeout");
+  ftev::StreamConnectionTransport &transport = _connection.get_transport();
+  transport.close();
+  _connection.release();
+}
+
 Connection::Connection(ftev::EventLoop &loop, ftpp::Socket &socket,
                        Address const &address, Configs const &configs)
     : TCPConnection(loop, socket), DeferredDelete(loop), _address(address),
       _configs(configs), _state(REQUEST), _bufferClosed(false),
-      _receiveRequestPosition(0), _cycle(NULL) {
+      _receiveRequestPosition(0), _cycle(NULL), _timeout(NULL) {
   ftpp::logger(ftpp::Logger::INFO, "Connection connected");
-  UNUSED(_configs);
+  _timeout = new Timeout(loop, *this);
+  _timeout->start(10000);
 }
 
 Connection::~Connection() {
   ftpp::logger(ftpp::Logger::INFO, "Connection close");
   delete _cycle;
+  delete _timeout;
 }
 
 void Connection::on_data(std::vector<char> const &data) {
@@ -83,18 +101,28 @@ void Connection::_process() {
       case REQUEST:
         flag = _process_request();
         if (!flag && _bufferClosed)
-          throw std::runtime_error("closed");
+          throw std::runtime_error("incomplete request");
         break;
       case RESPONSE:
         _cycle->bufferUpdate(_buffer, _bufferClosed);
         flag = false;
         break;
       case DONE:
+        ftpp::logger(ftpp::Logger::INFO, "Connection done");
+        _timeout->cancel();
+        bool keep = _cycle->getKeepAlive();
         delete _cycle;
         _cycle = NULL;
-        _state = REQUEST;
         ftev::StreamConnectionTransport &transport = get_transport();
-        transport.resume();
+        if (keep) {
+          _state = REQUEST;
+          transport.resume();
+          _timeout->start(10000);
+        } else {
+          transport.close();
+          release();
+          flag = false;
+        }
         break;
       };
     }

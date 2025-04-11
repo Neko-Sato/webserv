@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 13:57:29 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/11 23:20:06 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,19 @@
 #include "configs/Location.hpp"
 
 class LocationRedirect : public Location::Detail {
+public:
+  class Task : public Location::Task {
+  private:
+    LocationRedirect const &_location;
+
+  public:
+    Task(ftev::StreamConnectionTransport &transport,
+         LocationRedirect const &location);
+    ~Task();
+    void on_data(std::vector<char> const &data);
+    void on_eof();
+  };
+
 private:
   int _code;
   std::string _redirect;
@@ -33,4 +46,6 @@ public:
 
   int getCode() const;
   std::string const &getRedirect() const;
+
+  Task *createTask(ftev::StreamConnectionTransport &transport) const;
 };

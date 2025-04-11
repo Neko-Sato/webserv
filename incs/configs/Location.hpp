@@ -6,14 +6,16 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 17:21:38 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 13:56:46 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/11 23:10:25 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+#include <ftev/Stream/StreamConnection.hpp>
 #include <ftjson/Json.hpp>
 #include <ftpp/any/Any.hpp>
+#include <ftpp/noncopyable/NonCopyable.hpp>
 #include <ftpp/smart_ptr/ScopedPtr.hpp>
 
 #include <set>
@@ -22,6 +24,21 @@
 class Location {
 public:
   typedef std::set<std::string> AllowMethods;
+
+  class Task : private ftpp::NonCopyable {
+  private:
+    ftev::StreamConnectionTransport &_transport;
+
+    Task();
+
+  public:
+    Task(ftev::StreamConnectionTransport &transport);
+    virtual ~Task();
+
+    ftev::StreamConnectionTransport &getTransport() const;
+    virtual void on_data(std::vector<char> const &data) = 0;
+    virtual void on_eof() = 0;
+  };
 
   class Detail {
   public:
@@ -41,6 +58,8 @@ public:
   public:
     virtual ~Detail();
     virtual Detail *clone() const = 0;
+    virtual Task *
+    createTask(ftev::StreamConnectionTransport &transport) const = 0;
   };
 
 private:

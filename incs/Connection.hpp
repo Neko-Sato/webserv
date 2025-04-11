@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 23:06:24 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/06 17:55:09 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/11 18:39:44 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,19 @@ class Connection : public ftev::TCPConnection,
 public:
   enum State { REQUEST, RESPONSE, DONE };
 
+  class Timeout : public ftev::EventLoop::TimerWatcher {
+  private:
+    Connection &_connection;
+
+    Timeout();
+
+  public:
+    Timeout(ftev::EventLoop &loop, Connection &connection);
+    ~Timeout();
+
+    void on_timeout();
+  };
+
 private:
   Address _address;
   Configs const &_configs;
@@ -42,6 +55,7 @@ private:
   std::size_t _receiveRequestPosition;
   Request _request;
   Cycle *_cycle;
+  Timeout *_timeout;
 
   void _process();
   bool _process_request();

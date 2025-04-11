@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 13:57:38 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/11 23:20:30 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,19 @@
 #include "configs/Location.hpp"
 
 class LocationUpload : public Location::Detail {
+public:
+  class Task : public Location::Task {
+  private:
+    LocationUpload const &_location;
+
+  public:
+    Task(ftev::StreamConnectionTransport &transport,
+         LocationUpload const &location);
+    ~Task();
+    void on_data(std::vector<char> const &data);
+    void on_eof();
+  };
+
 private:
   std::string _store;
 
@@ -30,4 +43,6 @@ public:
   LocationUpload *clone() const;
 
   std::string const &getStore() const;
+
+  Task *createTask(ftev::StreamConnectionTransport &transport) const;
 };

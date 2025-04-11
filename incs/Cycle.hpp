@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 17:50:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/06 20:09:15 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/11 23:26:41 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,16 +20,14 @@
 #include <ftev/Stream/StreamConnection.hpp>
 #include <ftpp/noncopyable/NonCopyable.hpp>
 
-class Task;
-
 class Cycle : private ftpp::NonCopyable {
 private:
   ftev::StreamConnectionTransport &_transport;
-  Configs const &_configs;
   Request const &_request;
   Address const &_address;
-  Task *_task;
+  Location::Task *_task;
   Reader *_reader;
+  bool _keepAlive;
 
   Cycle();
 
@@ -38,5 +36,6 @@ public:
         Request const &request, Address const &address);
   ~Cycle();
 
-  void bufferUpdate(std::deque<char> &buffer, bool eof);
+  void bufferUpdate(std::deque<char> &buffer, bool bufferClosed);
+  bool getKeepAlive() const;
 };
