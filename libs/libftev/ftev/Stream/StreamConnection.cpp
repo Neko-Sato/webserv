@@ -56,16 +56,17 @@ void StreamConnectionTransport::Handler::on_read() {
 }
 
 void StreamConnectionTransport::Handler::on_write() {
-  assert(!_transport._buffer.empty());
-  try {
-    size_t size = _transport._socket.write(_transport._buffer.data(),
-                                           _transport._buffer.size());
-    _transport._buffer.erase(_transport._buffer.begin(),
-                             _transport._buffer.begin() + size);
-  } catch (std::exception const &e) {
-    ftpp::logger(ftpp::Logger::WARN,
-                 ftpp::Format("StreamTransport: {}") % e.what());
-    return;
+  if (!_transport._buffer.empty()) {
+    try {
+      size_t size = _transport._socket.write(_transport._buffer.data(),
+                                             _transport._buffer.size());
+      _transport._buffer.erase(_transport._buffer.begin(),
+                               _transport._buffer.begin() + size);
+    } catch (std::exception const &e) {
+      ftpp::logger(ftpp::Logger::WARN,
+                   ftpp::Format("StreamTransport: {}") % e.what());
+      return;
+    }
   }
   if (_transport._buffer.empty()) {
     event_t event = get_events() & ~ftpp::Selector::WRITE;
@@ -162,10 +163,13 @@ void StreamConnectionTransport::drain() {
   if (_closed)
     throw std::runtime_error("already closed");
   assert(!_draining);
-  if (_buffer.empty())
-    _protocol.on_drain();
-  else
-    _draining = true;
+  if (_handler->is_active()) {
+    Handler::event_t event = _handler->get_events();
+    if (!(event & ftpp::Selector::WRITE))
+      _handler->modify(event | ftpp::Selector::WRITE);
+  } else
+    _handler->start(_socket.getSockfd(), ftpp::Selector::WRITE);
+  _draining = true;
 }
 
 void StreamConnectionTransport::close() {

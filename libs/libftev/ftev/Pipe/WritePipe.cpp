@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 03:45:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/02 00:27:18 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/11 23:56:48 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,22 +38,23 @@ void WritePipeTransport::Handler::on_read() {
 }
 
 void WritePipeTransport::Handler::on_write() {
-  assert(!_transport._buffer.empty());
-  try {
-    ssize_t size = ::write(_transport._fd, _transport._buffer.data(),
-                           _transport._buffer.size());
-    if (unlikely(size == -1))
+  if (!_transport._buffer.empty()) {
+    try {
+      ssize_t size = ::write(_transport._fd, _transport._buffer.data(),
+                             _transport._buffer.size());
+      if (unlikely(size == -1))
 #if defined(FT_SUBJECT_NOT_COMPLIANT)
-      throw ftpp::OSError(errno, "write");
+        throw ftpp::OSError(errno, "write");
 #else
-      throw std::runtime_error("write: No access to error details");
+        throw std::runtime_error("write: No access to error details");
 #endif
-    _transport._buffer.erase(_transport._buffer.begin(),
-                             _transport._buffer.begin() + size);
-  } catch (std::exception const &e) {
-    ftpp::logger(ftpp::Logger::WARN,
-                 ftpp::Format("StreamTransport: {}") % e.what());
-    return;
+      _transport._buffer.erase(_transport._buffer.begin(),
+                               _transport._buffer.begin() + size);
+    } catch (std::exception const &e) {
+      ftpp::logger(ftpp::Logger::WARN,
+                   ftpp::Format("StreamTransport: {}") % e.what());
+      return;
+    }
   }
   if (_transport._buffer.empty()) {
     event_t event = get_events() & ~ftpp::Selector::WRITE;
@@ -129,10 +130,13 @@ void WritePipeTransport::drain() {
   if (_closed)
     throw std::runtime_error("already closed");
   assert(!_draining);
-  if (_buffer.empty())
-    _protocol.on_drain();
-  else
-    _draining = true;
+  if (_handler->is_active()) {
+    Handler::event_t event = _handler->get_events();
+    if (!(event & ftpp::Selector::WRITE))
+      _handler->modify(event | ftpp::Selector::WRITE);
+  } else
+    _handler->start(_fd, ftpp::Selector::WRITE);
+  _draining = true;
 }
 
 void WritePipeTransport::close() {

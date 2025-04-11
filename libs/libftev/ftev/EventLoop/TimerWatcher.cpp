@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 05:31:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/28 22:15:01 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/11 18:15:52 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ void EventLoop::TimerWatcher::operator()() {
 void EventLoop::TimerWatcher::start(time_t timeout) {
   assert(!_is_active);
   _is_active = true;
+  loop._update_time();
   _it = loop._timer_watchers.insert(std::make_pair(loop._time + timeout, this));
 }
 
