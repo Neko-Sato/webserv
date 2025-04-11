@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 01:41:18 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/12 00:29:00 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/12 00:32:22 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@
 #include <cassert>
 #include <iostream>
 #include <sstream>
+
+time_t const Connection::request_timeout = 10000;
 
 Connection::Timeout::Timeout(ftev::EventLoop &loop, Connection &connection)
     : TimerWatcher(loop), _connection(connection) {
@@ -49,7 +51,7 @@ Connection::Connection(ftev::EventLoop &loop, ftpp::Socket &socket,
       _receiveRequestPosition(0), _cycle(NULL), _timeout(NULL) {
   ftpp::logger(ftpp::Logger::INFO, "Connection connected");
   _timeout = new Timeout(loop, *this);
-  _timeout->start(10000);
+  _timeout->start(request_timeout);
 }
 
 Connection::~Connection() {
@@ -111,18 +113,14 @@ void Connection::_process() {
         flag = false;
         break;
       case DONE:
-        _timeout->cancel();
         bool keep = _cycle->getKeepAlive();
         delete _cycle;
         _cycle = NULL;
         ftev::StreamConnectionTransport &transport = get_transport();
-        ftpp::logger(ftpp::Logger::INFO,
-                     ftpp::Format("Connection keep alive: {}") %
-                         (keep ? "true" : "false"));
         if (keep) {
           _state = REQUEST;
           transport.resume();
-          _timeout->start(10000);
+          _timeout->start(request_timeout);
         } else {
           transport.close();
           release();
@@ -157,5 +155,6 @@ bool Connection::_process_request() {
   _buffer.erase(_buffer.begin(), match + DOUBLE_CRLF.size());
   _state = RESPONSE;
   _cycle = new Cycle(get_transport(), _configs, _request, _address);
+  _timeout->cancel();
   return true;
 }

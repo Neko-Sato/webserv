@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 23:06:24 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/11 18:39:44 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/12 00:32:36 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,8 @@ public:
 
     void on_timeout();
   };
+
+  static time_t const request_timeout;
 
 private:
   Address _address;
