@@ -6,41 +6,46 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 22:09:31 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/28 22:15:08 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/16 05:10:58 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <ftev/EventLoop.hpp>
-#include <ftev/EventLoop/Watcher.hpp>
+
+#include <ftpp/noncopyable/NonCopyable.hpp>
 
 namespace ftev {
 
-class EventLoop::IOWatcher : public EventLoop::Watcher {
+class EventLoop::IOWatcher : private ftpp::NonCopyable {
+public:
+  EventLoop &loop;
+
+  typedef ftpp::Selector::event_t event_t;
+
 private:
-  bool _is_active;
+  bool _isActive;
   IOWatchers::iterator _it;
+
+  friend class EventLoop;
 
 protected:
   IOWatcher(EventLoop &loop);
 
 public:
-  typedef ftpp::Selector::event_t event_t;
-
   virtual ~IOWatcher();
-  void operator()(event_t events);
 
-  event_t get_events() const;
   void start(int fd, event_t events);
   void modify(event_t events);
   void stop();
 
-  virtual void on_read() = 0;
-  virtual void on_write() = 0;
-  virtual void on_except() = 0;
+  virtual void onRead() = 0;
+  virtual void onWrite() = 0;
+  virtual void onExcept() = 0;
 
-  bool is_active() const;
+  event_t getEvents() const;
+  bool getIsActive() const;
 };
 
 } // namespace ftev

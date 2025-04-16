@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 03:37:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/03 14:59:41 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/16 21:36:27 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,14 +29,14 @@ ReadPipeTransport::Handler::Handler(EventLoop &loop,
 }
 
 ReadPipeTransport::Handler::~Handler() {
-  if (is_active())
+  if (getIsActive())
     stop();
 }
 
-void ReadPipeTransport::Handler::on_read() {
+void ReadPipeTransport::Handler::onRead() {
   std::vector<char> chank;
   try {
-    chank.resize(_transport._chank_size);
+    chank.resize(_transport._chankSize);
     ssize_t size = read(_transport._fd, chank.data(), chank.size());
     if (unlikely(size == -1))
       throw ftpp::OSError(errno, "read");
@@ -47,25 +47,25 @@ void ReadPipeTransport::Handler::on_read() {
     return;
   }
   if (chank.empty()) {
-    event_t event = get_events() & ~ftpp::Selector::READ;
+    event_t event = getEvents() & ~ftpp::Selector::READ;
     if (event)
       modify(event);
     else
       stop();
-    _transport._protocol.on_eof();
+    _transport._protocol.onEof();
   } else
-    _transport._protocol.on_data(chank);
+    _transport._protocol.onData(chank);
 }
 
-void ReadPipeTransport::Handler::on_write() {
+void ReadPipeTransport::Handler::onWrite() {
   assert(false);
 }
 
-void ReadPipeTransport::Handler::on_except() {
-  _transport._protocol.on_except();
+void ReadPipeTransport::Handler::onExcept() {
+  _transport._protocol.onExcept();
 }
 
-std::size_t const ReadPipeTransport::_chank_size = 4096;
+std::size_t const ReadPipeTransport::_chankSize = 4096;
 
 ReadPipeTransport::ReadPipeTransport(EventLoop &loop,
                                      ReadPipeProtocol &protocol, int fd)
@@ -82,8 +82,8 @@ ReadPipeTransport::~ReadPipeTransport() {
 void ReadPipeTransport::resume() {
   if (_closed)
     throw std::runtime_error("already closed");
-  if (_handler->is_active()) {
-    Handler::event_t event = _handler->get_events();
+  if (_handler->getIsActive()) {
+    Handler::event_t event = _handler->getEvents();
     if (!(event & ftpp::Selector::READ))
       _handler->modify(event | ftpp::Selector::READ);
   } else
@@ -93,8 +93,8 @@ void ReadPipeTransport::resume() {
 void ReadPipeTransport::pause() {
   if (_closed)
     throw std::runtime_error("already closed");
-  if (_handler->is_active()) {
-    Handler::event_t event = _handler->get_events() & ~ftpp::Selector::READ;
+  if (_handler->getIsActive()) {
+    Handler::event_t event = _handler->getEvents() & ~ftpp::Selector::READ;
     if (event)
       _handler->modify(event);
     else
@@ -105,7 +105,7 @@ void ReadPipeTransport::pause() {
 void ReadPipeTransport::close() {
   if (_closed)
     throw std::runtime_error("already closed");
-  if (_handler->is_active())
+  if (_handler->getIsActive())
     _handler->stop();
   ::close(_fd);
   _closed = true;

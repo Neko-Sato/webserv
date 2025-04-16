@@ -1,46 +1,43 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   TimerWatcher.cpp                                   :+:      :+:    :+:   */
+/*   DeferWatcher.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 05:31:53 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/16 03:16:47 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/16 02:29:41 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ftev/EventLoop.hpp>
-#include <ftev/EventLoop/TimerWatcher.hpp>
-
-#include <ftpp/algorithm.hpp>
+#include <ftev/EventLoop/DeferWatcher.hpp>
 
 #include <cassert>
 
 namespace ftev {
 
-EventLoop::TimerWatcher::TimerWatcher(EventLoop &loop)
+EventLoop::DeferWatcher::DeferWatcher(EventLoop &loop)
     : loop(loop), _isActive(false) {
 }
 
-EventLoop::TimerWatcher::~TimerWatcher() {
+EventLoop::DeferWatcher::~DeferWatcher() {
   assert(!_isActive);
 }
 
-void EventLoop::TimerWatcher::start(time_t timeout) {
+void EventLoop::DeferWatcher::start() {
   assert(!_isActive);
-  loop._updateTime();
-  _it = loop._timerWatchers.insert(std::make_pair(loop._time + timeout, this));
+  _it = loop._deferWatchers.insert(loop._deferWatchers.end(), this);
   _isActive = true;
 }
 
-void EventLoop::TimerWatcher::cancel() {
+void EventLoop::DeferWatcher::cancel() {
   assert(_isActive);
-  loop._timerWatchers.erase(_it);
+  loop._deferWatchers.erase(_it);
   _isActive = false;
 }
 
-bool EventLoop::TimerWatcher::getIsActive() const {
+bool EventLoop::DeferWatcher::getIsActive() const {
   return _isActive;
 }
 

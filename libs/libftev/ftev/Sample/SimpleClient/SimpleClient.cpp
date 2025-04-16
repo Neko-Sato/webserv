@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 04:36:16 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/02 00:08:37 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/16 21:48:37 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,11 @@ SimpleClient::Timer::Timer(EventLoop &loop,
 }
 
 SimpleClient::Timer::~Timer() {
-  if (is_active())
+  if (getIsActive())
     cancel();
 }
 
-void SimpleClient::Timer::on_timeout() {
+void SimpleClient::Timer::onTimeout() {
   std::string tmp = ftpp::Format("Timer: {}") % _count++;
   _transport.write(tmp.data(), tmp.size());
   _transport.drain();
@@ -40,7 +40,7 @@ SimpleClient::SimpleClient(EventLoop &loop, std::string const &host, int port)
   ftpp::logger(ftpp::Logger::INFO,
                ftpp::Format("SimpleClient connected: (host: {}, port: {})") %
                    host % port);
-  _timer = new Timer(loop, get_transport());
+  _timer = new Timer(loop, getTransport());
 }
 
 SimpleClient::~SimpleClient() {
@@ -48,25 +48,25 @@ SimpleClient::~SimpleClient() {
   delete _timer;
 }
 
-void SimpleClient::on_data(std::vector<char> const &data) {
+void SimpleClient::onData(std::vector<char> const &data) {
   ftpp::logger(ftpp::Logger::INFO, ftpp::Format("recv: {}") %
                                        std::string(data.begin(), data.end()));
 }
 
-void SimpleClient::on_eof() {
+void SimpleClient::onEof() {
   ftpp::logger(ftpp::Logger::INFO, "recv: eof");
 }
 
-void SimpleClient::on_except() {
+void SimpleClient::onExcept() {
   ftpp::logger(ftpp::Logger::ERROR, "SimpleClient: error");
-  StreamConnectionTransport &transport = get_transport();
-  if (_timer->is_active())
+  StreamConnectionTransport &transport = getTransport();
+  if (_timer->getIsActive())
     _timer->cancel();
   transport.close();
   loop.stop();
 }
 
-void SimpleClient::on_drain() {
+void SimpleClient::onDrain() {
   _timer->start(1000);
 }
 

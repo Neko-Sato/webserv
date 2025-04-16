@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 04:11:13 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/03 15:46:44 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/16 21:46:27 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 namespace ftev {
 
 EchoConnection::EchoConnection(EventLoop &loop, ftpp::Socket &socket)
-    : TCPConnection(loop, socket), DeferredDelete(loop) {
+    : TCPConnection(loop, socket), Reaper(loop) {
   ftpp::logger(ftpp::Logger::INFO, "EchoConnection create");
 }
 
@@ -26,31 +26,31 @@ EchoConnection::~EchoConnection() {
   ftpp::logger(ftpp::Logger::INFO, "EchoConnection destroy");
 }
 
-void EchoConnection::on_data(std::vector<char> const &data) {
-  StreamConnectionTransport &transport = get_transport();
+void EchoConnection::onData(std::vector<char> const &data) {
+  StreamConnectionTransport &transport = getTransport();
   transport.write(data.data(), data.size());
   ftpp::logger(ftpp::Logger::INFO, ftpp::Format("EchoConnection: recv: {}") %
                                        std::string(data.begin(), data.end()));
 }
 
-void EchoConnection::on_eof() {
-  StreamConnectionTransport &transport = get_transport();
+void EchoConnection::onEof() {
+  StreamConnectionTransport &transport = getTransport();
   transport.drain();
 }
 
-void EchoConnection::on_drain() {
-  StreamConnectionTransport &transport = get_transport();
+void EchoConnection::onDrain() {
+  StreamConnectionTransport &transport = getTransport();
   transport.close();
   release();
 }
 
-void EchoConnection::on_except() {
-  StreamConnectionTransport &transport = get_transport();
+void EchoConnection::onExcept() {
+  StreamConnectionTransport &transport = getTransport();
   transport.close();
   release();
 }
 
-void EchoConnection::on_release() {
+void EchoConnection::onRelease() {
   delete this;
 }
 
@@ -65,7 +65,7 @@ EchoServer::~EchoServer() {
   ftpp::logger(ftpp::Logger::INFO, "EchoServer destroy");
 }
 
-void EchoServer::on_connect(ftpp::Socket &conn) {
+void EchoServer::onConnect(ftpp::Socket &conn) {
   try {
     new EchoConnection(loop, conn);
   } catch (std::exception const &e) {

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:47:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/01 22:53:42 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/16 21:29:12 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 namespace ftev {
 
 struct StreamServerProtocol {
-  virtual void on_connect(ftpp::Socket &conn) = 0;
+  virtual void onConnect(ftpp::Socket &conn) = 0;
 };
 
 class StreamServerTransport : private ftpp::NonCopyable {
@@ -34,9 +34,9 @@ private:
     Handler(EventLoop &loop, StreamServerTransport &transport);
     ~Handler();
 
-    void on_read();
-    void on_write();
-    void on_except();
+    void onRead();
+    void onWrite();
+    void onExcept();
   };
 
   StreamServerProtocol &_protocol;

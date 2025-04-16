@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:47:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/02 00:00:35 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/16 21:30:27 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,11 @@ StreamServerTransport::Handler::Handler(EventLoop &loop,
 }
 
 StreamServerTransport::Handler::~Handler() {
-  if (is_active())
+  if (getIsActive())
     stop();
 }
 
-void StreamServerTransport::Handler::on_read() {
+void StreamServerTransport::Handler::onRead() {
   ftpp::Socket conn;
   try {
     _transport._socket.accept(conn);
@@ -49,14 +49,14 @@ void StreamServerTransport::Handler::on_read() {
                  ftpp::Format("StreamServer: {}") % e.what());
     return;
   }
-  _transport._protocol.on_connect(conn);
+  _transport._protocol.onConnect(conn);
 }
 
-void StreamServerTransport::Handler::on_write() {
+void StreamServerTransport::Handler::onWrite() {
   assert(false);
 }
 
-void StreamServerTransport::Handler::on_except() {
+void StreamServerTransport::Handler::onExcept() {
   assert(false);
 }
 
@@ -75,7 +75,7 @@ StreamServerTransport::~StreamServerTransport() {
 void StreamServerTransport::close() {
   if (_closed)
     throw std::runtime_error("already closed");
-  if (_handler->is_active())
+  if (_handler->getIsActive())
     _handler->stop();
   _socket.close();
   _closed = true;

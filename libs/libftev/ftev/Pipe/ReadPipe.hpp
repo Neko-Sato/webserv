@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 03:37:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/02 00:20:56 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/16 21:34:10 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@
 namespace ftev {
 
 struct ReadPipeProtocol {
-  virtual void on_data(std::vector<char> const &data) = 0;
-  virtual void on_eof() = 0;
-  virtual void on_except() = 0;
+  virtual void onData(std::vector<char> const &data) = 0;
+  virtual void onEof() = 0;
+  virtual void onExcept() = 0;
 };
 
 class ReadPipeTransport : private ftpp::NonCopyable {
@@ -33,12 +33,12 @@ private:
     Handler(EventLoop &loop, ReadPipeTransport &transport);
     ~Handler();
 
-    void on_read();
-    void on_write();
-    void on_except();
+    void onRead();
+    void onWrite();
+    void onExcept();
   };
 
-  static std::size_t const _chank_size;
+  static std::size_t const _chankSize;
 
   ReadPipeProtocol &_protocol;
   int _fd;

@@ -1,34 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Watcher.hpp                                        :+:      :+:    :+:   */
+/*   Reaper.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/17 02:16:25 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/28 21:57:37 by hshimizu         ###   ########.fr       */
+/*   Created: 2025/04/16 05:37:58 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/04/16 05:45:56 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
-
 #include <ftev/EventLoop.hpp>
+#include <ftev/EventLoop/Reaper.hpp>
 
+#include <ftpp/macros.hpp>
 #include <ftpp/noncopyable/NonCopyable.hpp>
+
+#include <cassert>
 
 namespace ftev {
 
-class EventLoop::Watcher : private ftpp::NonCopyable {
-public:
-  EventLoop &loop;
+EventLoop::Reaper::Reaper(EventLoop &loop) : loop(loop) {
+  std::pair<Reapers::iterator, bool> result = loop._reapers.insert(this);
+  UNUSED(result);
+  assert(result.second);
+}
 
-  Watcher();
+EventLoop::Reaper::~Reaper() {
+  loop._reapers.erase(this);
+}
 
-protected:
-  Watcher(EventLoop &loop);
-
-public:
-  virtual ~Watcher();
-};
+void EventLoop::Reaper::release() {
+  loop._pendingReapers.push(this);
+}
 
 } // namespace ftev

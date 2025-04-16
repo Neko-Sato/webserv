@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/24 01:28:08 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 17:41:37 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/14 07:07:27 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,5 +54,11 @@ bool ends_with(C1 const &input, C2 const &suffix) {
     return false;
   return std::equal(suffix.rbegin(), suffix.rend(), input.rbegin());
 }
+
+template <typename T> struct DerefLess {
+  bool operator()(const T &x, const T &y) const {
+    return *x < *y;
+  }
+};
 
 } // namespace ftpp

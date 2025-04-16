@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/31 10:00:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/28 22:15:01 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/16 05:51:21 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ public:
   LoopStopper(ftev::EventLoop &loop);
   ~LoopStopper();
 
-  void on_signal();
+  void onSignal();
 };
 
 } // namespace ftev

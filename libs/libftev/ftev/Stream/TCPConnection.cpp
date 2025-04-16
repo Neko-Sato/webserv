@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 01:47:05 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/02 08:26:40 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/16 21:32:00 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ TCPConnection::~TCPConnection() {
   delete _transport;
 }
 
-StreamConnectionTransport &TCPConnection::get_transport() {
+StreamConnectionTransport &TCPConnection::getTransport() {
   return *_transport;
 }
 

@@ -6,14 +6,15 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/28 22:15:01 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/16 21:49:45 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ftev/EventLoop.hpp>
-#include <ftev/EventLoop/DeferredDelete.hpp>
+#include <ftev/EventLoop/DeferWatcher.hpp>
 #include <ftev/EventLoop/IOWatcher.hpp>
 #include <ftev/EventLoop/ProcessWatcher.hpp>
+#include <ftev/EventLoop/Reaper.hpp>
 #include <ftev/EventLoop/SignalWatcher.hpp>
 #include <ftev/EventLoop/TimerWatcher.hpp>
 
@@ -32,26 +33,26 @@
 
 namespace ftev {
 
-EventLoop EventLoop::default_loop;
+EventLoop EventLoop::defaultLoop;
 
 int EventLoop::_signalpipe[2] = {-1, -1};
 
-ftpp::Selector *EventLoop::default_selector_factory() {
+ftpp::Selector *EventLoop::defaultSelectorFactory() {
   return new ftpp::DefaultSelector;
 }
 
 EventLoop::EventLoop(selector_factory_t factory)
-    : _selector(factory()), _time(0), _running(false), _stop_flag(false),
-      _signalpipe_watcher(NULL), _wait_watcher(NULL) {
-  _update_time();
+    : _selector(factory()), _time(0), _running(false), _stopFlag(false),
+      _signalpipeWatcher(NULL), _waitWatcher(NULL) {
+  _updateTime();
 }
 
 EventLoop::~EventLoop() {
-  delete _wait_watcher;
-  delete _signalpipe_watcher;
+  delete _waitWatcher;
+  delete _signalpipeWatcher;
   _cleanup();
-  std::for_each(_deferred_deletes.begin(), _deferred_deletes.end(),
-                std::mem_fun(&DeferredDelete::on_release));
+  std::for_each(_reapers.begin(), _reapers.end(),
+                std::mem_fun(&Reaper::onRelease));
   if (_signalpipe[0] != -1)
     close(_signalpipe[0]);
   if (_signalpipe[1] != -1)
@@ -60,25 +61,25 @@ EventLoop::~EventLoop() {
 }
 
 void EventLoop::_cleanup() {
-  while (!_pending_deletes.empty()) {
-    DeferredDelete *tmp = _pending_deletes.front();
-    if (_deferred_deletes.find(tmp) != _deferred_deletes.end())
-      tmp->on_release();
-    _pending_deletes.pop();
+  while (!_pendingReapers.empty()) {
+    _pendingReapers.front()->onRelease();
+    _pendingReapers.pop();
   }
 }
 
-void EventLoop::_update_time() {
+void EventLoop::_updateTime() {
   timespec ts;
   if (unlikely(clock_gettime(CLOCK_MONOTONIC, &ts) == -1))
     throw ftpp::OSError(errno, "clock_gettime");
   _time = ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
 }
 
-int EventLoop::_backend_timeout() const {
-  if (_timer_watchers.empty())
+int EventLoop::_backendTimeout() const {
+  if (!_deferWatchers.empty())
+    return 0;
+  if (_timerWatchers.empty())
     return -1;
-  time_t timeout = _timer_watchers.begin()->first - _time;
+  time_t timeout = _timerWatchers.begin()->first - _time;
   if (timeout < 0)
     return 0;
   else if (unlikely(std::numeric_limits<int>::max() < timeout))
@@ -86,17 +87,29 @@ int EventLoop::_backend_timeout() const {
   return timeout;
 }
 
-void EventLoop::_run_timer() {
-  _update_time();
-  for (;;) {
-    TimerWatchers::iterator it = _timer_watchers.begin();
-    if (it == _timer_watchers.end() || _time < it->first)
+void EventLoop::_runTimer() {
+  _updateTime();
+  while (!_timerWatchers.empty()) {
+    TimerWatchers::iterator it = _timerWatchers.begin();
+    if (_time < it->first)
       break;
-    (*it->second)();
+    TimerWatcher *watcher = it->second;
+    it->second->_isActive = false;
+    _timerWatchers.erase(it);
+    watcher->onTimeout();
   }
 }
 
-void EventLoop::_run_io_poll(int timeout) {
+void EventLoop::_runDefer() {
+  for (size_t i = _deferWatchers.size(); 0 < i; --i) {
+    DeferWatcher *watcher = _deferWatchers.front();
+    _deferWatchers.pop_front();
+    watcher->_isActive = false;
+    watcher->onEvent();
+  }
+}
+
+void EventLoop::_runIOPoll(int timeout) {
   typedef ftpp::Selector::Events Events;
   typedef ftpp::Selector::event_details event_details;
   Events events;
@@ -115,9 +128,18 @@ void EventLoop::_run_io_poll(int timeout) {
   }
   while (!events.empty()) {
     event_details const &details = events.front();
-    IOWatchers::iterator watcher = _io_watchers.find(details.fd);
-    if (watcher != _io_watchers.end())
-      (*watcher->second)(details.events);
+    IOWatchers::iterator it = _ioWatchers.find(details.fd);
+    if (it != _ioWatchers.end()) {
+      IOWatcher *watcher = it->second;
+      if (watcher->_isActive && details.events & ftpp::Selector::EXCEPT)
+        watcher->onExcept();
+      else {
+        if (watcher->_isActive && details.events & ftpp::Selector::READ)
+          watcher->onRead();
+        if (watcher->_isActive && details.events & ftpp::Selector::WRITE)
+          watcher->onWrite();
+      }
+    }
     events.pop();
   }
 }
@@ -126,8 +148,9 @@ void EventLoop::operator++() {
   _running = true;
   try {
     ftpp::logger(ftpp::Logger::INFO, "EventLoop once");
-    _run_io_poll(_backend_timeout());
-    _run_timer();
+    _runIOPoll(_backendTimeout());
+    _runTimer();
+    _runDefer();
     _cleanup();
   } catch (...) {
     _running = false;
@@ -138,13 +161,13 @@ void EventLoop::operator++() {
 
 void EventLoop::run() {
   assert(!_running);
-  _stop_flag = false;
+  _stopFlag = false;
   try {
     ftpp::logger(ftpp::Logger::INFO, "EventLoop start");
-    _run_timer();
-    for (; likely(!(_stop_flag ||
-                    (_timer_watchers.empty() && _io_watchers.empty() &&
-                     _signal_watchers.empty() && _process_watchers.empty())));
+    _runTimer();
+    for (; likely(!(_stopFlag ||
+                    (_timerWatchers.empty() && _ioWatchers.empty() &&
+                     _signalWatchers.empty() && _processWatchers.empty())));
          operator++())
       ;
   } catch (...) {
@@ -155,10 +178,10 @@ void EventLoop::run() {
 }
 
 void EventLoop::stop() {
-  _stop_flag = true;
+  _stopFlag = true;
 }
 
-void EventLoop::_maybe_init_signalpipe() {
+void EventLoop::_maybeInitSignalpipe() {
   int &pipe_in = _signalpipe[0];
   int &pipe_out = _signalpipe[1];
   if (unlikely(pipe_in == -1 || pipe_out == -1)) {

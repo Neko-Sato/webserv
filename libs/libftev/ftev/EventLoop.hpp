@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/28 22:11:02 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/16 05:48:31 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,8 @@ namespace ftev {
 
 class EventLoop : private ftpp::NonCopyable {
 public:
-  class DeferredDelete;
-  class Watcher;
+  class Reaper;
+  class DeferWatcher;
   class TimerWatcher;
   class IOWatcher;
   class SignalWatcher;
@@ -50,48 +50,57 @@ private:
   ftpp::Selector *_selector;
   time_t _time;
   bool _running;
-  bool _stop_flag;
+  bool _stopFlag;
 
   void _cleanup();
-  void _update_time();
-  int _backend_timeout() const;
-  void _run_timer();
-  void _run_io_poll(int timeout);
+  void _updateTime();
+  int _backendTimeout() const;
+  void _runTimer();
+  void _runDefer();
+  void _runIOPoll(int timeout);
   void operator++();
 
 public:
-  static EventLoop default_loop;
+  static EventLoop defaultLoop;
 
   typedef ftpp::Selector *(selector_factory_t)();
-  static ftpp::Selector *default_selector_factory();
-  EventLoop(selector_factory_t factory = default_selector_factory);
+  static ftpp::Selector *defaultSelectorFactory();
+  EventLoop(selector_factory_t factory = defaultSelectorFactory);
   ~EventLoop();
 
   void run();
   void stop();
 
 private:
-  typedef std::set<DeferredDelete *> DeferredDeletes;
-  DeferredDeletes _deferred_deletes;
+  // Reaper
+  typedef std::set<Reaper *> Reapers;
+  Reapers _reapers;
+  typedef std::queue<Reaper *> PendingReapers;
+  PendingReapers _pendingReapers;
 
-  typedef std::queue<DeferredDelete *> PendingDeletes;
-  PendingDeletes _pending_deletes;
+  // Defer watcher
+  typedef std::list<DeferWatcher *> DeferWatchers;
+  DeferWatchers _deferWatchers;
 
+  // Timer watchers
   typedef std::multimap<time_t, TimerWatcher *> TimerWatchers;
-  TimerWatchers _timer_watchers;
+  TimerWatchers _timerWatchers;
 
+  // IOWatcher
   typedef std::map<int, IOWatcher *> IOWatchers;
-  IOWatchers _io_watchers;
+  IOWatchers _ioWatchers;
 
-  static void _maybe_init_signalpipe();
+  // Signal watcher
+  static void _maybeInitSignalpipe();
   static int _signalpipe[2];
-  IOWatcher *_signalpipe_watcher;
+  IOWatcher *_signalpipeWatcher;
   typedef std::map<int, SignalWatcher *> SignalWatchers;
-  SignalWatchers _signal_watchers;
+  SignalWatchers _signalWatchers;
 
-  SignalWatcher *_wait_watcher;
+  // Process watcher
+  SignalWatcher *_waitWatcher;
   typedef std::map<pid_t, ProcessWatcher *> ProcessWatchers;
-  ProcessWatchers _process_watchers;
+  ProcessWatchers _processWatchers;
 };
 
 } // namespace ftev

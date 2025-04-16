@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 00:31:00 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/28 22:15:01 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/16 05:12:29 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,54 +18,47 @@
 
 #include <cassert>
 #include <cstdlib>
-#include <fcntl.h>
 #include <unistd.h>
 
 namespace ftev {
 
 EventLoop::SignalWatcher::SignalWatcher(EventLoop &loop)
-    : Watcher(loop), _is_active(false) {
+    : loop(loop), _isActive(false) {
 }
 
 EventLoop::SignalWatcher::~SignalWatcher() {
-  assert(!_is_active);
-}
-
-void EventLoop::SignalWatcher::operator()() {
-  if (!_is_active)
-    return;
-  on_signal();
+  assert(!_isActive);
 }
 
 void EventLoop::SignalWatcher::start(int signum) {
-  assert(!_is_active);
+  assert(!_isActive);
   SignalpipeWatcher::activate(loop);
   std::pair<SignalWatchers::iterator, bool> result =
-      loop._signal_watchers.insert(std::make_pair(signum, this));
+      loop._signalWatchers.insert(std::make_pair(signum, this));
   assert(result.second);
-  _it = result.first;
   try {
-    sighandler_t old_handler = signal(signum, _signal_handler);
-    if (unlikely(old_handler == SIG_ERR))
+    sighandler_t oldHandler = signal(signum, _signalHandler);
+    if (unlikely(oldHandler == SIG_ERR))
       throw ftpp::OSError(errno, "signal");
-    _old_handler = old_handler;
+    _oldHandler = oldHandler;
   } catch (...) {
-    loop._signal_watchers.erase(_it);
+    loop._signalWatchers.erase(signum);
     throw;
   }
-  _is_active = true;
+  _it = result.first;
+  _isActive = true;
 }
 
 void EventLoop::SignalWatcher::stop() {
-  assert(_is_active);
-  sighandler_t old_handler = signal(_it->first, _old_handler);
+  assert(_isActive);
+  sighandler_t old_handler = signal(_it->first, _oldHandler);
   if (unlikely(old_handler == SIG_ERR))
     throw ftpp::OSError(errno, "signal");
-  loop._signal_watchers.erase(_it);
-  _is_active = false;
+  loop._signalWatchers.erase(_it);
+  _isActive = false;
 }
 
-void EventLoop::SignalWatcher::_signal_handler(int signum) {
+void EventLoop::SignalWatcher::_signalHandler(int signum) {
   assert(_signalpipe[1] != -1);
   ssize_t size = write(_signalpipe[1], &signum, sizeof(signum));
   UNUSED(size);
@@ -77,40 +70,40 @@ EventLoop::SignalWatcher::SignalpipeWatcher::SignalpipeWatcher(EventLoop &loop)
 }
 
 EventLoop::SignalWatcher::SignalpipeWatcher::~SignalpipeWatcher() {
-  if (is_active())
+  if (getIsActive())
     stop();
 }
 
 void EventLoop::SignalWatcher::SignalpipeWatcher::activate(EventLoop &loop) {
-  _maybe_init_signalpipe();
-  if (unlikely(!loop._signalpipe_watcher))
-    loop._signalpipe_watcher = new SignalpipeWatcher(loop);
-  if (unlikely(!loop._signalpipe_watcher->is_active()))
-    loop._signalpipe_watcher->start(EventLoop::_signalpipe[0],
-                                    ftpp::Selector::READ);
+  _maybeInitSignalpipe();
+  if (unlikely(!loop._signalpipeWatcher))
+    loop._signalpipeWatcher = new SignalpipeWatcher(loop);
+  if (unlikely(!loop._signalpipeWatcher->getIsActive()))
+    loop._signalpipeWatcher->start(EventLoop::_signalpipe[0],
+                                   ftpp::Selector::READ);
 }
 
-void EventLoop::SignalWatcher::SignalpipeWatcher::on_read() {
+void EventLoop::SignalWatcher::SignalpipeWatcher::onRead() {
   assert(_signalpipe[0] != -1);
   int signum;
   ssize_t size = read(_signalpipe[0], &signum, sizeof(signum));
   UNUSED(size);
   assert(size == sizeof(signum));
-  SignalWatchers::iterator it = loop._signal_watchers.find(signum);
-  if (it != loop._signal_watchers.end())
-    (*it->second)();
+  SignalWatchers::iterator it = loop._signalWatchers.find(signum);
+  if (it != loop._signalWatchers.end())
+    it->second->onSignal();
 }
 
-void EventLoop::SignalWatcher::SignalpipeWatcher::on_write() {
+void EventLoop::SignalWatcher::SignalpipeWatcher::onWrite() {
   assert(false);
 }
 
-void EventLoop::SignalWatcher::SignalpipeWatcher::on_except() {
+void EventLoop::SignalWatcher::SignalpipeWatcher::onExcept() {
   assert(false);
 }
 
-bool EventLoop::SignalWatcher::is_active() const {
-  return _is_active;
+bool EventLoop::SignalWatcher::getIsActive() const {
+  return _isActive;
 }
 
 } // namespace ftev

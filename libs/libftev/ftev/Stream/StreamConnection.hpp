@@ -13,6 +13,7 @@
 #pragma once
 
 #include <ftev/EventLoop.hpp>
+#include <ftev/EventLoop/DeferWatcher.hpp>
 #include <ftev/EventLoop/IOWatcher.hpp>
 
 #include <ftpp/noncopyable/NonCopyable.hpp>
@@ -21,10 +22,10 @@
 namespace ftev {
 
 struct StreamConnectionProtocol {
-  virtual void on_data(std::vector<char> const &data) = 0;
-  virtual void on_eof() = 0;
-  virtual void on_drain() = 0;
-  virtual void on_except() = 0;
+  virtual void onData(std::vector<char> const &data) = 0;
+  virtual void onEof() = 0;
+  virtual void onDrain() = 0;
+  virtual void onExcept() = 0;
 };
 
 class StreamConnectionTransport : private ftpp::NonCopyable {
@@ -37,19 +38,31 @@ private:
     Handler(EventLoop &loop, StreamConnectionTransport &transport);
     ~Handler();
 
-    void on_read();
-    void on_write();
-    void on_except();
+    void onRead();
+    void onWrite();
+    void onExcept();
   };
 
-  static std::size_t const _chank_size;
+  class DrainHandler : public EventLoop::DeferWatcher {
+  private:
+    StreamConnectionTransport &_transport;
+
+  public:
+    DrainHandler(EventLoop &loop, StreamConnectionTransport &transport);
+    ~DrainHandler();
+
+    void onEvent();
+  };
+
+  static std::size_t const _chankSize;
 
   StreamConnectionProtocol &_protocol;
   ftpp::Socket _socket;
   Handler *_handler;
-  bool _closed;
+  DrainHandler *_drainHandler;
   std::vector<char> _buffer;
   bool _draining;
+  bool _closed;
 
   StreamConnectionTransport();
 

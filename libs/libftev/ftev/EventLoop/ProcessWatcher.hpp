@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/28 22:15:01 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/16 05:10:50 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,22 @@
 
 #include <ftev/EventLoop.hpp>
 #include <ftev/EventLoop/SignalWatcher.hpp>
-#include <ftev/EventLoop/Watcher.hpp>
+
+#include <ftpp/noncopyable/NonCopyable.hpp>
 
 #include <csignal>
 
 namespace ftev {
 
-class EventLoop::ProcessWatcher : public EventLoop::Watcher {
+class EventLoop::ProcessWatcher : private ftpp::NonCopyable {
+public:
+  EventLoop &loop;
+
 private:
-  bool _is_active;
+  bool _isActive;
   ProcessWatchers::iterator _it;
+
+  friend class EventLoop;
 
   class WaitWatcher : private SignalWatcher {
   private:
@@ -34,7 +40,7 @@ private:
 
     ~WaitWatcher();
 
-    void on_signal();
+    void onSignal();
   };
 
 protected:
@@ -42,15 +48,15 @@ protected:
 
 public:
   virtual ~ProcessWatcher();
-  void operator()(int status);
 
   void start(pid_t pid);
   void kill(int signum = SIGKILL);
   void detach();
-  virtual void on_exited(int status) = 0;
-  virtual void on_signaled(int signum) = 0;
 
-  bool is_active() const;
+  virtual void onExited(int status) = 0;
+  virtual void onSignaled(int signum) = 0;
+
+  bool getIsActive() const;
 };
 
 } // namespace ftev

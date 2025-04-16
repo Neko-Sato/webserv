@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 00:22:29 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/28 22:15:01 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/16 05:10:35 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,22 @@
 
 #include <ftev/EventLoop.hpp>
 #include <ftev/EventLoop/IOWatcher.hpp>
-#include <ftev/EventLoop/Watcher.hpp>
+
+#include <ftpp/noncopyable/NonCopyable.hpp>
 
 #include <csignal>
 
 namespace ftev {
 
-class EventLoop::SignalWatcher : public EventLoop::Watcher {
+class EventLoop::SignalWatcher : private ftpp::NonCopyable {
+public:
+  EventLoop &loop;
+
 private:
-  bool _is_active;
+  bool _isActive;
   SignalWatchers::iterator _it;
-  sighandler_t _old_handler;
+
+  friend class EventLoop;
 
   class SignalpipeWatcher : private IOWatcher {
   private:
@@ -35,25 +40,27 @@ private:
 
     ~SignalpipeWatcher();
 
-    void on_read();
-    void on_write();
-    void on_except();
+    void onRead();
+    void onWrite();
+    void onExcept();
   };
 
-  static void _signal_handler(int signum);
+  static void _signalHandler(int signum);
+
+  sighandler_t _oldHandler;
 
 protected:
   SignalWatcher(EventLoop &loop);
 
 public:
   virtual ~SignalWatcher();
-  void operator()();
 
   void start(int signum);
   void stop();
-  virtual void on_signal() = 0;
 
-  bool is_active() const;
+  virtual void onSignal() = 0;
+
+  bool getIsActive() const;
 };
 
 } // namespace ftev

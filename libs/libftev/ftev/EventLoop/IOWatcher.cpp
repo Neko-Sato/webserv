@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 22:48:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/28 22:15:01 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/16 05:03:51 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,58 +21,47 @@
 namespace ftev {
 
 EventLoop::IOWatcher::IOWatcher(EventLoop &loop)
-    : Watcher(loop), _is_active(false) {
+    : loop(loop), _isActive(false) {
 }
 
 EventLoop::IOWatcher::~IOWatcher() {
-  assert(!_is_active);
-}
-
-void EventLoop::IOWatcher::operator()(event_t events) {
-  if (_is_active && events & ftpp::Selector::EXCEPT) {
-    on_except();
-    return;
-  }
-  if (_is_active && events & ftpp::Selector::READ)
-    on_read();
-  if (_is_active && events & ftpp::Selector::WRITE)
-    on_write();
-}
-
-EventLoop::IOWatcher::event_t EventLoop::IOWatcher::get_events() const {
-  assert(_is_active);
-  return loop._selector->getMap().find(_it->first)->second;
+  assert(!_isActive);
 }
 
 void EventLoop::IOWatcher::start(int fd, event_t events) {
-  assert(!_is_active);
+  assert(!_isActive);
   std::pair<IOWatchers::iterator, bool> result =
-      loop._io_watchers.insert(std::make_pair(fd, this));
+      loop._ioWatchers.insert(std::make_pair(fd, this));
   assert(result.second);
-  _it = result.first;
   try {
     loop._selector->add(fd, events);
   } catch (...) {
-    loop._io_watchers.erase(_it);
+    loop._ioWatchers.erase(fd);
     throw;
   }
-  _is_active = true;
+  _it = result.first;
+  _isActive = true;
 }
 
 void EventLoop::IOWatcher::modify(event_t events) {
-  assert(_is_active);
+  assert(_isActive);
   loop._selector->modify(_it->first, events);
 }
 
 void EventLoop::IOWatcher::stop() {
-  assert(_is_active);
+  assert(_isActive);
   loop._selector->remove(_it->first);
-  loop._io_watchers.erase(_it);
-  _is_active = false;
+  loop._ioWatchers.erase(_it);
+  _isActive = false;
 }
 
-bool EventLoop::IOWatcher::is_active() const {
-  return _is_active;
+EventLoop::IOWatcher::event_t EventLoop::IOWatcher::getEvents() const {
+  assert(_isActive);
+  return loop._selector->getMap().find(_it->first)->second;
+}
+
+bool EventLoop::IOWatcher::getIsActive() const {
+  return _isActive;
 }
 
 } // namespace ftev

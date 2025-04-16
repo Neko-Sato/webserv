@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 01:47:05 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/02 08:21:58 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/16 21:31:24 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ protected:
 public:
   virtual ~TCPConnection();
 
-  StreamConnectionTransport &get_transport();
+  StreamConnectionTransport &getTransport();
 };
 
 } // namespace ftev

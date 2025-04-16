@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 16:23:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/28 22:15:01 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/16 05:10:47 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,43 +25,32 @@
 namespace ftev {
 
 EventLoop::ProcessWatcher::ProcessWatcher(EventLoop &loop)
-    : Watcher(loop), _is_active(false) {
+    : loop(loop), _isActive(false) {
 }
 
 EventLoop::ProcessWatcher::~ProcessWatcher() {
-  assert(!_is_active);
-}
-
-void EventLoop::ProcessWatcher::operator()(int status) {
-  if (!_is_active)
-    return;
-  loop._process_watchers.erase(_it);
-  _is_active = false;
-  if (WIFEXITED(status))
-    on_exited(WEXITSTATUS(status));
-  else if (WIFSIGNALED(status))
-    on_signaled(WTERMSIG(status));
+  assert(!_isActive);
 }
 
 void EventLoop::ProcessWatcher::start(pid_t pid) {
-  assert(!_is_active);
+  assert(!_isActive);
   WaitWatcher::activate(loop);
   std::pair<ProcessWatchers::iterator, bool> result =
-      loop._process_watchers.insert(std::make_pair(pid, this));
+      loop._processWatchers.insert(std::make_pair(pid, this));
   assert(result.second); /* It shouldn't already be there. */
   _it = result.first;
-  _is_active = true;
+  _isActive = true;
 }
 
 void EventLoop::ProcessWatcher::kill(int signum) {
-  assert(_is_active);
+  assert(_isActive);
   ::kill(_it->first, signum);
 }
 
 void EventLoop::ProcessWatcher::detach() {
-  assert(_is_active);
-  loop._process_watchers.erase(_it);
-  _is_active = false;
+  assert(_isActive);
+  loop._processWatchers.erase(_it);
+  _isActive = false;
 }
 
 EventLoop::ProcessWatcher::WaitWatcher::WaitWatcher(EventLoop &loop)
@@ -69,18 +58,18 @@ EventLoop::ProcessWatcher::WaitWatcher::WaitWatcher(EventLoop &loop)
 }
 
 EventLoop::ProcessWatcher::WaitWatcher::~WaitWatcher() {
-  if (is_active())
+  if (getIsActive())
     stop();
 }
 
 void EventLoop::ProcessWatcher::WaitWatcher::activate(EventLoop &loop) {
-  if (unlikely(!loop._wait_watcher))
-    loop._wait_watcher = new WaitWatcher(loop);
-  if (unlikely(!loop._wait_watcher->is_active()))
-    loop._wait_watcher->start(SIGCHLD);
+  if (unlikely(!loop._waitWatcher))
+    loop._waitWatcher = new WaitWatcher(loop);
+  if (unlikely(!loop._waitWatcher->getIsActive()))
+    loop._waitWatcher->start(SIGCHLD);
 }
 
-void EventLoop::ProcessWatcher::WaitWatcher::on_signal() {
+void EventLoop::ProcessWatcher::WaitWatcher::onSignal() {
   for (;;) {
     int status;
     pid_t pid;
@@ -97,15 +86,21 @@ void EventLoop::ProcessWatcher::WaitWatcher::on_signal() {
       }
       break;
     };
-    ProcessWatchers::iterator it = loop._process_watchers.find(pid);
-    if (it == loop._process_watchers.end())
+    ProcessWatchers::iterator it = loop._processWatchers.find(pid);
+    if (it == loop._processWatchers.end())
       continue;
-    (*it->second)(status);
+    ProcessWatcher *watcher = it->second;
+    loop._processWatchers.erase(it);
+    watcher->_isActive = false;
+    if (WIFEXITED(status))
+      watcher->onExited(WEXITSTATUS(status));
+    else if (WIFSIGNALED(status))
+      watcher->onSignaled(WTERMSIG(status));
   }
 }
 
-bool EventLoop::ProcessWatcher::is_active() const {
-  return _is_active;
+bool EventLoop::ProcessWatcher::getIsActive() const {
+  return _isActive;
 }
 
 } // namespace ftev

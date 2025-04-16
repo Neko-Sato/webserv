@@ -6,20 +6,21 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 03:45:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/02 00:19:58 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/16 21:38:13 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include <ftev/EventLoop.hpp>
+#include <ftev/EventLoop/DeferWatcher.hpp>
 #include <ftev/EventLoop/IOWatcher.hpp>
 
 namespace ftev {
 
 struct WritePipeProtocol {
-  virtual void on_drain() = 0;
-  virtual void on_except() = 0;
+  virtual void onDrain() = 0;
+  virtual void onExcept() = 0;
 };
 
 class WritePipeTransport : private ftpp::NonCopyable {
@@ -32,14 +33,26 @@ private:
     Handler(EventLoop &loop, WritePipeTransport &transport);
     ~Handler();
 
-    void on_read();
-    void on_write();
-    void on_except();
+    void onRead();
+    void onWrite();
+    void onExcept();
+  };
+
+  class DrainHandler : public EventLoop::DeferWatcher {
+  private:
+    WritePipeTransport &_transport;
+
+  public:
+    DrainHandler(EventLoop &loop, WritePipeTransport &transport);
+    ~DrainHandler();
+
+    void onEvent();
   };
 
   WritePipeProtocol &_protocol;
   int _fd;
   Handler *_handler;
+  DrainHandler *_drainHandler;
   bool _closed;
   std::vector<char> _buffer;
   bool _draining;

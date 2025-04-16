@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   DeferredDelete.hpp                                 :+:      :+:    :+:   */
+/*   Reaper.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/28 21:58:01 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/28 22:35:47 by hshimizu         ###   ########.fr       */
+/*   Created: 2025/04/16 05:37:58 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/04/16 21:46:49 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,20 +18,16 @@
 
 namespace ftev {
 
-class EventLoop::DeferredDelete : private ftpp::NonCopyable {
-private:
-  DeferredDelete();
-
+class EventLoop::Reaper : private ftpp::NonCopyable {
 public:
   EventLoop &loop;
 
-  DeferredDelete(EventLoop &loop);
+  Reaper(EventLoop &loop);
+  virtual ~Reaper();
 
   void release();
-  virtual void on_release() = 0;
 
-protected:
-  virtual ~DeferredDelete();
+  virtual void onRelease() = 0;
 };
 
 } // namespace ftev
