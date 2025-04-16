@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 19:20:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/10 01:24:11 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 01:36:13 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,7 @@ void ChankedReader::read(std::deque<char> &buffer, std::vector<char> &res) {
       }
       _state = READ_DATA;
     }
+      // fallthrough
     case READ_DATA: {
       std::size_t size = std::min(buffer.size(), _size);
       res.insert(res.end(), buffer.begin(), buffer.begin() + size);
@@ -83,6 +84,7 @@ void ChankedReader::read(std::deque<char> &buffer, std::vector<char> &res) {
         return;
       _state = READ_CRLF;
     }
+      // fallthrough
     case READ_CRLF:
       if (buffer.size() < CRLF.size())
         return;

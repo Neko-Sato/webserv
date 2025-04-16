@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/18 04:30:35 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 17:55:51 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 01:35:21 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -343,7 +343,8 @@ static inline void _unicode_escape(std::ostringstream &oss,
 std::string JsonParser::_string_dequote(std::string const &str) {
   std::ostringstream oss;
   std::size_t index = 0;
-  assert(str[index++] == '"');
+  assert(str[index] == '"');
+  index++;
   for (; index < str.size() - 1; ++index) {
     if (str[index] == '\\') {
       ++index;
