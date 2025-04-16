@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 08:18:49 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 14:18:21 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/16 22:08:44 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
   try {
     if (2 < argc)
       throw std::runtime_error("Too many arguments");
-    ftev::EventLoop &loop = ftev::EventLoop::default_loop;
+    ftev::EventLoop &loop = ftev::EventLoop::defaultLoop;
     char const *const &config_path =
         argc == 2 ? argv[1] : get_default_config_path();
     Webserv webserv(loop, Configs::load(config_path));

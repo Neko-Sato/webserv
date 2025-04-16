@@ -105,10 +105,11 @@ StreamConnectionTransport::StreamConnectionTransport(
     : _protocol(protocol), _handler(NULL), _drainHandler(NULL),
       _draining(false), _closed(false) {
   _socket.swap(socket);
-  _handler = new Handler(loop, *this);
   try {
+    _handler = new Handler(loop, *this);
     _drainHandler = new DrainHandler(loop, *this);
   } catch (...) {
+    delete _drainHandler;
     delete _handler;
     throw;
   }

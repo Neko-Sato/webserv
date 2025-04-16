@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 17:58:16 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/12 00:11:24 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 00:16:29 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@
 
 #include <cassert>
 
-Cycle::Cycle(ftev::StreamConnectionTransport &transport, Configs const &configs,
+Cycle::Cycle(ftev::StreamConnectionTransport &transport,
+             ftev::EventLoop::DeferWatcher &complete, Configs const &configs,
              Request const &request, Address const &address)
     : _transport(transport), _request(request), _address(address), _task(NULL),
       _reader(NULL), _keepAlive(false) {
@@ -50,7 +51,7 @@ Cycle::Cycle(ftev::StreamConnectionTransport &transport, Configs const &configs,
   try {
     if (!loc)
       throw std::runtime_error("location not found");
-    _task = loc->getDetail().createTask(transport);
+    _task = loc->getDetail().createTask(transport, complete);
   } catch (...) {
     delete _reader;
     throw;
@@ -65,15 +66,15 @@ Cycle::~Cycle() {
 
 void Cycle::bufferUpdate(std::deque<char> &buffer, bool bufferClosed) {
   if (!_reader) {
-    _task->on_eof();
+    _task->onEof();
     _transport.pause();
     return;
   }
   std::vector<char> tmp;
   _reader->read(buffer, tmp);
-  _task->on_data(tmp);
+  _task->onData(tmp);
   if (_reader->completed()) {
-    _task->on_eof();
+    _task->onEof();
     _transport.pause();
     delete _reader;
     _reader = NULL;

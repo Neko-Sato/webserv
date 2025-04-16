@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 03:45:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/16 21:51:36 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/16 22:38:16 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,10 +92,11 @@ WritePipeTransport::WritePipeTransport(EventLoop &loop,
                                        WritePipeProtocol &protocol, int fd)
     : _protocol(protocol), _fd(fd), _handler(NULL), _drainHandler(NULL),
       _closed(false), _draining(false) {
-  _handler = new Handler(loop, *this);
   try {
+    _handler = new Handler(loop, *this);
     _drainHandler = new DrainHandler(loop, *this);
   } catch (...) {
+    delete _drainHandler;
     delete _handler;
     throw;
   }

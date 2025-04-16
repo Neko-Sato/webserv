@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 01:40:08 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 14:09:51 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/16 22:08:00 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ Server::~Server() {
                    _address.host % _address.port);
 }
 
-void Server::on_connect(ftpp::Socket &socket) {
+void Server::onConnect(ftpp::Socket &socket) {
   try {
     new Connection(loop, socket, _address, _configs);
   } catch (std::exception const &e) {

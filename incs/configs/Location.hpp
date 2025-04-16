@@ -6,12 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 17:21:38 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/11 23:10:25 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 00:14:48 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+#include <ftev/EventLoop/DeferWatcher.hpp>
 #include <ftev/Stream/StreamConnection.hpp>
 #include <ftjson/Json.hpp>
 #include <ftpp/any/Any.hpp>
@@ -28,16 +29,21 @@ public:
   class Task : private ftpp::NonCopyable {
   private:
     ftev::StreamConnectionTransport &_transport;
+    ftev::EventLoop::DeferWatcher &_complete;
 
     Task();
 
   public:
-    Task(ftev::StreamConnectionTransport &transport);
+    Task(ftev::StreamConnectionTransport &transport,
+         ftev::EventLoop::DeferWatcher &complete);
     virtual ~Task();
 
     ftev::StreamConnectionTransport &getTransport() const;
-    virtual void on_data(std::vector<char> const &data) = 0;
-    virtual void on_eof() = 0;
+
+    void complete();
+
+    virtual void onData(std::vector<char> const &data) = 0;
+    virtual void onEof() = 0;
   };
 
   class Detail {
@@ -58,8 +64,8 @@ public:
   public:
     virtual ~Detail();
     virtual Detail *clone() const = 0;
-    virtual Task *
-    createTask(ftev::StreamConnectionTransport &transport) const = 0;
+    virtual Task *createTask(ftev::StreamConnectionTransport &transport,
+                             ftev::EventLoop::DeferWatcher &complete) const = 0;
   };
 
 private:

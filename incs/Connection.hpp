@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 23:06:24 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/12 00:32:36 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/16 22:22:56 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include "structs/Address.hpp"
 #include "structs/Request.hpp"
 
-#include <ftev/EventLoop/DeferredDelete.hpp>
+#include <ftev/EventLoop/Reaper.hpp>
 #include <ftev/EventLoop/TimerWatcher.hpp>
 #include <ftev/Stream/TCPConnection.hpp>
 #include <ftpp/urllib/URI.hpp>
@@ -26,8 +26,7 @@
 #include <string>
 #include <vector>
 
-class Connection : public ftev::TCPConnection,
-                   public ftev::EventLoop::DeferredDelete {
+class Connection : public ftev::TCPConnection, public ftev::EventLoop::Reaper {
 public:
   enum State { REQUEST, RESPONSE, DONE };
 
@@ -41,10 +40,21 @@ public:
     Timeout(ftev::EventLoop &loop, Connection &connection);
     ~Timeout();
 
-    void on_timeout();
+    void onTimeout();
   };
 
-  static time_t const request_timeout;
+  class Complete : public ftev::EventLoop::DeferWatcher {
+  private:
+    Connection &_connection;
+
+  public:
+    Complete(ftev::EventLoop &loop, Connection &connection);
+    ~Complete();
+
+    void onEvent();
+  };
+
+  static time_t const requestTimeout;
 
 private:
   Address _address;
@@ -58,18 +68,19 @@ private:
   Request _request;
   Cycle *_cycle;
   Timeout *_timeout;
+  Complete *_complete;
 
   void _process();
-  bool _process_request();
+  bool _processRequest();
 
 public:
   Connection(ftev::EventLoop &loop, ftpp::Socket &socket,
              Address const &address, Configs const &configs);
   ~Connection();
 
-  void on_data(std::vector<char> const &data);
-  void on_eof();
-  void on_drain();
-  void on_except();
-  void on_release();
+  void onData(std::vector<char> const &data);
+  void onEof();
+  void onDrain();
+  void onExcept();
+  void onRelease();
 };

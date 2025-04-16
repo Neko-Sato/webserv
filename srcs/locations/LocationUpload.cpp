@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/12 00:24:57 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 00:24:10 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,25 +59,27 @@ std::string const &LocationUpload::getStore() const {
 }
 
 LocationUpload::Task *
-LocationUpload::createTask(ftev::StreamConnectionTransport &transport) const {
-  return new Task(transport, *this);
+LocationUpload::createTask(ftev::StreamConnectionTransport &transport,
+                           ftev::EventLoop::DeferWatcher &complete) const {
+  return new Task(transport, complete, *this);
 }
 
 LocationUpload::Task::Task(ftev::StreamConnectionTransport &transport,
+                           ftev::EventLoop::DeferWatcher &complete,
                            LocationUpload const &location)
-    : Location::Task(transport), _location(location) {
+    : Location::Task(transport, complete), _location(location) {
   (void)_location;
 }
 
 LocationUpload::Task::~Task() {
 }
 
-void LocationUpload::Task::on_data(std::vector<char> const &) {
+void LocationUpload::Task::onData(std::vector<char> const &) {
 }
 
-void LocationUpload::Task::on_eof() {
+void LocationUpload::Task::onEof() {
   ftev::StreamConnectionTransport &transport = getTransport();
   transport.write("HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello World!\n",
-				  52);
-  transport.drain();
+                  52);
+  complete();
 }

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 01:40:37 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/30 02:03:46 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/16 21:58:14 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,5 +28,5 @@ public:
          Configs const &configs);
   ~Server();
 
-  void on_connect(ftpp::Socket &socket);
+  void onConnect(ftpp::Socket &socket);
 };

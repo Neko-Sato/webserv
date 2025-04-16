@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/11 23:20:06 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 00:18:53 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,11 @@ public:
 
   public:
     Task(ftev::StreamConnectionTransport &transport,
+         ftev::EventLoop::DeferWatcher &complete,
          LocationRedirect const &location);
     ~Task();
-    void on_data(std::vector<char> const &data);
-    void on_eof();
+    void onData(std::vector<char> const &data);
+    void onEof();
   };
 
 private:
@@ -47,5 +48,6 @@ public:
   int getCode() const;
   std::string const &getRedirect() const;
 
-  Task *createTask(ftev::StreamConnectionTransport &transport) const;
+  Task *createTask(ftev::StreamConnectionTransport &transport,
+                   ftev::EventLoop::DeferWatcher &complete) const;
 };

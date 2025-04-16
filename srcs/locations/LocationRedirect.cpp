@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/11 23:22:03 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 00:23:22 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,23 +82,25 @@ std::string const &LocationRedirect::getRedirect() const {
 }
 
 LocationRedirect::Task *
-LocationRedirect::createTask(ftev::StreamConnectionTransport &transport) const {
-  return new LocationRedirect::Task(transport, *this);
+LocationRedirect::createTask(ftev::StreamConnectionTransport &transport,
+                             ftev::EventLoop::DeferWatcher &complete) const {
+  return new LocationRedirect::Task(transport, complete, *this);
 }
 
 LocationRedirect::Task::Task(ftev::StreamConnectionTransport &transport,
+                             ftev::EventLoop::DeferWatcher &complete,
                              LocationRedirect const &location)
-    : Location::Task(transport), _location(location) {
+    : Location::Task(transport, complete), _location(location) {
 }
 
 LocationRedirect::Task::~Task() {
 }
 
-void LocationRedirect::Task::on_data(std::vector<char> const &data) {
+void LocationRedirect::Task::onData(std::vector<char> const &data) {
   UNUSED(data);
 }
 
-void LocationRedirect::Task::on_eof() {
+void LocationRedirect::Task::onEof() {
   std::ostringstream oss;
   oss << "HTTP/1.1 " << _location.getCode() << " Moved Permanently" << CRLF;
   oss << "Location: " << _location.getRedirect() << CRLF;
@@ -106,5 +108,5 @@ void LocationRedirect::Task::on_eof() {
   std::string const &response = oss.str();
   ftev::StreamConnectionTransport &transport = getTransport();
   transport.write(response.c_str(), response.size());
-  transport.drain();
+  complete();
 }
