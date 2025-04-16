@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 19:20:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/10 04:03:04 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 02:02:17 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ private:
   State _state;
   std::size_t _pos;
   std::size_t _size;
+  bool _eof;
 
 public:
   ChankedReader();
