@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 08:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 14:19:55 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 01:15:15 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,14 +78,14 @@ Configs::Servers const &Configs::getServers() const {
 }
 
 ServerConf const &Configs::findServer(Address const &addr,
-                                      std::string const &name) const {
+                                      std::string const *name) const {
   ServerConf const *first = NULL;
   for (Servers::const_iterator it = _servers.begin(); it != _servers.end();
        ++it) {
     ServerConf::Addresses const &addrs = it->getAddresses();
     if (addrs.find(addr) != addrs.end()) {
       ServerConf::ServerNames const &names = it->getServerNames();
-      if (name.empty() || names.find(name) != names.end())
+      if (!name || names.find(*name) != names.end())
         return *it;
       if (!first)
         first = &*it;

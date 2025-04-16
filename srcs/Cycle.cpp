@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 17:58:16 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 00:16:29 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 01:15:32 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ Cycle::Cycle(ftev::StreamConnectionTransport &transport,
     _keepAlive = it->second.back() == "keep-alive";
   it = _request.headers.find("host");
   ServerConf const &serverConf = configs.findServer(
-      _address, it != _request.headers.end() ? it->second.back() : "");
+      _address, it != _request.headers.end() ? &it->second.back() : NULL);
   it = _request.headers.find("transfer-encoding");
   if (it != _request.headers.end()) {
     if (it->second.back() == "chunked")

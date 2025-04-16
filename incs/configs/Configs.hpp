@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 14:04:54 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 13:56:30 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 01:14:20 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,6 @@ public:
   Servers const &getServers() const;
 
   ServerConf const &findServer(Address const &addr,
-                               std::string const &name = "") const;
+                               std::string const *name = NULL) const;
   std::set<Address> getAddressAll() const;
 };
