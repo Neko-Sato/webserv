@@ -6,29 +6,31 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 00:19:03 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 00:57:14 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+#include "Task.hpp"
 #include "configs/Location.hpp"
 
-class LocationUpload : public Location::Detail {
+class LocationUpload;
+
+class UploadTask : public Task {
+private:
+  LocationUpload const &_location;
+
 public:
-  class Task : public Location::Task {
-  private:
-    LocationUpload const &_location;
+  UploadTask(ftev::StreamConnectionTransport &transport,
+             ftev::EventLoop::DeferWatcher &complete,
+             LocationUpload const &location);
+  ~UploadTask();
+  void onData(std::vector<char> const &data);
+  void onEof();
+};
 
-  public:
-    Task(ftev::StreamConnectionTransport &transport,
-         ftev::EventLoop::DeferWatcher &complete,
-         LocationUpload const &location);
-    ~Task();
-    void onData(std::vector<char> const &data);
-    void onEof();
-  };
-
+class LocationUpload : public Location::Detail {
 private:
   std::string _store;
 

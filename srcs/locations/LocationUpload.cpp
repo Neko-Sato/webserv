@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 00:24:10 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 00:57:48 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,26 +58,26 @@ std::string const &LocationUpload::getStore() const {
   return _store;
 }
 
-LocationUpload::Task *
+Task *
 LocationUpload::createTask(ftev::StreamConnectionTransport &transport,
                            ftev::EventLoop::DeferWatcher &complete) const {
-  return new Task(transport, complete, *this);
+  return new UploadTask(transport, complete, *this);
 }
 
-LocationUpload::Task::Task(ftev::StreamConnectionTransport &transport,
-                           ftev::EventLoop::DeferWatcher &complete,
-                           LocationUpload const &location)
-    : Location::Task(transport, complete), _location(location) {
+UploadTask::UploadTask(ftev::StreamConnectionTransport &transport,
+                       ftev::EventLoop::DeferWatcher &complete,
+                       LocationUpload const &location)
+    : Task(transport, complete), _location(location) {
   (void)_location;
 }
 
-LocationUpload::Task::~Task() {
+UploadTask::~UploadTask() {
 }
 
-void LocationUpload::Task::onData(std::vector<char> const &) {
+void UploadTask::onData(std::vector<char> const &) {
 }
 
-void LocationUpload::Task::onEof() {
+void UploadTask::onEof() {
   ftev::StreamConnectionTransport &transport = getTransport();
   transport.write("HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello World!\n",
                   52);

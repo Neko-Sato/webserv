@@ -6,31 +6,34 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 00:18:39 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 00:52:21 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+#include "Task.hpp"
 #include "configs/Location.hpp"
+
+class LocationDefault;
+
+class DefaultTask : public ::Task {
+private:
+  LocationDefault const &_location;
+
+public:
+  DefaultTask(ftev::StreamConnectionTransport &transport,
+       ftev::EventLoop::DeferWatcher &complete,
+       LocationDefault const &location);
+  ~DefaultTask();
+  void onData(std::vector<char> const &data);
+  void onEof();
+};
 
 class LocationDefault : public Location::Detail {
 public:
   typedef std::set<std::string> Indexes;
   typedef std::map<std::string, std::string> Cgis;
-
-  class Task : public Location::Task {
-  private:
-    LocationDefault const &_location;
-
-  public:
-    Task(ftev::StreamConnectionTransport &transport,
-         ftev::EventLoop::DeferWatcher &complete,
-         LocationDefault const &location);
-    ~Task();
-    void onData(std::vector<char> const &data);
-    void onEof();
-  };
 
 private:
   std::string _root;

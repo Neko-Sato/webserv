@@ -6,29 +6,31 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 00:18:53 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 00:56:21 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+#include "Task.hpp"
 #include "configs/Location.hpp"
 
-class LocationRedirect : public Location::Detail {
+class LocationRedirect;
+
+class RedirectTask : public Task {
+private:
+  LocationRedirect const &_location;
+
 public:
-  class Task : public Location::Task {
-  private:
-    LocationRedirect const &_location;
+  RedirectTask(ftev::StreamConnectionTransport &transport,
+               ftev::EventLoop::DeferWatcher &complete,
+               LocationRedirect const &location);
+  ~RedirectTask();
+  void onData(std::vector<char> const &data);
+  void onEof();
+};
 
-  public:
-    Task(ftev::StreamConnectionTransport &transport,
-         ftev::EventLoop::DeferWatcher &complete,
-         LocationRedirect const &location);
-    ~Task();
-    void onData(std::vector<char> const &data);
-    void onEof();
-  };
-
+class LocationRedirect : public Location::Detail {
 private:
   int _code;
   std::string _redirect;

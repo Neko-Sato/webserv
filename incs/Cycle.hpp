@@ -6,12 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 17:50:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/16 22:45:21 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 00:58:28 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+#include "Task.hpp"
 #include "Reader.hpp"
 #include "configs/Configs.hpp"
 #include "structs/Address.hpp"
@@ -26,7 +27,7 @@ private:
   ftev::StreamConnectionTransport &_transport;
   Request const &_request;
   Address const &_address;
-  Location::Task *_task;
+  Task *_task;
   Reader *_reader;
   bool _keepAlive;
 

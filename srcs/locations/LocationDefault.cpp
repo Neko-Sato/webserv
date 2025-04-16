@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 00:20:52 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 00:53:21 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,26 +129,26 @@ bool LocationDefault::getAutoindex() const {
   return _autoindex;
 }
 
-LocationDefault::Task *
+Task *
 LocationDefault::createTask(ftev::StreamConnectionTransport &transport,
                             ftev::EventLoop::DeferWatcher &complete) const {
-  return new Task(transport, complete, *this);
+  return new DefaultTask(transport, complete, *this);
 }
 
-LocationDefault::Task::Task(ftev::StreamConnectionTransport &transport,
-                            ftev::EventLoop::DeferWatcher &complete,
-                            LocationDefault const &location)
-    : Location::Task(transport, complete), _location(location) {
+DefaultTask::DefaultTask(ftev::StreamConnectionTransport &transport,
+                         ftev::EventLoop::DeferWatcher &complete,
+                         LocationDefault const &location)
+    : Task(transport, complete), _location(location) {
   (void)_location;
 }
 
-LocationDefault::Task::~Task() {
+DefaultTask::~DefaultTask() {
 }
 
-void LocationDefault::Task::onData(std::vector<char> const &) {
+void DefaultTask::onData(std::vector<char> const &) {
 }
 
-void LocationDefault::Task::onEof() {
+void DefaultTask::onEof() {
   ftev::StreamConnectionTransport &transport = getTransport();
   transport.write("HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello World!\n",
                   52);

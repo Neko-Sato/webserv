@@ -6,14 +6,14 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 17:21:38 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 00:14:48 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 00:43:01 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <ftev/EventLoop/DeferWatcher.hpp>
-#include <ftev/Stream/StreamConnection.hpp>
+#include "Task.hpp"
+
 #include <ftjson/Json.hpp>
 #include <ftpp/any/Any.hpp>
 #include <ftpp/noncopyable/NonCopyable.hpp>
@@ -25,26 +25,6 @@
 class Location {
 public:
   typedef std::set<std::string> AllowMethods;
-
-  class Task : private ftpp::NonCopyable {
-  private:
-    ftev::StreamConnectionTransport &_transport;
-    ftev::EventLoop::DeferWatcher &_complete;
-
-    Task();
-
-  public:
-    Task(ftev::StreamConnectionTransport &transport,
-         ftev::EventLoop::DeferWatcher &complete);
-    virtual ~Task();
-
-    ftev::StreamConnectionTransport &getTransport() const;
-
-    void complete();
-
-    virtual void onData(std::vector<char> const &data) = 0;
-    virtual void onEof() = 0;
-  };
 
   class Detail {
   public:

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 00:23:22 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 00:55:51 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,26 +81,25 @@ std::string const &LocationRedirect::getRedirect() const {
   return _redirect;
 }
 
-LocationRedirect::Task *
+Task *
 LocationRedirect::createTask(ftev::StreamConnectionTransport &transport,
                              ftev::EventLoop::DeferWatcher &complete) const {
-  return new LocationRedirect::Task(transport, complete, *this);
+  return new RedirectTask(transport, complete, *this);
 }
 
-LocationRedirect::Task::Task(ftev::StreamConnectionTransport &transport,
-                             ftev::EventLoop::DeferWatcher &complete,
-                             LocationRedirect const &location)
-    : Location::Task(transport, complete), _location(location) {
+RedirectTask::RedirectTask(ftev::StreamConnectionTransport &transport,
+                           ftev::EventLoop::DeferWatcher &complete,
+                           LocationRedirect const &location)
+    : Task(transport, complete), _location(location) {
 }
 
-LocationRedirect::Task::~Task() {
+RedirectTask::~RedirectTask() {
 }
 
-void LocationRedirect::Task::onData(std::vector<char> const &data) {
-  UNUSED(data);
+void RedirectTask::onData(std::vector<char> const &) {
 }
 
-void LocationRedirect::Task::onEof() {
+void RedirectTask::onEof() {
   std::ostringstream oss;
   oss << "HTTP/1.1 " << _location.getCode() << " Moved Permanently" << CRLF;
   oss << "Location: " << _location.getRedirect() << CRLF;

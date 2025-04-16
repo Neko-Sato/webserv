@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:18:19 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 00:21:53 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 00:44:52 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,22 +32,6 @@ Location::Detail::Factories Location::Detail::initFactories() {
   factories["upload"] = &create<LocationUpload>;
   factories["redirect"] = &create<LocationRedirect>;
   return factories;
-}
-
-Location::Task::Task(ftev::StreamConnectionTransport &transport,
-                     ftev::EventLoop::DeferWatcher &complete)
-    : _transport(transport), _complete(complete) {
-}
-
-Location::Task::~Task() {
-}
-
-void Location::Task::complete() {
-  _complete.start();
-}
-
-ftev::StreamConnectionTransport &Location::Task::getTransport() const {
-  return _transport;
 }
 
 Location::Detail::Detail() {
