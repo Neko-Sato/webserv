@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 17:58:16 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 20:45:20 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/18 01:10:20 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,14 +71,15 @@ void Cycle::bufferUpdate(std::deque<char> &buffer, bool bufferClosed) {
   }
   std::vector<char> tmp;
   _reader->read(buffer, tmp);
-  _task->onData(tmp);
+  if (!tmp.empty())
+    _task->onData(tmp);
   if (_reader->completed()) {
     _task->onEof();
     _transport.pause();
     delete _reader;
     _reader = NULL;
   } else if (bufferClosed)
-    throw std::runtime_error("");
+    throw std::runtime_error("illegally closed buffer");
 }
 
 bool Cycle::getKeepAlive() const {
