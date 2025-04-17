@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 17:56:36 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 20:48:47 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 21:09:15 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,4 +37,7 @@ void RedirectTask::onEof() {
   ftev::StreamConnectionTransport &transport = getTransport();
   transport.write(response.c_str(), response.size());
   complete();
+}
+
+void RedirectTask::onCancel() {
 }
