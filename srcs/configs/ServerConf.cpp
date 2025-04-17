@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 14:28:11 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/06 19:11:02 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 20:37:26 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,9 @@
 #include <iostream>
 #include <limits>
 
-std::size_t const ServerConf::default_client_max_body_size = parseSize("1m");
+std::size_t const ServerConf::defaultClientMaxBodySize = parseSize("1m");
 
-ServerConf::ServerConf() : _client_max_body_size(default_client_max_body_size) {
+ServerConf::ServerConf() : _clientMaxBodySize(defaultClientMaxBodySize) {
 }
 
 ServerConf::ServerConf(ftjson::Object const &server) {
@@ -35,9 +35,9 @@ ServerConf::ServerConf(ftjson::Object const &server) {
 }
 
 ServerConf::ServerConf(ServerConf const &rhs)
-    : _server_names(rhs._server_names), _addresses(rhs._addresses),
-      _client_max_body_size(rhs._client_max_body_size),
-      _error_pages(rhs._error_pages), _locations(rhs._locations) {
+    : _serverNames(rhs._serverNames), _addresses(rhs._addresses),
+      _clientMaxBodySize(rhs._clientMaxBodySize),
+      _errorPages(rhs._errorPages), _locations(rhs._locations) {
 }
 
 ServerConf &ServerConf::operator=(ServerConf const &rhs) {
@@ -50,10 +50,10 @@ ServerConf::~ServerConf() {
 }
 
 void ServerConf::swap(ServerConf &rhs) throw() {
-  _server_names.swap(rhs._server_names);
+  _serverNames.swap(rhs._serverNames);
   _addresses.swap(rhs._addresses);
-  std::swap(_client_max_body_size, rhs._client_max_body_size);
-  _error_pages.swap(rhs._error_pages);
+  std::swap(_clientMaxBodySize, rhs._clientMaxBodySize);
+  _errorPages.swap(rhs._errorPages);
   _locations.swap(rhs._locations);
 }
 
@@ -67,7 +67,7 @@ void ServerConf::_takeServerNames(ftjson::Object const &server) {
          ++it) {
       if (!it->isType<ftjson::String>())
         throw std::runtime_error("server_names is not string");
-      _server_names.insert(ftpp::tolower(it->as_unsafe<ftjson::String>()));
+      _serverNames.insert(ftpp::tolower(it->as_unsafe<ftjson::String>()));
     }
   }
 }
@@ -94,9 +94,9 @@ void ServerConf::_takeClientBodySize(ftjson::Object const &server) {
   if (it != server.end()) {
     if (!it->second.isType<ftjson::String>())
       throw std::runtime_error("client_max_body_size is not string");
-    _client_max_body_size = parseSize(it->second.as_unsafe<ftjson::String>());
+    _clientMaxBodySize = parseSize(it->second.as_unsafe<ftjson::String>());
   } else
-    _client_max_body_size = default_client_max_body_size;
+    _clientMaxBodySize = defaultClientMaxBodySize;
 }
 
 void ServerConf::_takeErrorPages(ftjson::Object const &server) {
@@ -131,7 +131,7 @@ void ServerConf::_takeErrorPages(ftjson::Object const &server) {
       std::string const &path = jt->second.as_unsafe<ftjson::String>();
       if (path.empty())
         throw std::runtime_error("error_page path is empty");
-      _error_pages[code] = path;
+      _errorPages[code] = path;
     }
   }
 }
@@ -161,7 +161,7 @@ void ServerConf::_takeLocations(ftjson::Object const &server) {
 }
 
 ServerConf::ServerNames const &ServerConf::getServerNames() const {
-  return _server_names;
+  return _serverNames;
 }
 
 ServerConf::Addresses const &ServerConf::getAddresses() const {
@@ -169,11 +169,11 @@ ServerConf::Addresses const &ServerConf::getAddresses() const {
 }
 
 std::size_t ServerConf::getClientMaxBodySize() const {
-  return _client_max_body_size;
+  return _clientMaxBodySize;
 }
 
 ServerConf::ErrorPages const &ServerConf::getErrorPages() const {
-  return _error_pages;
+  return _errorPages;
 }
 
 ServerConf::Locations const &ServerConf::getLocations() const {

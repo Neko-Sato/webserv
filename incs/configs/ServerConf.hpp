@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 17:07:45 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 13:57:05 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 17:51:45 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 
 class ServerConf {
 public:
-  static std::size_t const default_client_max_body_size;
+  static std::size_t const defaultClientMaxBodySize;
 
   typedef std::set<std::string> ServerNames;
   typedef std::set<Address> Addresses;
@@ -32,10 +32,10 @@ public:
   typedef std::map<std::string, Location> Locations;
 
 private:
-  ServerNames _server_names;
+  ServerNames _serverNames;
   Addresses _addresses;
-  std::size_t _client_max_body_size;
-  ErrorPages _error_pages;
+  std::size_t _clientMaxBodySize;
+  ErrorPages _errorPages;
   Locations _locations;
 
   void _takeServerNames(ftjson::Object const &server);

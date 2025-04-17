@@ -6,29 +6,15 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 00:56:21 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 20:31:38 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "Task.hpp"
 #include "configs/Location.hpp"
-
-class LocationRedirect;
-
-class RedirectTask : public Task {
-private:
-  LocationRedirect const &_location;
-
-public:
-  RedirectTask(ftev::StreamConnectionTransport &transport,
-               ftev::EventLoop::DeferWatcher &complete,
-               LocationRedirect const &location);
-  ~RedirectTask();
-  void onData(std::vector<char> const &data);
-  void onEof();
-};
+#include "structs/Request.hpp"
+#include "tasks/Task.hpp"
 
 class LocationRedirect : public Location::Detail {
 private:
@@ -51,5 +37,6 @@ public:
   std::string const &getRedirect() const;
 
   Task *createTask(ftev::StreamConnectionTransport &transport,
-                   ftev::EventLoop::DeferWatcher &complete) const;
+                   ftev::EventLoop::DeferWatcher &complete,
+                   Request const &request) const;
 };

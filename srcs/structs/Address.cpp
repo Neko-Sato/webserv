@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/31 09:45:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 14:18:44 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 20:43:37 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,13 @@
 #include <stdexcept>
 #include <string>
 
-int const Address::PORT_MIN = 0;
-int const Address::PORT_MAX = 65535;
+int const Address::portMin = 0;
+int const Address::portMax = 65535;
 
 Address::Address(std::string const &host, int port) : host(host), port(port) {
   if (host.empty())
     throw std::runtime_error("empty host");
-  if (PORT_MIN > port || PORT_MAX < port)
+  if (portMin > port || portMax < port)
     throw std::runtime_error("port out of range");
 }
 
@@ -47,7 +47,7 @@ Address::Address(ftjson::Object const &addr) {
         throw std::runtime_error("port is not number");
       double tmp = it->second.as_unsafe<ftjson::Number>();
       port = static_cast<int>(tmp);
-      if (PORT_MIN > tmp || PORT_MAX < tmp || port != tmp)
+      if (portMin > tmp || portMax < tmp || port != tmp)
         throw std::runtime_error("port out of range");
     } else
       throw std::runtime_error("address without port");

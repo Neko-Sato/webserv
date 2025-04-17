@@ -6,11 +6,12 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 00:53:21 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 20:38:38 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <locations/LocationDefault.hpp>
+#include <tasks/DefaultTask.hpp>
 
 #include <stdexcept>
 
@@ -129,28 +130,8 @@ bool LocationDefault::getAutoindex() const {
   return _autoindex;
 }
 
-Task *
-LocationDefault::createTask(ftev::StreamConnectionTransport &transport,
-                            ftev::EventLoop::DeferWatcher &complete) const {
-  return new DefaultTask(transport, complete, *this);
-}
-
-DefaultTask::DefaultTask(ftev::StreamConnectionTransport &transport,
-                         ftev::EventLoop::DeferWatcher &complete,
-                         LocationDefault const &location)
-    : Task(transport, complete), _location(location) {
-  (void)_location;
-}
-
-DefaultTask::~DefaultTask() {
-}
-
-void DefaultTask::onData(std::vector<char> const &) {
-}
-
-void DefaultTask::onEof() {
-  ftev::StreamConnectionTransport &transport = getTransport();
-  transport.write("HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello World!\n",
-                  52);
-  complete();
+Task *LocationDefault::createTask(ftev::StreamConnectionTransport &transport,
+                                  ftev::EventLoop::DeferWatcher &complete,
+                                  Request const &request) const {
+  return new DefaultTask(transport, complete, request, *this);
 }

@@ -6,13 +6,14 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 17:21:38 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 00:43:01 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 20:29:38 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "Task.hpp"
+#include "structs/Request.hpp"
+#include "tasks/Task.hpp"
 
 #include <ftjson/Json.hpp>
 #include <ftpp/any/Any.hpp>
@@ -45,11 +46,12 @@ public:
     virtual ~Detail();
     virtual Detail *clone() const = 0;
     virtual Task *createTask(ftev::StreamConnectionTransport &transport,
-                             ftev::EventLoop::DeferWatcher &complete) const = 0;
+                             ftev::EventLoop::DeferWatcher &complete,
+                             Request const &request) const = 0;
   };
 
 private:
-  AllowMethods _allow_methods;
+  AllowMethods _allowMethods;
   ftpp::ScopedPtr<Detail> _detail;
 
   void _takeAllowMethods(ftjson::Object const &location);

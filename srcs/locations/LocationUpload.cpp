@@ -6,11 +6,12 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 00:57:48 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 20:41:08 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <locations/LocationUpload.hpp>
+#include <tasks/UploadTask.hpp>
 
 #include <stdexcept>
 
@@ -58,28 +59,8 @@ std::string const &LocationUpload::getStore() const {
   return _store;
 }
 
-Task *
-LocationUpload::createTask(ftev::StreamConnectionTransport &transport,
-                           ftev::EventLoop::DeferWatcher &complete) const {
-  return new UploadTask(transport, complete, *this);
-}
-
-UploadTask::UploadTask(ftev::StreamConnectionTransport &transport,
-                       ftev::EventLoop::DeferWatcher &complete,
-                       LocationUpload const &location)
-    : Task(transport, complete), _location(location) {
-  (void)_location;
-}
-
-UploadTask::~UploadTask() {
-}
-
-void UploadTask::onData(std::vector<char> const &) {
-}
-
-void UploadTask::onEof() {
-  ftev::StreamConnectionTransport &transport = getTransport();
-  transport.write("HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello World!\n",
-                  52);
-  complete();
+Task *LocationUpload::createTask(ftev::StreamConnectionTransport &transport,
+                                 ftev::EventLoop::DeferWatcher &complete,
+                                 Request const &request) const {
+  return new UploadTask(transport, complete, request, *this);
 }

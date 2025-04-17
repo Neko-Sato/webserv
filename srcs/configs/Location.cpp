@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:18:19 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 00:44:52 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 20:36:29 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ Location::Location(ftjson::Object const &location) {
 }
 
 Location::Location(Location const &rhs)
-    : _allow_methods(rhs._allow_methods),
+    : _allowMethods(rhs._allowMethods),
       _detail(rhs._detail ? rhs._detail->clone() : NULL) {
 }
 
@@ -76,7 +76,7 @@ Location::~Location() {
 }
 
 void Location::swap(Location &rhs) throw() {
-  _allow_methods.swap(rhs._allow_methods);
+  _allowMethods.swap(rhs._allowMethods);
   _detail.swap(rhs._detail);
 }
 
@@ -90,7 +90,7 @@ void Location::_takeAllowMethods(ftjson::Object const &location) {
          it != methods.end(); ++it) {
       if (!it->isType<ftjson::String>())
         throw std::runtime_error("allow_methods is not string");
-      _allow_methods.insert(ftpp::tolower(it->as_unsafe<ftjson::String>()));
+      _allowMethods.insert(ftpp::tolower(it->as_unsafe<ftjson::String>()));
     }
   }
 }
@@ -109,7 +109,7 @@ void Location::_takeDetail(ftjson::Object const &location) {
 }
 
 Location::AllowMethods const &Location::getAllowMethods() const {
-  return _allow_methods;
+  return _allowMethods;
 }
 
 Location::Detail const &Location::getDetail() const {

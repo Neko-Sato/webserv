@@ -1,42 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Cycle.hpp                                          :+:      :+:    :+:   */
+/*   Task.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/06 17:50:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 20:44:42 by hshimizu         ###   ########.fr       */
+/*   Created: 2025/04/17 00:41:05 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/04/17 20:42:20 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "Reader.hpp"
-#include "configs/Configs.hpp"
-#include "structs/Address.hpp"
 #include "structs/Request.hpp"
-#include "tasks/Task.hpp"
 
-#include <ftev/EventLoop/DeferWatcher.hpp>
 #include <ftev/Stream/StreamConnection.hpp>
 #include <ftpp/noncopyable/NonCopyable.hpp>
 
-class Cycle : private ftpp::NonCopyable {
+class Task : private ftpp::NonCopyable {
 private:
   ftev::StreamConnectionTransport &_transport;
-  Task *_task;
-  Reader *_reader;
-  bool _keepAlive;
+  ftev::EventLoop::DeferWatcher &_complete;
+  Request const &_request;
 
-  Cycle();
+  Task();
 
 public:
-  Cycle(ftev::StreamConnectionTransport &transport,
-        ftev::EventLoop::DeferWatcher &complete, Configs const &configs,
-        Request const &request, Address const &address);
-  ~Cycle();
+  Task(ftev::StreamConnectionTransport &transport,
+       ftev::EventLoop::DeferWatcher &complete, Request const &request);
+  virtual ~Task();
 
-  void bufferUpdate(std::deque<char> &buffer, bool bufferClosed);
-  bool getKeepAlive() const;
+  ftev::StreamConnectionTransport &getTransport() const;
+  Request const &getRequest() const;
+  void complete();
+
+  virtual void onData(std::vector<char> const &data) = 0;
+  virtual void onEof() = 0;
 };

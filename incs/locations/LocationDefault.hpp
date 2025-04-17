@@ -6,29 +6,15 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 00:52:21 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 20:31:07 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "Task.hpp"
 #include "configs/Location.hpp"
-
-class LocationDefault;
-
-class DefaultTask : public ::Task {
-private:
-  LocationDefault const &_location;
-
-public:
-  DefaultTask(ftev::StreamConnectionTransport &transport,
-       ftev::EventLoop::DeferWatcher &complete,
-       LocationDefault const &location);
-  ~DefaultTask();
-  void onData(std::vector<char> const &data);
-  void onEof();
-};
+#include "structs/Request.hpp"
+#include "tasks/Task.hpp"
 
 class LocationDefault : public Location::Detail {
 public:
@@ -60,5 +46,6 @@ public:
   bool getAutoindex() const;
 
   Task *createTask(ftev::StreamConnectionTransport &transport,
-                   ftev::EventLoop::DeferWatcher &complete) const;
+                   ftev::EventLoop::DeferWatcher &complete,
+                   Request const &request) const;
 };

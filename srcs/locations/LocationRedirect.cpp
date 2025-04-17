@@ -6,17 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 00:55:51 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 20:40:35 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "locations/LocationRedirect.hpp"
-#include "constants.hpp"
+#include "tasks/RedirectTask.hpp"
 
-#include <ftpp/macros.hpp>
-#include <ftpp/string/string.hpp>
-
-#include <sstream>
 #include <stdexcept>
 
 LocationRedirect::LocationRedirect() : _code(0) {
@@ -81,31 +77,8 @@ std::string const &LocationRedirect::getRedirect() const {
   return _redirect;
 }
 
-Task *
-LocationRedirect::createTask(ftev::StreamConnectionTransport &transport,
-                             ftev::EventLoop::DeferWatcher &complete) const {
-  return new RedirectTask(transport, complete, *this);
-}
-
-RedirectTask::RedirectTask(ftev::StreamConnectionTransport &transport,
-                           ftev::EventLoop::DeferWatcher &complete,
-                           LocationRedirect const &location)
-    : Task(transport, complete), _location(location) {
-}
-
-RedirectTask::~RedirectTask() {
-}
-
-void RedirectTask::onData(std::vector<char> const &) {
-}
-
-void RedirectTask::onEof() {
-  std::ostringstream oss;
-  oss << "HTTP/1.1 " << _location.getCode() << " Moved Permanently" << CRLF;
-  oss << "Location: " << _location.getRedirect() << CRLF;
-  oss << CRLF;
-  std::string const &response = oss.str();
-  ftev::StreamConnectionTransport &transport = getTransport();
-  transport.write(response.c_str(), response.size());
-  complete();
+Task *LocationRedirect::createTask(ftev::StreamConnectionTransport &transport,
+                                   ftev::EventLoop::DeferWatcher &complete,
+                                   Request const &request) const {
+  return new RedirectTask(transport, complete, request, *this);
 }

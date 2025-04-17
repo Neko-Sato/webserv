@@ -1,31 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Address.hpp                                        :+:      :+:    :+:   */
+/*   DefaultTask.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/31 09:45:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 17:48:34 by hshimizu         ###   ########.fr       */
+/*   Created: 2025/04/17 17:53:55 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/04/17 20:42:28 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <ftjson/Json.hpp>
+#include "locations/LocationDefault.hpp"
+#include "tasks/Task.hpp"
 
-#include <string>
+class DefaultTask : public ::Task {
+private:
+  LocationDefault const &_location;
 
-struct Address {
-  std::string host;
-  int port;
+public:
+  DefaultTask(ftev::StreamConnectionTransport &transport,
+              ftev::EventLoop::DeferWatcher &complete, Request const &request,
+              LocationDefault const &location);
+  ~DefaultTask();
 
-  static int const portMin;
-  static int const portMax;
-
-  Address(std::string const &host, int port);
-  Address(ftjson::Object const &addr);
-
-  void swap(Address &rhs) throw();
-  bool operator<(Address const &rhs) const;
+  void onData(std::vector<char> const &data);
+  void onEof();
 };

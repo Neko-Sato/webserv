@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/06 17:58:16 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 01:15:32 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/17 20:45:20 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,24 +21,23 @@
 Cycle::Cycle(ftev::StreamConnectionTransport &transport,
              ftev::EventLoop::DeferWatcher &complete, Configs const &configs,
              Request const &request, Address const &address)
-    : _transport(transport), _request(request), _address(address), _task(NULL),
-      _reader(NULL), _keepAlive(false) {
+    : _transport(transport), _task(NULL), _reader(NULL), _keepAlive(false) {
   Request::Headers::const_iterator it;
-  it = _request.headers.find("connection");
-  if (it != _request.headers.end())
+  it = request.headers.find("connection");
+  if (it != request.headers.end())
     _keepAlive = it->second.back() == "keep-alive";
-  it = _request.headers.find("host");
+  it = request.headers.find("host");
   ServerConf const &serverConf = configs.findServer(
-      _address, it != _request.headers.end() ? &it->second.back() : NULL);
-  it = _request.headers.find("transfer-encoding");
-  if (it != _request.headers.end()) {
+      address, it != request.headers.end() ? &it->second.back() : NULL);
+  it = request.headers.find("transfer-encoding");
+  if (it != request.headers.end()) {
     if (it->second.back() == "chunked")
       _reader = new ChankedReader;
     else
       throw std::runtime_error("no support");
   } else {
-    it = _request.headers.find("content-length");
-    if (it != _request.headers.end()) {
+    it = request.headers.find("content-length");
+    if (it != request.headers.end()) {
       std::string const &nstr = it->second.back();
       std::size_t len;
       std::size_t n = ftpp::stoul(nstr, &len);
@@ -47,11 +46,11 @@ Cycle::Cycle(ftev::StreamConnectionTransport &transport,
       _reader = new ContentLengthReader(n);
     }
   }
-  Location const *loc = serverConf.findLocation(_request.method, _request.path);
+  Location const *loc = serverConf.findLocation(request.method, request.path);
   try {
     if (!loc)
       throw std::runtime_error("location not found");
-    _task = loc->getDetail().createTask(transport, complete);
+    _task = loc->getDetail().createTask(transport, complete, request);
   } catch (...) {
     delete _reader;
     throw;
