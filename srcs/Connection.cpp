@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 01:41:18 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 00:29:40 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/19 02:18:27 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,8 +62,8 @@ Connection::Connection(ftev::EventLoop &loop, ftpp::Socket &socket,
                        Address const &address, Configs const &configs)
     : TCPConnection(loop, socket), Reaper(loop), _address(address),
       _configs(configs), _state(REQUEST), _bufferClosed(false),
-      _receiveRequestPosition(0), _cycle(NULL), _timeout(NULL),
-      _complete(NULL) {
+      _receiveRequestPosition(0), _cycle(NULL), _timeout(NULL), _complete(NULL),
+      _keepAlive(false) {
   ftpp::logger(ftpp::Logger::INFO, "Connection connected");
   try {
     _timeout = new Timeout(loop, *this);
@@ -127,20 +127,19 @@ void Connection::_process() {
         flag = _processRequest();
         if (!flag && _bufferClosed) {
           ftev::StreamConnectionTransport &transport = getTransport();
-          transport.close();
-          release();
+          transport.drain();
+          flag = false;
         }
         break;
       case RESPONSE:
-        _cycle->bufferUpdate(_buffer, _bufferClosed);
+        _cycle->bufferUpdate();
         flag = false;
         break;
       case DONE:
-        bool keep = _cycle->getKeepAlive();
         delete _cycle;
         _cycle = NULL;
         ftev::StreamConnectionTransport &transport = getTransport();
-        if (keep) {
+        if (_keepAlive) {
           _state = REQUEST;
           transport.resume();
           _timeout->start(requestTimeout);
@@ -176,7 +175,74 @@ bool Connection::_processRequest() {
       .swap(_request);
   _buffer.erase(_buffer.begin(), match + DOUBLE_CRLF.size());
   _state = RESPONSE;
-  _cycle = new Cycle(getTransport(), *_complete, _configs, _request, _address);
+  _cycle = new Cycle(*this);
   _timeout->cancel();
   return true;
+}
+
+Connection::Cycle::Cycle(Connection &connection)
+    : _connection(connection), _task(NULL), _reader(NULL) {
+  Request::Headers::const_iterator it;
+  it = _connection._request.headers.find("connection");
+  if (it != _connection._request.headers.end())
+    _connection._keepAlive = it->second.back() == "keep-alive";
+  it = _connection._request.headers.find("host");
+  ServerConf const &serverConf = _connection._configs.findServer(
+      _connection._address,
+      it != _connection._request.headers.end() ? &it->second.back() : NULL);
+  it = _connection._request.headers.find("transfer-encoding");
+  if (it != _connection._request.headers.end()) {
+    if (it->second.back() == "chunked")
+      _reader = new ChankedReader;
+    else
+      throw std::runtime_error("no support");
+  } else {
+    it = _connection._request.headers.find("content-length");
+    if (it != _connection._request.headers.end()) {
+      std::string const &nstr = it->second.back();
+      std::size_t len;
+      std::size_t n = ftpp::stoul(nstr, &len);
+      if (nstr.size() != len)
+        throw std::runtime_error("");
+      _reader = new ContentLengthReader(n);
+    }
+  }
+  Location const *loc = serverConf.findLocation(_connection._request.method,
+                                                _connection._request.path);
+  try {
+    if (!loc)
+      throw std::runtime_error("location not found");
+    _task = loc->getDetail().createTask(_connection.getTransport(),
+                                        *_connection._complete,
+                                        _connection._request);
+  } catch (...) {
+    delete _reader;
+    throw;
+  }
+  return;
+}
+
+Connection::Cycle::~Cycle() {
+  delete _reader;
+  delete _task;
+}
+
+void Connection::Cycle::bufferUpdate() {
+  ftev::StreamConnectionTransport &transport = _connection.getTransport();
+  if (!_reader) {
+    _task->onEof();
+    transport.pause();
+    return;
+  }
+  std::vector<char> tmp;
+  _reader->read(_connection._buffer, tmp);
+  if (!tmp.empty())
+    _task->onData(tmp);
+  if (_reader->completed()) {
+    _task->onEof();
+    transport.pause();
+    delete _reader;
+    _reader = NULL;
+  } else if (_connection._bufferClosed)
+    throw std::runtime_error("interrupted body");
 }

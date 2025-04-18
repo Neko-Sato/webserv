@@ -6,16 +6,17 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 23:06:24 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/16 22:22:56 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/19 02:09:57 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "Cycle.hpp"
+#include "Reader.hpp"
 #include "configs/Configs.hpp"
 #include "structs/Address.hpp"
 #include "structs/Request.hpp"
+#include "tasks/Task.hpp"
 
 #include <ftev/EventLoop/Reaper.hpp>
 #include <ftev/EventLoop/TimerWatcher.hpp>
@@ -54,6 +55,21 @@ public:
     void onEvent();
   };
 
+  class Cycle : private ftpp::NonCopyable {
+  private:
+    Connection &_connection;
+    Task *_task;
+    Reader *_reader;
+
+    Cycle();
+
+  public:
+    Cycle(Connection &_connection);
+    ~Cycle();
+
+    void bufferUpdate();
+  };
+
   static time_t const requestTimeout;
 
 private:
@@ -69,6 +85,7 @@ private:
   Cycle *_cycle;
   Timeout *_timeout;
   Complete *_complete;
+  bool _keepAlive;
 
   void _process();
   bool _processRequest();
