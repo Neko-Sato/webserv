@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 08:39:11 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/21 08:41:28 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/21 08:44:06 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void Responce::swap(Responce &rhs) throw() {
   headers.swap(rhs.headers);
 }
 
-std::string makeResponce(Responce const &responce) {
+std::string composeResponse(Responce const &responce) {
   std::ostringstream oss;
   oss << responce.version << " " << responce.status << " " << responce.reason
       << CRLF;

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 08:27:36 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/21 08:41:06 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/21 08:44:10 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,4 +28,4 @@ struct Responce {
   void swap(Responce &rhs) throw();
 };
 
-std::string makeResponce(Responce const &responce);
+std::string composeResponse(Responce const &responce);
