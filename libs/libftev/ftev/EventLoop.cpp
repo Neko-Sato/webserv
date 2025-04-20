@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/16 21:49:45 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/20 23:54:19 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,6 @@ int EventLoop::_backendTimeout() const {
 }
 
 void EventLoop::_runTimer() {
-  _updateTime();
   while (!_timerWatchers.empty()) {
     TimerWatchers::iterator it = _timerWatchers.begin();
     if (_time < it->first)
@@ -126,6 +125,7 @@ void EventLoop::_runIOPoll(int timeout) {
       }
     }
   }
+  _updateTime();
   while (!events.empty()) {
     event_details const &details = events.front();
     IOWatchers::iterator it = _ioWatchers.find(details.fd);
@@ -164,6 +164,7 @@ void EventLoop::run() {
   _stopFlag = false;
   try {
     ftpp::logger(ftpp::Logger::INFO, "EventLoop start");
+    _updateTime();
     _runTimer();
     for (; likely(!(_stopFlag ||
                     (_timerWatchers.empty() && _ioWatchers.empty() &&
