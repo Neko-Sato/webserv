@@ -1,35 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Responce.cpp                                       :+:      :+:    :+:   */
+/*   Response.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 08:39:11 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/21 08:44:06 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/21 09:28:46 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "structs/Responce.hpp"
+#include "structs/Response.hpp"
 #include "constants.hpp"
 
 #include <algorithm>
 #include <sstream>
 
-void Responce::swap(Responce &rhs) throw() {
+void Response::swap(Response &rhs) throw() {
   version.swap(rhs.version);
   std::swap(status, rhs.status);
   reason.swap(rhs.reason);
   headers.swap(rhs.headers);
 }
 
-std::string composeResponse(Responce const &responce) {
-  std::ostringstream oss;
-  oss << responce.version << " " << responce.status << " " << responce.reason
+std::string composeResponse(Response const &response) {
+  std::ostringstream oss;s
+  oss << response.version << " " << response.status << " " << response.reason
       << CRLF;
-  for (Responce::Headers::const_iterator it = responce.headers.begin();
-       it != responce.headers.end(); ++it) {
-    for (Responce::HeaderValues::const_iterator jt = it->second.begin();
+  for (Response::Headers::const_iterator it = response.headers.begin();
+       it != response.headers.end(); ++it) {
+    for (Response::HeaderValues::const_iterator jt = it->second.begin();
          jt != it->second.end(); ++jt) {
       oss << it->first << ": " << *jt << CRLF;
     }

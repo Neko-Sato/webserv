@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 08:27:36 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/21 08:44:10 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/21 09:27:53 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 #include <string>
 #include <vector>
 
-struct Responce {
+struct Response {
   typedef std::vector<std::string> HeaderValues;
   typedef std::map<std::string, HeaderValues> Headers;
 
@@ -25,7 +25,7 @@ struct Responce {
   std::string reason;
   Headers headers;
 
-  void swap(Responce &rhs) throw();
+  void swap(Response &rhs) throw();
 };
 
-std::string composeResponse(Responce const &responce);
+std::string composeResponse(Response const &response);
