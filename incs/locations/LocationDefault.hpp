@@ -6,14 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 20:31:07 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/24 03:25:06 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "configs/Location.hpp"
-#include "structs/Request.hpp"
+#include "configs/LocationDetail.hpp"
 #include "tasks/Task.hpp"
 
 class LocationDefault : public Location::Detail {
@@ -45,7 +44,5 @@ public:
   Indexes const &getIndex() const;
   bool getAutoindex() const;
 
-  Task *createTask(ftev::StreamConnectionTransport &transport,
-                   ftev::EventLoop::DeferWatcher &complete,
-                   Request const &request) const;
+  Task *createTask(Connection::Cycle &cycle) const;
 };

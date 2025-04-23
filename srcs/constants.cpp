@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 17:47:19 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 21:07:36 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/24 02:18:42 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 std::string const DOUBLE_CRLF("\r\n\r\n");
 std::string const CRLF("\r\n");
 
-static HttpStatusMap _createStatusCode() {
+static HttpStatusMap _createStatusMap() {
   HttpStatusMap tmp;
   // 1xx
   tmp[100] = "Continue";
@@ -87,4 +87,4 @@ static HttpStatusMap _createStatusCode() {
   return tmp;
 }
 
-HttpStatusMap const status = _createStatusCode();
+HttpStatusMap const httpStatusMap = _createStatusMap();

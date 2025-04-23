@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 20:41:08 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/24 03:00:31 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,8 +59,6 @@ std::string const &LocationUpload::getStore() const {
   return _store;
 }
 
-Task *LocationUpload::createTask(ftev::StreamConnectionTransport &transport,
-                                 ftev::EventLoop::DeferWatcher &complete,
-                                 Request const &request) const {
-  return new UploadTask(transport, complete, request, *this);
+Task *LocationUpload::createTask(Connection::Cycle &cycle) const {
+  return new UploadTask(cycle, *this);
 }

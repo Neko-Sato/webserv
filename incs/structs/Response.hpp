@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Responce.hpp                                       :+:      :+:    :+:   */
+/*   Response.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 08:27:36 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/21 09:27:53 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/24 00:55:11 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,4 +28,4 @@ struct Response {
   void swap(Response &rhs) throw();
 };
 
-std::string composeResponse(Response const &response);
+void composeResponse(std::string &res, Response const &response);

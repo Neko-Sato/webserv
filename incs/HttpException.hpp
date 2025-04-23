@@ -1,35 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Task.hpp                                           :+:      :+:    :+:   */
+/*   HttpException.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/17 00:41:05 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 03:05:55 by hshimizu         ###   ########.fr       */
+/*   Created: 2025/04/23 21:43:16 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/04/24 02:20:45 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "Connection.hpp"
+#include <exception>
 
-#include <ftpp/noncopyable/NonCopyable.hpp>
-
-class Task : private ftpp::NonCopyable {
-public:
-  Connection::Cycle &cycle;
-
+class HttpException : public std::exception {
 private:
-  Task();
-
-protected:
-  Task(Connection::Cycle &cycle);
+  int _code;
 
 public:
-  virtual ~Task();
+  HttpException(int code = 500);
+  HttpException(HttpException const &rhs);
+  ~HttpException() throw();
+  HttpException &operator=(HttpException const &rhs);
 
-  virtual void onData(std::vector<char> const &data) = 0;
-  virtual void onEof() = 0;
-  virtual void onCancel() = 0;
+  char const *what() const throw();
+
+  int getCode() const throw();
 };

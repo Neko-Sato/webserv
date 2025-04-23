@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 02:12:43 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 14:18:52 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/23 20:31:47 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void Request::swap(Request &rhs) throw() {
   headers.swap(rhs.headers);
 }
 
-Request parseRequest(std::string const &data) {
+void parseRequest(Request &res, std::string const &data) {
   bool is_first_line = true;
   Request tmp;
   std::string::const_iterator it = data.begin();
@@ -58,5 +58,5 @@ Request parseRequest(std::string const &data) {
     if (it == data.end())
       break;
   }
-  return tmp;
+  res.swap(tmp);
 }

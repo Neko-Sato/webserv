@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 20:38:38 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/24 02:43:07 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,8 +130,6 @@ bool LocationDefault::getAutoindex() const {
   return _autoindex;
 }
 
-Task *LocationDefault::createTask(ftev::StreamConnectionTransport &transport,
-                                  ftev::EventLoop::DeferWatcher &complete,
-                                  Request const &request) const {
-  return new DefaultTask(transport, complete, request, *this);
+Task *LocationDefault::createTask(Connection::Cycle &cycle) const {
+  return new DefaultTask(cycle, *this);
 }

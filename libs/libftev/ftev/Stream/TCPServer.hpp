@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 01:07:13 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/02 08:22:08 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/21 12:40:22 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@ private:
   TCPServer();
 
 protected:
-  TCPServer(EventLoop &loop, const std::string &host, int port);
+  TCPServer(EventLoop &loop, const std::string &host, int port,
+            int backlog = 1024);
 
 public:
   virtual ~TCPServer();

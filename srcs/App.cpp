@@ -1,35 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Task.hpp                                           :+:      :+:    :+:   */
+/*   App.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/17 00:41:05 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 03:05:55 by hshimizu         ###   ########.fr       */
+/*   Created: 2025/04/24 00:49:33 by hshimizu          #+#    #+#             */
+/*   Updated: 2025/04/24 03:18:32 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
-
 #include "Connection.hpp"
+#include "Cycle.hpp"
 
-#include <ftpp/noncopyable/NonCopyable.hpp>
+App::App(Connection::Cycle &cycle) : cycle(cycle) {
+}
 
-class Task : private ftpp::NonCopyable {
-public:
-  Connection::Cycle &cycle;
+App::~App() {
+}
 
-private:
-  Task();
+void App::onData(std::vector<char> const &) {
+}
 
-protected:
-  Task(Connection::Cycle &cycle);
+void App::onEof() {
+  Response::Headers headers;
+  headers["transfer-encoding"].push_back("chunked");
+  cycle.send(200, headers);
+  cycle.send("Hello", 5, false);
+}
 
-public:
-  virtual ~Task();
-
-  virtual void onData(std::vector<char> const &data) = 0;
-  virtual void onEof() = 0;
-  virtual void onCancel() = 0;
-};
+void App::onCancel() {
+}

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 18:00:43 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 21:09:47 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/24 02:45:04 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,7 @@ private:
   LocationUpload const &_location;
 
 public:
-  UploadTask(ftev::StreamConnectionTransport &transport,
-             ftev::EventLoop::DeferWatcher &complete, Request const &request,
-             LocationUpload const &location);
+  UploadTask(Connection::Cycle &cycle, LocationUpload const &location);
   ~UploadTask();
 
   void onData(std::vector<char> const &data);

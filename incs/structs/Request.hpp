@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 21:37:12 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 13:58:00 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/23 20:30:27 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,4 +31,4 @@ struct Request {
   void swap(Request &rhs) throw();
 };
 
-Request parseRequest(std::string const &data);
+void parseRequest(Request &res, std::string const &data);

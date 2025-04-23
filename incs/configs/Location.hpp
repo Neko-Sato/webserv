@@ -6,18 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 17:21:38 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 20:29:38 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/24 03:23:42 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "structs/Request.hpp"
-#include "tasks/Task.hpp"
-
 #include <ftjson/Json.hpp>
-#include <ftpp/any/Any.hpp>
-#include <ftpp/noncopyable/NonCopyable.hpp>
 #include <ftpp/smart_ptr/ScopedPtr.hpp>
 
 #include <set>
@@ -26,29 +21,7 @@
 class Location {
 public:
   typedef std::set<std::string> AllowMethods;
-
-  class Detail {
-  public:
-    typedef Detail *(*factory)(ftjson::Object const &location);
-    typedef std::map<std::string, factory> Factories;
-    static Factories factories;
-
-    static Factories initFactories();
-    template <typename T> static Detail *create(ftjson::Object const &location);
-
-  protected:
-    Detail();
-    Detail(Detail const &rhs);
-    Detail(ftjson::Object const &location);
-    Detail &operator=(Detail const &rhs);
-
-  public:
-    virtual ~Detail();
-    virtual Detail *clone() const = 0;
-    virtual Task *createTask(ftev::StreamConnectionTransport &transport,
-                             ftev::EventLoop::DeferWatcher &complete,
-                             Request const &request) const = 0;
-  };
+  class Detail;
 
 private:
   AllowMethods _allowMethods;
@@ -68,8 +41,3 @@ public:
   AllowMethods const &getAllowMethods() const;
   Detail const &getDetail() const;
 };
-
-template <typename T>
-Location::Detail *Location::Detail::create(ftjson::Object const &location) {
-  return new T(location);
-}

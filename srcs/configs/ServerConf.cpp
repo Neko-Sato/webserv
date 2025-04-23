@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 14:28:11 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 20:37:26 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/24 03:29:34 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 #include <ftpp/algorithm.hpp>
 #include <ftpp/string/string.hpp>
 
-#include <iostream>
 #include <limits>
 
 std::size_t const ServerConf::defaultClientMaxBodySize = parseSize("1m");

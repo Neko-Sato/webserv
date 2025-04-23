@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 01:07:13 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/02 08:26:19 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/21 12:39:59 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 
 namespace ftev {
 
-TCPServer::TCPServer(EventLoop &loop, const std::string &host, int port)
+TCPServer::TCPServer(EventLoop &loop, const std::string &host, int port, int backlog)
     : loop(loop) {
   try {
     ftpp::AddrInfos::Hints hints(AF_UNSPEC, SOCK_STREAM, 0, AI_PASSIVE);
@@ -38,7 +38,7 @@ TCPServer::TCPServer(EventLoop &loop, const std::string &host, int port)
       }
       setblocking(socket.getSockfd(), false);
       socket.bind(it->ai_addr, it->ai_addrlen);
-      socket.listen();
+      socket.listen(backlog);
       StreamServerTransport *transport =
           new StreamServerTransport(loop, *this, socket);
       try {

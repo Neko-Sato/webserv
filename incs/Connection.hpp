@@ -6,17 +6,18 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 23:06:24 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/19 02:09:57 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/24 03:19:47 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "Reader.hpp"
+#include "Writer.hpp"
 #include "configs/Configs.hpp"
 #include "structs/Address.hpp"
 #include "structs/Request.hpp"
-#include "tasks/Task.hpp"
+#include "structs/Response.hpp"
 
 #include <ftev/EventLoop/Reaper.hpp>
 #include <ftev/EventLoop/TimerWatcher.hpp>
@@ -29,8 +30,6 @@
 
 class Connection : public ftev::TCPConnection, public ftev::EventLoop::Reaper {
 public:
-  enum State { REQUEST, RESPONSE, DONE };
-
   class Timeout : public ftev::EventLoop::TimerWatcher {
   private:
     Connection &_connection;
@@ -55,24 +54,13 @@ public:
     void onEvent();
   };
 
-  class Cycle : private ftpp::NonCopyable {
-  private:
-    Connection &_connection;
-    Task *_task;
-    Reader *_reader;
-
-    Cycle();
-
-  public:
-    Cycle(Connection &_connection);
-    ~Cycle();
-
-    void bufferUpdate();
-  };
+  class Cycle;
 
   static time_t const requestTimeout;
 
 private:
+  enum State { REQUEST, RESPONSE, DONE };
+
   Address _address;
   Configs const &_configs;
 

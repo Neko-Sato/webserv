@@ -6,25 +6,22 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 01:41:18 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/19 02:18:27 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/24 03:14:57 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Connection.hpp"
+#include "Cycle.hpp"
 #include "constants.hpp"
 
 #include <ftpp/format/Format.hpp>
 #include <ftpp/iterator.hpp>
 #include <ftpp/logger/Logger.hpp>
-#include <ftpp/macros.hpp>
 #include <ftpp/string/string.hpp>
 #include <ftpp/urllib/URI.hpp>
-#include <ftpp/urllib/urlquote.hpp>
 
 #include <algorithm>
 #include <cassert>
-#include <iostream>
-#include <sstream>
 
 time_t const Connection::requestTimeout = 10000;
 
@@ -171,78 +168,10 @@ bool Connection::_processRequest() {
     return false;
   }
   _receiveRequestPosition = 0;
-  parseRequest(std::string(_buffer.begin(), match + CRLF.size()))
-      .swap(_request);
+  parseRequest(_request, std::string(_buffer.begin(), match + CRLF.size()));
   _buffer.erase(_buffer.begin(), match + DOUBLE_CRLF.size());
   _state = RESPONSE;
   _cycle = new Cycle(*this);
   _timeout->cancel();
   return true;
-}
-
-Connection::Cycle::Cycle(Connection &connection)
-    : _connection(connection), _task(NULL), _reader(NULL) {
-  Request::Headers::const_iterator it;
-  it = _connection._request.headers.find("connection");
-  if (it != _connection._request.headers.end())
-    _connection._keepAlive = it->second.back() == "keep-alive";
-  it = _connection._request.headers.find("host");
-  ServerConf const &serverConf = _connection._configs.findServer(
-      _connection._address,
-      it != _connection._request.headers.end() ? &it->second.back() : NULL);
-  it = _connection._request.headers.find("transfer-encoding");
-  if (it != _connection._request.headers.end()) {
-    if (it->second.back() == "chunked")
-      _reader = new ChankedReader;
-    else
-      throw std::runtime_error("no support");
-  } else {
-    it = _connection._request.headers.find("content-length");
-    if (it != _connection._request.headers.end()) {
-      std::string const &nstr = it->second.back();
-      std::size_t len;
-      std::size_t n = ftpp::stoul(nstr, &len);
-      if (nstr.size() != len)
-        throw std::runtime_error("");
-      _reader = new ContentLengthReader(n);
-    }
-  }
-  Location const *loc = serverConf.findLocation(_connection._request.method,
-                                                _connection._request.path);
-  try {
-    if (!loc)
-      throw std::runtime_error("location not found");
-    _task = loc->getDetail().createTask(_connection.getTransport(),
-                                        *_connection._complete,
-                                        _connection._request);
-  } catch (...) {
-    delete _reader;
-    throw;
-  }
-  return;
-}
-
-Connection::Cycle::~Cycle() {
-  delete _reader;
-  delete _task;
-}
-
-void Connection::Cycle::bufferUpdate() {
-  ftev::StreamConnectionTransport &transport = _connection.getTransport();
-  if (!_reader) {
-    _task->onEof();
-    transport.pause();
-    return;
-  }
-  std::vector<char> tmp;
-  _reader->read(_connection._buffer, tmp);
-  if (!tmp.empty())
-    _task->onData(tmp);
-  if (_reader->completed()) {
-    _task->onEof();
-    transport.pause();
-    delete _reader;
-    _reader = NULL;
-  } else if (_connection._bufferClosed)
-    throw std::runtime_error("interrupted body");
 }

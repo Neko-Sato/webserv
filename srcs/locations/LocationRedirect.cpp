@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/17 20:40:35 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/24 03:00:19 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,8 +77,6 @@ std::string const &LocationRedirect::getRedirect() const {
   return _redirect;
 }
 
-Task *LocationRedirect::createTask(ftev::StreamConnectionTransport &transport,
-                                   ftev::EventLoop::DeferWatcher &complete,
-                                   Request const &request) const {
-  return new RedirectTask(transport, complete, request, *this);
+Task *LocationRedirect::createTask(Connection::Cycle &cycle) const {
+  return new RedirectTask(cycle, *this);
 }
