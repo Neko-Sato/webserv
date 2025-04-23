@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 23:45:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 03:22:16 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/24 03:44:58 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 
 /*
 見直す必要がある
+リクエストヘッダーについて適当かどうか検証して適切にエラーページを返す必要がある
 */
 Connection::Cycle::Cycle(Connection &connection)
     : _connection(connection), _state(RESPONSE), _serverConf(NULL), _app(NULL),
@@ -125,6 +126,8 @@ Request const &Connection::Cycle::getRequest() const {
 
 /*
 見直す必要がある
+ここの目的はレスポンスヘッダーが正しいかチェックしどうしても不正な場合はrunntime_errorを
+訂正可能な場合は修正して送信する。
 */
 void Connection::Cycle::send(int code, Response::Headers const &headers) {
   assert(_state == RESPONSE);
@@ -180,6 +183,11 @@ void Connection::Cycle::send(char const *data, std::size_t size, bool more) {
   }
 }
 
+/*
+見直す必要がある
+上のsend関数を用いて適当にエラーページを返す必要がある。
+失敗はrunntime_errorで良い。
+*/
 void Connection::Cycle::sendErrorPage(int code) {
   send(code, Response::Headers());
   send("<html><head><title>Webserv</title></head><body>"

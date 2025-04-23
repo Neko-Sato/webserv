@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 00:49:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 03:35:12 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/24 03:46:47 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,11 @@ App::App(Connection::Cycle &cycle) : cycle(cycle) {
 
 App::~App() {
 }
+
+/*
+ここではロケーションごとの分岐や、NotFoundの処理を適切に行う必要がある。
+レスポンスは必ずonEofののあとに行う必要がある。
+*/
 
 void App::onData(std::vector<char> const &) {
 }

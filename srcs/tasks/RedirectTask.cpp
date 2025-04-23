@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 17:56:36 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 03:34:28 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/24 03:41:21 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ void RedirectTask::onData(std::vector<char> const &) {
 void RedirectTask::onEof() {
   Response::Headers headers;
   headers["Location"].push_back(_location.getRedirect());
-  headers["Content-Type"].push_back("text/html");
   cycle.send(_location.getCode(), headers);
   cycle.send(NULL, 0, false);
 }
