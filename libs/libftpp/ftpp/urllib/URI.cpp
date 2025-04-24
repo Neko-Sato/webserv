@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 14:50:24 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 17:55:34 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/24 23:55:10 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,8 @@ std::string URI::_readNetloc(std::string const &url, std::size_t &pos) {
   if (url.compare(pos, 2, "//"))
     return "";
   std::size_t _pos = url.find_first_of("/?#", pos + 2);
+  if (_pos == std::string::npos)
+    return "";
   std::string result(url, pos + 2, _pos - (pos + 2));
   pos = _pos;
   return result;
