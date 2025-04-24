@@ -6,11 +6,12 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 20:46:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 03:02:16 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/24 21:35:59 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "tasks/DefaultTask.hpp"
+#include "Cycle.hpp"
 
 DefaultTask::DefaultTask(Connection::Cycle &cycle,
                          LocationDefault const &location)
@@ -25,6 +26,7 @@ void DefaultTask::onData(std::vector<char> const &) {
 }
 
 void DefaultTask::onEof() {
+  cycle.sendErrorPage(200);
 }
 
 void DefaultTask::onCancel() {
