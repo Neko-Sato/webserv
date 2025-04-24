@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 23:45:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 20:42:59 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/25 00:40:36 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,49 +21,61 @@
 #include <cassert>
 #include <fstream>
 
-/*
-見直す必要がある
-リクエストヘッダーについて適当かどうか検証して適切にエラーページを返す必要がある
-*/
 Connection::Cycle::Cycle(Connection &connection)
     : _connection(connection), _state(RESPONSE), _serverConf(NULL), _app(NULL),
       _reader(NULL), _writer(NULL), _eof(false), _bodySize(0) {
   try {
     try {
       Request::Headers::const_iterator it;
-      it = _connection._request.headers.find("host");
-      _serverConf = &_connection._configs.findServer(
-          _connection._address,
-          it != _connection._request.headers.end() ? &it->second.back() : NULL);
-      it = _connection._request.headers.find("connection");
-      if (it != _connection._request.headers.end()) {
-        if (it->second.size() != 1)
-          throw HttpException(400);
-        else if (it->second.back() == "keep-alive")
-          _connection._keepAlive = true;
-        else if (it->second.back() == "close")
-          _connection._keepAlive = false;
-        else
-          throw HttpException(400);
-      }
-      it = _connection._request.headers.find("transfer-encoding");
-      if (it != _connection._request.headers.end()) {
-        if (it->second.size() != 1)
-          throw HttpException(400);
-        else if (it->second.back() == "chunked")
-          _reader = new ChankedReader;
-        else
-          throw HttpException(400);
-      } else {
-        it = _connection._request.headers.find("content-length");
+      {
+        it = _connection._request.headers.find("host");
+        std::string const *host = NULL;
         if (it != _connection._request.headers.end()) {
-          std::string const &nstr = it->second.back();
-          std::size_t len;
-          std::size_t n = ftpp::stoul(nstr, &len);
-          if (nstr.size() != len)
+          if (it->second.size() != 1)
             throw HttpException(400);
+          host = &it->second.back();
+        }
+        _serverConf =
+            &_connection._configs.findServer(_connection._address, NULL);
+      }
+      {
+        it = _connection._request.headers.find("connection");
+        if (it != _connection._request.headers.end()) {
+          if (it->second.size() != 1)
+            throw HttpException(400);
+          else if (it->second.back() == "keep-alive")
+            _connection._keepAlive = true;
+          else if (it->second.back() == "close")
+            _connection._keepAlive = false;
           else
-            _reader = new ContentLengthReader(n);
+            throw HttpException(400);
+        }
+      }
+      {
+        it = _connection._request.headers.find("transfer-encoding");
+        if (it != _connection._request.headers.end()) {
+          if (it->second.size() != 1)
+            throw HttpException(400);
+          else if (_connection._request.headers.find("content-length") !=
+                   _connection._request.headers.end())
+            throw HttpException(400);
+          else if (it->second.back() == "chunked")
+            _reader = new ChankedReader;
+          else
+            throw HttpException(501);
+        } else {
+          it = _connection._request.headers.find("content-length");
+          if (it != _connection._request.headers.end()) {
+            if (it->second.size() != 1)
+              throw HttpException(400);
+            std::string const &nstr = it->second.back();
+            std::size_t len;
+            std::size_t n = ftpp::stoul(nstr, &len);
+            if (nstr.size() != len)
+              throw HttpException(400);
+            else
+              _reader = new ContentLengthReader(n);
+          }
         }
       }
       _app = new App(*this);
@@ -126,9 +138,11 @@ Request const &Connection::Cycle::getRequest() const {
 }
 
 /*
-見直す必要がある
-ここの目的はレスポンスヘッダーが正しいかチェックしどうしても不正な場合はrunntime_errorを
-訂正可能な場合は修正して送信する。
+connectionが有効なこと。closeならkeep-aliveをfalseにする
+transfer-encodingかcontent-lengthがどちらか一つかないこと
+ないときはchunkedにする。
+transfer-encodingがchunkedであること
+content-lengthが数値であること
 */
 void Connection::Cycle::send(int code, Response::Headers const &headers) {
   assert(_state == RESPONSE);
@@ -174,7 +188,8 @@ void Connection::Cycle::send(int code, Response::Headers const &headers) {
 
 void Connection::Cycle::send(char const *data, std::size_t size, bool more) {
   assert(_state == BODY);
-  _writer->write(_connection.getTransport(), data, size, more);
+  if (_writer)
+    _writer->write(_connection.getTransport(), data, size, more);
   if (!more) {
     delete _writer;
     _writer = NULL;
@@ -196,9 +211,10 @@ void Connection::Cycle::sendErrorPage(int code) {
       for (;;) {
         char buf[4096];
         ifs.read(buf, sizeof(buf));
-        if (ifs.gcount() == 0)
+        std::size_t n = ifs.gcount();
+        if (!n)
           break;
-        send(buf, ifs.gcount(), true);
+        send(buf, n, true);
       }
       send(NULL, 0, false);
       return;
