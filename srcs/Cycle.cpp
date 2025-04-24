@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 23:45:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/25 00:40:36 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/25 01:25:57 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,10 +54,9 @@ Connection::Cycle::Cycle(Connection &connection)
       {
         it = _connection._request.headers.find("transfer-encoding");
         if (it != _connection._request.headers.end()) {
-          if (it->second.size() != 1)
-            throw HttpException(400);
-          else if (_connection._request.headers.find("content-length") !=
-                   _connection._request.headers.end())
+          if (it->second.size() != 1 ||
+              _connection._request.headers.find("content-length") !=
+                  _connection._request.headers.end())
             throw HttpException(400);
           else if (it->second.back() == "chunked")
             _reader = new ChankedReader;
@@ -137,13 +136,6 @@ Request const &Connection::Cycle::getRequest() const {
   return _connection._request;
 }
 
-/*
-connectionが有効なこと。closeならkeep-aliveをfalseにする
-transfer-encodingかcontent-lengthがどちらか一つかないこと
-ないときはchunkedにする。
-transfer-encodingがchunkedであること
-content-lengthが数値であること
-*/
 void Connection::Cycle::send(int code, Response::Headers const &headers) {
   assert(_state == RESPONSE);
   std::string response;
@@ -151,32 +143,51 @@ void Connection::Cycle::send(int code, Response::Headers const &headers) {
     Response tmp;
     tmp.version = "HTTP/1.1";
     tmp.status = code;
+    tmp.reason = getHttpStatusReason(code);
+    for (Response::Headers::const_iterator it = headers.begin();
+         it != headers.end(); ++it) {
+      Response::HeaderValues &values = tmp.headers[ftpp::tolower(it->first)];
+      for (Response::HeaderValues::const_iterator jt = it->second.begin();
+           jt != it->second.end(); ++jt)
+        values.push_back(*jt);
+    }
+    Response::Headers::iterator it;
     {
-      tmp.reason = getHttpStatusReason(code);
-      for (Response::Headers::const_iterator it = headers.begin();
-           it != headers.end(); ++it) {
-        Response::HeaderValues &values = tmp.headers[ftpp::tolower(it->first)];
-        for (Response::HeaderValues::const_iterator jt = it->second.begin();
-             jt != it->second.end(); ++jt)
-          values.push_back(*jt);
+      it = tmp.headers.find("connection");
+      if (it != tmp.headers.end()) {
+        if (it->second.size() != 1)
+          throw std::runtime_error("invalid connection");
+        else if (it->second.back() == "close")
+          _connection._keepAlive = false;
+        else if (it->second.back() != "keep-alive")
+          throw std::runtime_error("invalid connection");
+      } else {
+        if (_connection._keepAlive)
+          tmp.headers["connection"].push_back("keep-alive");
+        else
+          tmp.headers["connection"].push_back("close");
       }
     }
-    if (_connection._keepAlive)
-      tmp.headers["connection"].push_back("keep-alive");
-    else
-      tmp.headers["connection"].push_back("close");
     {
-      Response::Headers::iterator it = tmp.headers.find("content-length");
-      if (it == tmp.headers.end()) {
-        _writer = new ChankedWriter;
-        tmp.headers["transfer-encoding"].push_back("chunked");
-      } else {
+      it = tmp.headers.find("content-length");
+      if (it != tmp.headers.end()) {
+        if (it->second.size() != 1 ||
+            _connection._request.headers.find("transfer-encoding") !=
+                _connection._request.headers.end())
+          throw std::runtime_error("invalid content-length");
         std::string const &nstr = it->second.back();
         std::size_t len;
         std::size_t n = ftpp::stoul(nstr, &len, 10);
         if (nstr.size() != len)
           throw std::runtime_error("invalid content-length");
         _writer = new ContentLengthWriter(n);
+      } else {
+        it = tmp.headers.find("transfer-encoding");
+        if (it != tmp.headers.end()) {
+          if (it->second.size() != 1 || it->second.back() != "chunked")
+            throw std::runtime_error("invalid transfer-encoding");
+          _writer = new ChankedWriter;
+        }
       }
     }
     composeResponse(response, tmp);
