@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 23:45:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/25 01:25:57 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/25 01:36:36 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,8 @@ Connection::Cycle::Cycle(Connection &connection)
         _serverConf =
             &_connection._configs.findServer(_connection._address, NULL);
       }
+      if (_connection._request.version != "HTTP/1.1")
+        throw HttpException(505);
       {
         it = _connection._request.headers.find("connection");
         if (it != _connection._request.headers.end()) {
@@ -186,8 +188,9 @@ void Connection::Cycle::send(int code, Response::Headers const &headers) {
         if (it != tmp.headers.end()) {
           if (it->second.size() != 1 || it->second.back() != "chunked")
             throw std::runtime_error("invalid transfer-encoding");
-          _writer = new ChankedWriter;
-        }
+        } else
+          tmp.headers["transfer-encoding"].push_back("chunked");
+        _writer = new ChankedWriter;
       }
     }
     composeResponse(response, tmp);
