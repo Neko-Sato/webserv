@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 17:47:19 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 02:18:42 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/24 20:37:49 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,3 +88,9 @@ static HttpStatusMap _createStatusMap() {
 }
 
 HttpStatusMap const httpStatusMap = _createStatusMap();
+
+std::string const &getHttpStatusReason(int code) {
+  static std::string const unknown = "Unknown";
+  HttpStatusMap::const_iterator it = httpStatusMap.find(code);
+  return it != httpStatusMap.end() ? it->second : unknown;
+}

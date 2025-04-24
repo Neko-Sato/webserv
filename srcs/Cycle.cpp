@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 23:45:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 03:44:58 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/24 20:42:59 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include <ftpp/urllib/URI.hpp>
 
 #include <cassert>
+#include <fstream>
 
 /*
 見直す必要がある
@@ -137,8 +138,7 @@ void Connection::Cycle::send(int code, Response::Headers const &headers) {
     tmp.version = "HTTP/1.1";
     tmp.status = code;
     {
-      HttpStatusMap::const_iterator it = httpStatusMap.find(code);
-      tmp.reason = it != httpStatusMap.end() ? it->second : "Unknown";
+      tmp.reason = getHttpStatusReason(code);
       for (Response::Headers::const_iterator it = headers.begin();
            it != headers.end(); ++it) {
         Response::HeaderValues &values = tmp.headers[ftpp::tolower(it->first)];
@@ -153,9 +153,10 @@ void Connection::Cycle::send(int code, Response::Headers const &headers) {
       tmp.headers["connection"].push_back("close");
     {
       Response::Headers::iterator it = tmp.headers.find("content-length");
-      if (it == tmp.headers.end())
+      if (it == tmp.headers.end()) {
         _writer = new ChankedWriter;
-      else {
+        tmp.headers["transfer-encoding"].push_back("chunked");
+      } else {
         std::string const &nstr = it->second.back();
         std::size_t len;
         std::size_t n = ftpp::stoul(nstr, &len, 10);
@@ -183,14 +184,41 @@ void Connection::Cycle::send(char const *data, std::size_t size, bool more) {
   }
 }
 
-/*
-見直す必要がある
-上のsend関数を用いて適当にエラーページを返す必要がある。
-失敗はrunntime_errorで良い。
-*/
 void Connection::Cycle::sendErrorPage(int code) {
-  send(code, Response::Headers());
-  send("<html><head><title>Webserv</title></head><body>"
-       "<h1>Webserv</h1><p>error</p></body></html>",
-       0, false);
+  ServerConf::ErrorPages const &errorPages = _serverConf->getErrorPages();
+  ServerConf::ErrorPages::const_iterator it = errorPages.find(code);
+  if (it != errorPages.end()) {
+    std::ifstream ifs(it->second.c_str());
+    if (ifs.is_open()) {
+      Response::Headers headers;
+      headers["content-type"].push_back("text/html");
+      send(code, headers);
+      for (;;) {
+        char buf[4096];
+        ifs.read(buf, sizeof(buf));
+        if (ifs.gcount() == 0)
+          break;
+        send(buf, ifs.gcount(), true);
+      }
+      send(NULL, 0, false);
+      return;
+    }
+  }
+  Response::Headers headers;
+  std::string const &reason = getHttpStatusReason(code);
+  std::ostringstream oss;
+  oss << "<!DOCTYPE html>";
+  oss << "<html>";
+  oss << "<head>";
+  oss << "<title>" << reason << "</title>";
+  oss << "</head>";
+  oss << "<body>";
+  oss << "<center><h1>" << reason << "</h1></center>";
+  oss << "<hr><center>webserv</center>";
+  oss << "</body>";
+  oss << "</html>";
+  headers["content-type"].push_back("text/html");
+  headers["content-length"].push_back(ftpp::to_string(oss.str().size()));
+  send(code, headers);
+  send(oss.str().c_str(), oss.str().size(), false);
 }
