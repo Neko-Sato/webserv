@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 18:00:43 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 21:37:00 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/24 22:38:08 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,10 @@ void UploadTask::onData(std::vector<char> const &) {
 }
 
 void UploadTask::onEof() {
-  cycle.sendErrorPage(200);
+  Response::Headers headers;
+  headers["Content-Type"].push_back("text/plain");
+  cycle.send(200, headers);
+  cycle.send("UploadTask", 10, false);
 }
 
 void UploadTask::onCancel() {
