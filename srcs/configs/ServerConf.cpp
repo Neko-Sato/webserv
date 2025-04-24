@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 14:28:11 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 03:29:34 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/24 22:01:38 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,8 @@ ServerConf::ServerConf(ftjson::Object const &server) {
 
 ServerConf::ServerConf(ServerConf const &rhs)
     : _serverNames(rhs._serverNames), _addresses(rhs._addresses),
-      _clientMaxBodySize(rhs._clientMaxBodySize),
-      _errorPages(rhs._errorPages), _locations(rhs._locations) {
+      _clientMaxBodySize(rhs._clientMaxBodySize), _errorPages(rhs._errorPages),
+      _locations(rhs._locations) {
 }
 
 ServerConf &ServerConf::operator=(ServerConf const &rhs) {
@@ -182,15 +182,16 @@ ServerConf::Locations const &ServerConf::getLocations() const {
 Location const *ServerConf::findLocation(std::string const &method,
                                          std::string const &path) const {
   std::string lowered_method = ftpp::tolower(method);
-  Locations::const_iterator res = _locations.end();
-  for (Locations::const_iterator it = _locations.lower_bound(path);
-       it != _locations.end() && ftpp::starts_with(path, it->first); ++it) {
+  Locations::const_reverse_iterator res = _locations.rend();
+  for (Locations::const_reverse_iterator it =
+           Locations::const_reverse_iterator(_locations.lower_bound(path));
+       it != _locations.rend() && ftpp::starts_with(path, it->first); ++it) {
     Location::AllowMethods const &allowMethods = it->second.getAllowMethods();
     if (allowMethods.empty() ||
         allowMethods.find(lowered_method) != allowMethods.end())
       res = it;
   }
-  if (res == _locations.end())
+  if (res == _locations.rend())
     return NULL;
   return &res->second;
 }
