@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 14:28:11 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 22:01:38 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/24 22:33:58 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,19 +179,20 @@ ServerConf::Locations const &ServerConf::getLocations() const {
   return _locations;
 }
 
+#include <iostream>
 Location const *ServerConf::findLocation(std::string const &method,
                                          std::string const &path) const {
   std::string lowered_method = ftpp::tolower(method);
   Locations::const_reverse_iterator res = _locations.rend();
   for (Locations::const_reverse_iterator it =
-           Locations::const_reverse_iterator(_locations.lower_bound(path));
-       it != _locations.rend() && ftpp::starts_with(path, it->first); ++it) {
+           Locations::const_reverse_iterator(_locations.upper_bound(path));
+       it != _locations.rend(); ++it) {
+    if (!ftpp::starts_with(path, it->first))
+      break;
     Location::AllowMethods const &allowMethods = it->second.getAllowMethods();
     if (allowMethods.empty() ||
         allowMethods.find(lowered_method) != allowMethods.end())
       res = it;
   }
-  if (res == _locations.rend())
-    return NULL;
-  return &res->second;
+  return res != _locations.rend() ? &res->second : NULL;
 }
