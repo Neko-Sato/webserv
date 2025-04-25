@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 23:45:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/25 21:36:45 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/25 23:08:44 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 #include "HttpException.hpp"
 #include "constants.hpp"
 
+#include "ftpp/format/Format.hpp"
+#include "ftpp/logger/Logger.hpp"
 #include <ftpp/string/string.hpp>
 #include <ftpp/urllib/URI.hpp>
 
@@ -194,6 +196,9 @@ void Connection::Cycle::send(int code, Response::Headers const &headers) {
       }
     }
     composeResponse(response, tmp);
+    ftpp::logger(ftpp::Logger::INFO,
+                 ftpp::Format("{} {} -> {} {}") % _connection._request.method %
+                     _connection._request.path % tmp.status % tmp.reason);
   }
   ftev::StreamConnectionTransport &transport = _connection.getTransport();
   transport.write(response.c_str(), response.size());
