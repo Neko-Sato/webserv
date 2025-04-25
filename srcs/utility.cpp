@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/31 21:52:35 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 14:18:35 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/26 02:03:44 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,4 +39,23 @@ std::size_t parseSize(std::string const &str) {
   if (size > std::numeric_limits<std::size_t>::max() / unit)
     throw std::overflow_error("size overflow");
   return static_cast<std::size_t>(size * unit);
+}
+
+char const *resetColorEscape = "\x1b[0m";
+
+char const *statusColorEscape(int code) {
+  switch (code / 100) {
+  case 1:
+    return "\x1b[97m";
+  case 2:
+    return "\x1b[32m";
+  case 3:
+    return "\x1b[33m";
+  case 4:
+    return "\x1b[31m";
+  case 5:
+    return "\x1b[91m";
+  default:
+    return "\x1b[0m";
+  }
 }
