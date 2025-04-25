@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/25 23:13:32 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/26 01:26:12 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,6 @@
 #include <unistd.h>
 
 namespace ftev {
-
-EventLoop EventLoop::defaultLoop;
 
 int EventLoop::_signalpipe[2] = {-1, -1};
 
