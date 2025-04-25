@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 20:53:31 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 10:18:47 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/25 21:22:00 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,16 @@
 
 namespace ftpp {
 
+struct notSpace {
+  bool operator()(int c) const {
+    return !std::isspace(c);
+  };
+};
+
 std::string strtrim(std::string const &str) {
-  return std::string(
-      std::find_if(str.begin(), str.end(), std::not1(std::ptr_fun(::isspace))),
-      std::find_if(str.rbegin(), str.rend(), std::not1(std::ptr_fun(::isspace)))
-          .base());
+  ;
+  return std::string(std::find_if(str.begin(), str.end(), notSpace()),
+                     std::find_if(str.rbegin(), str.rend(), notSpace()).base());
 }
 
 } // namespace ftpp

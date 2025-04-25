@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 23:45:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/25 01:36:36 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/25 21:36:45 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ Connection::Cycle::Cycle(Connection &connection)
           host = &it->second.back();
         }
         _serverConf =
-            &_connection._configs.findServer(_connection._address, NULL);
+            &_connection._configs.findServer(_connection._address, host);
       }
       if (_connection._request.version != "HTTP/1.1")
         throw HttpException(505);
@@ -80,7 +80,7 @@ Connection::Cycle::Cycle(Connection &connection)
         }
       }
       _app = new App(*this);
-    } catch (HttpException &e) {
+    } catch (HttpException &) {
       throw;
     } catch (...) {
       throw HttpException(500);
