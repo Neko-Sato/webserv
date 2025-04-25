@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/25 22:58:25 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/25 23:01:34 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,8 @@ EventLoop::~EventLoop() {
   delete _waitWatcher;
   delete _signalpipeWatcher;
   _cleanup();
-  std::for_each(_reapers.begin(), _reapers.end(),
-                std::mem_fun(&Reaper::release));
-  _cleanup();
+  for (Reapers::iterator it; (it = _reapers.begin()) != _reapers.end();)
+    (*it)->onRelease();
   if (_signalpipe[0] != -1)
     close(_signalpipe[0]);
   if (_signalpipe[1] != -1)
