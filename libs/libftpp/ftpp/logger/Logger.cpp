@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 11:58:37 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 01:11:25 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/25 23:18:33 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ void Logger::operator()(Level level, std::string const &msg) {
 }
 
 #if defined(NDEBUG)
-Logger logger(Logger::WARN);
+Logger logger(Logger::INFO);
 #else
 Logger logger(Logger::DEBUG);
 

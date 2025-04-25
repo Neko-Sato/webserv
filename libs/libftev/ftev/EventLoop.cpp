@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/25 23:01:34 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/25 23:13:32 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,7 +147,7 @@ void EventLoop::_runIOPoll(int timeout) {
 void EventLoop::operator++() {
   _running = true;
   try {
-    ftpp::logger(ftpp::Logger::INFO, "EventLoop once");
+    ftpp::logger(ftpp::Logger::DEBUG, "EventLoop once");
     _runIOPoll(_backendTimeout());
     _runTimer();
     _runDefer();
@@ -163,7 +163,7 @@ void EventLoop::run() {
   assert(!_running);
   _stopFlag = false;
   try {
-    ftpp::logger(ftpp::Logger::INFO, "EventLoop start");
+    ftpp::logger(ftpp::Logger::DEBUG, "EventLoop start");
     _updateTime();
     _runTimer();
     for (; likely(!(_stopFlag ||
@@ -172,10 +172,10 @@ void EventLoop::run() {
          operator++())
       ;
   } catch (...) {
-    ftpp::logger(ftpp::Logger::INFO, "EventLoop stop");
+    ftpp::logger(ftpp::Logger::DEBUG, "EventLoop stop");
     throw;
   }
-  ftpp::logger(ftpp::Logger::INFO, "EventLoop stop");
+  ftpp::logger(ftpp::Logger::DEBUG, "EventLoop stop");
 }
 
 void EventLoop::stop() {
