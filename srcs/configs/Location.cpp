@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:18:19 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 03:28:45 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/25 22:26:26 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,16 +22,21 @@
 
 #include <stdexcept>
 
-Location::Detail::Factories Location::Detail::factories =
-    Location::Detail::initFactories();
+template <typename T>
+static Location::Detail *_createLocationDetail(ftjson::Object const &location) {
+  return new T(location);
+}
 
-Location::Detail::Factories Location::Detail::initFactories() {
+static Location::Detail::Factories _initFactories() {
+  typedef Location::Detail::Factories Factories;
   Factories factories;
-  factories["default"] = &create<LocationDefault>;
-  factories["upload"] = &create<LocationUpload>;
-  factories["redirect"] = &create<LocationRedirect>;
+  factories["default"] = &_createLocationDetail<LocationDefault>;
+  factories["upload"] = &_createLocationDetail<LocationUpload>;
+  factories["redirect"] = &_createLocationDetail<LocationRedirect>;
   return factories;
 }
+
+Location::Detail::Factories Location::Detail::factories = _initFactories();
 
 Location::Detail::Detail() {
 }

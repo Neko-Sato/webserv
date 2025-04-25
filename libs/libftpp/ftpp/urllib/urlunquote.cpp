@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 18:12:07 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 17:55:34 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/25 22:47:32 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ std::string urlunquote(std::string const &s) {
       if (it + 2 < s.end()) {
         std::string hex(it + 1, it + 3);
         if (ftpp::all_of(hex.begin(), hex.end(), isxdigit)) {
-          oss.put(stol(hex, NULL, 16));
+          oss.put(ftpp::stol(hex, NULL, 16));
           it += 2;
           break;
         }
