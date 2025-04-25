@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 03:08:36 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/25 22:02:18 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,8 @@ private:
   void operator++();
 
 public:
+  static EventLoop defaultLoop;
+
   typedef ftpp::Selector *(selector_factory_t)();
   static ftpp::Selector *defaultSelectorFactory();
   EventLoop(selector_factory_t factory = defaultSelectorFactory);
