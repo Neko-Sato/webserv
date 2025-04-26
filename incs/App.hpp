@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 03:16:25 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 21:34:53 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/26 16:22:11 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ public:
 
 private:
   Task *_task;
+  std::size_t _bodySize;
 
 public:
   App(Connection::Cycle &cycle);
@@ -30,5 +31,4 @@ public:
 
   void onData(std::vector<char> const &data);
   void onEof();
-  void onCancel();
 };

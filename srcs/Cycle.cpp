@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 23:45:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/26 02:03:41 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/26 15:48:28 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 
 Connection::Cycle::Cycle(Connection &connection)
     : _connection(connection), _state(RESPONSE), _serverConf(NULL), _app(NULL),
-      _reader(NULL), _writer(NULL), _eof(false), _bodySize(0) {
+      _reader(NULL), _writer(NULL), _eof(false) {
   try {
     try {
       Request::Headers::const_iterator it;
@@ -108,13 +108,6 @@ void Connection::Cycle::bufferUpdate() {
   if (_reader) {
     std::vector<char> tmp;
     _reader->read(_connection._buffer, tmp);
-    _bodySize += tmp.size();
-    if (_bodySize > _serverConf->getClientMaxBodySize()) {
-      _app->onCancel();
-      delete _app;
-      _app = NULL;
-      sendErrorPage(413);
-    }
     if (_app && !tmp.empty())
       _app->onData(tmp);
   }
@@ -197,11 +190,11 @@ void Connection::Cycle::send(int code, Response::Headers const &headers) {
       }
     }
     composeResponse(response, tmp);
-    ftpp::logger(ftpp::Logger::INFO, ftpp::Format("{} {} -> {}{} {}{}") %
-                                         _connection._request.method %
-                                         _connection._request.path %
-                                         statusColorEscape(tmp.status) %
-                                         tmp.status % tmp.reason % resetColorEscape);
+    ftpp::logger(ftpp::Logger::INFO,
+                 ftpp::Format("{} {} -> {}{} {}{}") %
+                     _connection._request.method % _connection._request.path %
+                     statusColorEscape(tmp.status) % tmp.status % tmp.reason %
+                     resetColorEscape);
   }
   ftev::StreamConnectionTransport &transport = _connection.getTransport();
   transport.write(response.c_str(), response.size());
