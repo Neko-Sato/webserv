@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/08 13:47:37 by hshimizu          #+#    #+#              #
-#    Updated: 2025/04/27 04:18:14 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/04/27 04:21:01 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,7 @@ servers:
     locations:
       - path: /default
         type: default
-        root: ~/html
+        root: /home/hshimizu/webserv/html/
         index: [index.html, index.htm]
         autoindex: true
         cgi:
