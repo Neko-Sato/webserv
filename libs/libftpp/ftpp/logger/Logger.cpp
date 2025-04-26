@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 11:58:37 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/25 23:18:33 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/27 04:13:28 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,12 +72,33 @@ void Logger::addLevel(Level level, std::string const &name) {
     res.first->second = name;
 }
 
+static char const *_colorEscape(Logger::Level level) {
+  if (level >= Logger::CRITICAL)
+    return "\x1b[91m";
+  if (level >= Logger::ERROR)
+    return "\x1b[31m";
+  if (level >= Logger::WARNING)
+    return "\x1b[33m";
+  if (level >= Logger::INFO)
+    return "\x1b[32m";
+  if (level >= Logger::DEBUG)
+    return "\x1b[34m";
+  return "\x1b[0m";
+}
+
+static char const *_resetEscape = "\x1b[0m";
+
 void Logger::operator()(Level level, std::string const &msg) {
   if (_level <= level && _ostream) {
     LevelNames::const_iterator it = _levelNames.upper_bound(level);
     std::string const &name =
         it == _levelNames.begin() ? "UNKNOWN" : (--it)->second;
-    *_ostream << "[" << name << "] " << msg << std::endl;
+#if defined(NOCOLOR)
+    _ostream << "[" << name << "] " << msg << std::endl;
+#else
+    *_ostream << _colorEscape(level) << "[" << name << "] " << _resetEscape
+              << msg << std::endl;
+#endif
   }
 }
 

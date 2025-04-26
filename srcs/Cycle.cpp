@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 23:45:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/26 15:48:28 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/27 04:15:15 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,6 +134,25 @@ Request const &Connection::Cycle::getRequest() const {
   return _connection._request;
 }
 
+static char const *_resetColorEscape = "\x1b[0m";
+
+static char const *_statusColorEscape(int code) {
+  switch (code / 100) {
+  case 1:
+    return "\x1b[97m";
+  case 2:
+    return "\x1b[32m";
+  case 3:
+    return "\x1b[33m";
+  case 4:
+    return "\x1b[31m";
+  case 5:
+    return "\x1b[91m";
+  default:
+    return "\x1b[0m";
+  }
+}
+
 void Connection::Cycle::send(int code, Response::Headers const &headers) {
   assert(_state == RESPONSE);
   std::string response;
@@ -190,11 +209,17 @@ void Connection::Cycle::send(int code, Response::Headers const &headers) {
       }
     }
     composeResponse(response, tmp);
+#if defined(NOCOLOR)
+    ftpp::logger(ftpp::Logger::INFO,
+                 ftpp::Format("{} {} -> {} {}") % _connection._request.method %
+                     _connection._request.path % tmp.status % tmp.reason);
+#else
     ftpp::logger(ftpp::Logger::INFO,
                  ftpp::Format("{} {} -> {}{} {}{}") %
                      _connection._request.method % _connection._request.path %
-                     statusColorEscape(tmp.status) % tmp.status % tmp.reason %
-                     resetColorEscape);
+                     _statusColorEscape(tmp.status) % tmp.status % tmp.reason %
+                     _resetColorEscape);
+#endif
   }
   ftev::StreamConnectionTransport &transport = _connection.getTransport();
   transport.write(response.c_str(), response.size());
