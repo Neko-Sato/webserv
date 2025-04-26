@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/08 13:47:37 by hshimizu          #+#    #+#              #
-#    Updated: 2025/04/26 02:07:48 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/04/27 04:18:14 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,8 +18,8 @@ servers:
       - { host: "::", port: 8081 }
     client_max_body_size: 10M
     error_pages:
-      - { code: 404, path: /home/hshimizu/webserv/error_pages/404.html }
-      - { code: 500, path: /home/hshimizu/webserv/error_pages/500.html }
+      - { code: 404, path: /home/hshimizu/webserv/html/404.html }
+      - { code: 500, path: /home/hshimizu/webserv/html/500.html }
     locations:
       - path: /default
         type: default
