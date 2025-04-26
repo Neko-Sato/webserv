@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 14:28:11 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 23:07:54 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/26 16:28:44 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,7 +179,6 @@ ServerConf::Locations const &ServerConf::getLocations() const {
   return _locations;
 }
 
-#include <iostream>
 Location const *ServerConf::findLocation(std::string const &method,
                                          std::string const &path) const {
   std::string lowered_method = ftpp::tolower(method);
