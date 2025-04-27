@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:18:19 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/25 22:26:26 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/28 06:00:00 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ void Location::_takeAllowMethods(ftjson::Object const &location) {
          it != methods.end(); ++it) {
       if (!it->isType<ftjson::String>())
         throw std::runtime_error("allow_methods is not string");
-      _allowMethods.insert(ftpp::tolower(it->as_unsafe<ftjson::String>()));
+      _allowMethods.insert(it->as_unsafe<ftjson::String>());
     }
   }
 }

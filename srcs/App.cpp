@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 00:49:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/28 05:39:26 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/28 06:04:39 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,12 @@ App::App(Connection::Cycle &cycle)
       serverConf.findLocation(request.method, request.path);
   if (location) {
     Location::AllowMethods const &allowMethods = location->getAllowMethods();
-    if (!allowMethods.empty() &&
-        std::find(allowMethods.begin(), allowMethods.end(), request.method) ==
+    if (allowMethods.empty() ||
+        std::find(allowMethods.begin(), allowMethods.end(), request.method) !=
             allowMethods.end())
-      _state = 405;
-    else
       _task = location->getDetail().createTask(cycle);
+    else
+      _state = 405;
   } else
     _state = 404;
 }
