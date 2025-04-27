@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 03:16:25 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/26 16:22:11 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/28 05:37:36 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ public:
   Connection::Cycle &cycle;
 
 private:
+  int _state;
   Task *_task;
   std::size_t _bodySize;
 

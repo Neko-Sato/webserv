@@ -6,12 +6,14 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 02:43:07 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/28 05:47:09 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <locations/LocationDefault.hpp>
-#include <tasks/DefaultTask.hpp>
+#include "locations/LocationDefault.hpp"
+#include "tasks/DefaultTask.hpp"
+
+#include <ftpp/pathlib/pathlib.hpp>
 
 #include <stdexcept>
 
@@ -56,7 +58,10 @@ void LocationDefault::_takeRoot(ftjson::Object const &location) {
     throw std::runtime_error("root is not found");
   if (!it->second.isType<ftjson::String>())
     throw std::runtime_error("root is not string");
-  _root = it->second.as_unsafe<std::string>();
+  std::string const &root = it->second.as_unsafe<std::string>();
+  if (!ftpp::isAbsolutePath(root))
+    throw std::runtime_error("root is not absolute path");
+  _root = root;
 }
 
 void LocationDefault::_takeIndex(ftjson::Object const &location) {

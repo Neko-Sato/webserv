@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2025/03/24 04:30:18 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/04/28 05:49:02 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,7 +40,7 @@ LIBS		+= -Wl,-rpath,$(LD_RUN_PATH)
 endif
 
 ifeq ($(DEBUG), 1)
-CXXFLAGS	+= -g -fsanitize=address
+CXXFLAGS	+= -g -fstandalone-debug -fsanitize=address
 else
 CXXFLAGS	+= -O3 -DNDEBUG
 endif

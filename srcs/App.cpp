@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 00:49:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/27 00:58:48 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/28 05:39:26 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,22 @@
 #include "Cycle.hpp"
 #include "configs/LocationDetail.hpp"
 
-App::App(Connection::Cycle &cycle) : cycle(cycle), _task(NULL), _bodySize(0) {
+App::App(Connection::Cycle &cycle)
+    : cycle(cycle), _state(-1), _task(NULL), _bodySize(0) {
   ServerConf const &serverConf = cycle.getServerConf();
   Request const &request = cycle.getRequest();
   Location const *location =
       serverConf.findLocation(request.method, request.path);
-  if (location)
-    _task = location->getDetail().createTask(cycle);
+  if (location) {
+    Location::AllowMethods const &allowMethods = location->getAllowMethods();
+    if (!allowMethods.empty() &&
+        std::find(allowMethods.begin(), allowMethods.end(), request.method) ==
+            allowMethods.end())
+      _state = 405;
+    else
+      _task = location->getDetail().createTask(cycle);
+  } else
+    _state = 404;
 }
 
 App::~App() {
@@ -33,6 +42,8 @@ void App::onData(std::vector<char> const &data) {
     _task->onCancel();
     delete _task;
     _task = NULL;
+    if (_state == -1)
+      _state = 413;
   }
   if (_task)
     _task->onData(data);
@@ -41,8 +52,6 @@ void App::onData(std::vector<char> const &data) {
 void App::onEof() {
   if (_task)
     _task->onEof();
-  else if (_bodySize > cycle.getServerConf().getClientMaxBodySize())
-    cycle.sendErrorPage(413);
   else
-    cycle.sendErrorPage(404);
+    cycle.sendErrorPage(_state);
 }
