@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 00:49:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/28 06:04:39 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/28 06:17:15 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,7 @@ App::App(Connection::Cycle &cycle)
     : cycle(cycle), _state(-1), _task(NULL), _bodySize(0) {
   ServerConf const &serverConf = cycle.getServerConf();
   Request const &request = cycle.getRequest();
-  Location const *location =
-      serverConf.findLocation(request.method, request.path);
+  Location const *location = serverConf.findLocation(request.path);
   if (location) {
     Location::AllowMethods const &allowMethods = location->getAllowMethods();
     if (allowMethods.empty() ||

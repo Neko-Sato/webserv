@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 17:07:45 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 03:24:50 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/28 06:11:16 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,5 @@ public:
   ErrorPages const &getErrorPages() const;
   Locations const &getLocations() const;
 
-  Location const *findLocation(std::string const &method,
-                               std::string const &path) const;
+  Location const *findLocation(std::string const &path) const;
 };

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 14:28:11 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/28 06:02:41 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/28 06:16:43 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,8 +179,7 @@ ServerConf::Locations const &ServerConf::getLocations() const {
   return _locations;
 }
 
-Location const *ServerConf::findLocation(std::string const &method,
-                                         std::string const &path) const {
+Location const *ServerConf::findLocation(std::string const &path) const {
   for (Locations::const_reverse_iterator it =
            Locations::const_reverse_iterator(_locations.upper_bound(path));
        it != _locations.rend(); ++it) {
@@ -189,9 +188,7 @@ Location const *ServerConf::findLocation(std::string const &method,
     if (it->first.size() != path.size() && *it->first.rbegin() != '/' &&
         path[it->first.size()] != '/')
       continue;
-    Location::AllowMethods const &allowMethods = it->second.getAllowMethods();
-    if (allowMethods.empty() || allowMethods.find(method) != allowMethods.end())
-      return &it->second;
+    return &it->second;
   }
   return NULL;
 }
