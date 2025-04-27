@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 23:45:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/28 07:54:49 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/28 07:56:51 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -286,5 +286,6 @@ void Connection::Cycle::sendErrorPage(int code) {
 }
 
 void Connection::Cycle::abort() {
+  _connection.getTransport().pause();
   _connection.release();
 }
