@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 03:13:29 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/26 15:48:32 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/28 07:10:37 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,4 +41,5 @@ public:
   void send(int code, Response::Headers const &headers);
   void send(char const *data, std::size_t size, bool more);
   void sendErrorPage(int code);
+  void abort();
 };

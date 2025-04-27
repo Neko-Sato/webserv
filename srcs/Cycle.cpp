@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 23:45:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/27 04:15:15 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/28 07:51:38 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,8 @@
 #include <ftpp/urllib/URI.hpp>
 
 #include <cassert>
-#include <fstream>
+#include <fcntl.h>
+#include <unistd.h>
 
 Connection::Cycle::Cycle(Connection &connection)
     : _connection(connection), _state(RESPONSE), _serverConf(NULL), _app(NULL),
@@ -94,7 +95,7 @@ Connection::Cycle::Cycle(Connection &connection)
     _reader = NULL;
     _app = NULL;
     _connection._keepAlive = false;
-    sendErrorPage(e.getCode());
+    sendErrorPage(e.getStatus());
   }
 }
 
@@ -243,20 +244,25 @@ void Connection::Cycle::sendErrorPage(int code) {
   ServerConf::ErrorPages const &errorPages = _serverConf->getErrorPages();
   ServerConf::ErrorPages::const_iterator it = errorPages.find(code);
   if (it != errorPages.end()) {
-    std::ifstream ifs(it->second.c_str());
-    if (ifs.is_open()) {
-      Response::Headers headers;
-      headers["content-type"].push_back("text/html");
-      send(code, headers);
-      for (;;) {
-        char buf[4096];
-        ifs.read(buf, sizeof(buf));
-        std::size_t n = ifs.gcount();
-        if (!n)
-          break;
-        send(buf, n, true);
+    int fd = open(it->second.c_str(), O_RDONLY);
+    if (fd != -1) {
+      try {
+        Response::Headers headers;
+        send(code, headers);
+        for (;;) {
+          char buf[4096];
+          ssize_t n = read(fd, buf, sizeof(buf));
+          if (n == -1)
+            throw std::runtime_error("read error");
+          if (n == 0)
+            break;
+          send(buf, n, true);
+        }
+        send(NULL, 0, false);
+      } catch (...) {
+        close(fd);
+        throw;
       }
-      send(NULL, 0, false);
       return;
     }
   }
@@ -277,4 +283,8 @@ void Connection::Cycle::sendErrorPage(int code) {
   headers["content-length"].push_back(ftpp::to_string(oss.str().size()));
   send(code, headers);
   send(oss.str().c_str(), oss.str().size(), false);
+}
+
+void Connection::Cycle::abort() {
+  _connection.release();
 }

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 21:43:16 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 02:20:45 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/28 06:32:02 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 
 class HttpException : public std::exception {
 private:
-  int _code;
+  int _status;
 
 public:
   HttpException(int code = 500);
@@ -26,5 +26,5 @@ public:
 
   char const *what() const throw();
 
-  int getCode() const throw();
+  int getStatus() const;
 };
