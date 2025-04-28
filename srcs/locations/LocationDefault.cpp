@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/28 05:47:09 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/28 08:36:45 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,12 @@ void LocationDefault::_takeIndex(ftjson::Object const &location) {
          it != indexes.end(); ++it) {
       if (!it->isType<ftjson::String>())
         throw std::runtime_error("index is not string");
-      _index.insert(it->as_unsafe<ftjson::String>());
+      std::string const &index = it->as_unsafe<ftjson::String>();
+      if (index.empty())
+        throw std::runtime_error("index is empty");
+      if (index.find('/') != std::string::npos)
+        throw std::runtime_error("index contains a slash");
+      _index.insert(index);
     }
   }
 }
