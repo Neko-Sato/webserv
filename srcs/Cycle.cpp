@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 23:45:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/28 07:56:51 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/30 04:05:31 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,8 +116,8 @@ void Connection::Cycle::bufferUpdate() {
     ftev::StreamConnectionTransport &transport = _connection.getTransport();
     if (_app)
       _app->onEof();
-    _eof = true;
     transport.pause();
+    _eof = true;
     delete _reader;
     _reader = NULL;
     if (_state == DONE)
@@ -228,9 +228,9 @@ void Connection::Cycle::send(int code, Response::Headers const &headers) {
 }
 
 void Connection::Cycle::send(char const *data, std::size_t size, bool more) {
+  assert(_writer);
   assert(_state == BODY);
-  if (_writer)
-    _writer->write(_connection.getTransport(), data, size, more);
+  _writer->write(_connection.getTransport(), data, size, more);
   if (!more) {
     delete _writer;
     _writer = NULL;
@@ -280,12 +280,14 @@ void Connection::Cycle::sendErrorPage(int code) {
   oss << "</body>";
   oss << "</html>";
   headers["content-type"].push_back("text/html");
-  headers["content-length"].push_back(ftpp::to_string(oss.str().size()));
+  std::string const &body = oss.str();
+  headers["content-length"].push_back(ftpp::to_string(body.size()));
   send(code, headers);
-  send(oss.str().c_str(), oss.str().size(), false);
+  send(body.c_str(), body.size(), false);
 }
 
 void Connection::Cycle::abort() {
-  _connection.getTransport().pause();
+  ftev::StreamConnectionTransport &transport = _connection.getTransport();
+  transport.pause();
   _connection.release();
 }

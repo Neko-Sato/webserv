@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/26 01:26:12 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/30 04:04:12 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@ EventLoop::EventLoop(selector_factory_t factory)
 EventLoop::~EventLoop() {
   delete _waitWatcher;
   delete _signalpipeWatcher;
-  _cleanup();
   for (Reapers::iterator it; (it = _reapers.begin()) != _reapers.end();)
     (*it)->onRelease();
   if (_signalpipe[0] != -1)
