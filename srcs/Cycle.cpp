@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 23:45:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/30 04:05:31 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/30 07:22:53 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,8 @@ Connection::Cycle::Cycle(Connection &connection)
       }
       if (_connection._request.version != "HTTP/1.1")
         throw HttpException(505);
+      if (!_connection._request.path.compare(0, 1, "/"))
+        throw HttpException(400);
       {
         it = _connection._request.headers.find("connection");
         if (it != _connection._request.headers.end()) {
