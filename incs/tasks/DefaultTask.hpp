@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 17:53:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/30 14:33:00 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/01 04:49:59 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,61 +15,63 @@
 #include "locations/LocationDefault.hpp"
 #include "tasks/Task.hpp"
 
+#include <ftev/EventLoop.hpp>
 #include <ftev/EventLoop/ProcessWatcher.hpp>
 #include <ftev/Pipe/ReadPipe.hpp>
 #include <ftev/Pipe/WritePipe.hpp>
 
 class DefaultTask : public Task {
-// public:
-//   class CgiProcess : public ftev::EventLoop::ProcessWatcher {
-//   public:
-//     class CgiReadPipe : public ftev::ReadPipeProtocol {
-//     private:
-//       CgiProcess &_process;
-//       ftev::ReadPipeTransport *_readPipe;
+public:
+  class CgiProcess : public ftev::EventLoop::ProcessWatcher {
+    //   public:
+    //     class CgiWritePipe : public ftev::WritePipeProtocol {
+    //     private:
+    //       CgiProcess &_process;
+    //       ftev::WritePipeTransport *_writePipe;
 
-//     public:
-//       CgiReadPipe(CgiProcess &process, int fd);
-//       ~CgiReadPipe();
+    //     public:
+    //       CgiWritePipe(CgiProcess &process, int fd);
+    //       ~CgiWritePipe();
 
-//       void onData(std::vector<char> const &data);
-//       void onEof();
-//       void onExcept();
-//     };
+    //       ftev::WritePipeTransport &getTransport();
+    //       void onDrain();
+    //       void onExcept();
+    //     };
 
-//     class CgiWritePipe : public ftev::WritePipeProtocol {
-//     private:
-//       CgiProcess &_process;
-//       ftev::WritePipeTransport *_writePipe;
+    //     class CgiReadPipe : public ftev::ReadPipeProtocol {
+    //     private:
+    //       CgiProcess &_process;
+    //       ftev::ReadPipeTransport *_readPipe;
 
-//     public:
-//       CgiWritePipe(CgiProcess &process, int fd);
-//       ~CgiWritePipe();
+    //     public:
+    //       CgiReadPipe(CgiProcess &process, int fd);
+    //       ~CgiReadPipe();
 
-//       ftev::WritePipeTransport &getTransport();
-//       void onDrain();
-//       void onExcept();
-//     };
+    //       void onData(std::vector<char> const &data);
+    //       void onEof();
+    //       void onExcept();
+    //     };
 
-//   private:
-//     CgiReadPipe *_readPipe;
-//     CgiWritePipe *_writePipe;
+    //   private:
+    //     DefaultTask &_task;
+    //     CgiWritePipe *_writePipe;
+    //     CgiReadPipe *_readPipe;
 
-//   public:
-//     CgiProcess(ftev::EventLoop &loop, std::string const &bin,
-//                DefaultTask &task);
-//     ~CgiProcess();
+    //   public:
+    //     CgiProcess(ftev::EventLoop &loop, DefaultTask &task,
+    //                LocationDefault::Cgi const &cgi);
+    //     ~CgiProcess();
 
-//     void onExited(int status);
-//     void onSignaled(int signum);
-//     void onData(std::vector<char> const &data);
-//     void onEof();
-//   };
+    //     void onExited(int status);
+    //     void onSignaled(int signum);
+    //     void onData(std::vector<char> const &data);
+    //     void onEof();
+  };
 
 private:
   LocationDefault const &_location;
   std::string _path;
-  void *_cgi;
+  CgiProcess *_cgi;
   int _status;
 
 public:

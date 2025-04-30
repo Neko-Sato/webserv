@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 20:46:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/30 15:11:38 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/01 04:53:16 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,36 +37,36 @@ DefaultTask::DefaultTask(Connection::Cycle &cycle,
   if (!ftpp::starts_with(_path, _location.getRoot()))
     _status = 403;
   else {
-    // try {
-    //   LocationDefault::Cgis const &cgis = _location.getCgis();
-    //   for (LocationDefault::Cgis::const_iterator it = cgis.begin();
-    //        it != cgis.end(); ++it) {
-    //     if (ftpp::ends_with(_path, it->first)) {
-    //       _cgi = new CgiProcess(cycle.getLoop(), it->first, *this);
-    //       break;
-    //     }
-    //   }
-    // } catch (std::exception &) {
-    //   _status = 500;
-    // }
+    try {
+      LocationDefault::Cgis const &cgis = _location.getCgis();
+      for (LocationDefault::Cgis::const_iterator it = cgis.begin();
+           it != cgis.end(); ++it) {
+        if (ftpp::ends_with(_path, it->first)) {
+          //   _cgi = new CgiProcess(cycle.getLoop(), *this, it->second);
+          break;
+        }
+      }
+    } catch (std::exception &) {
+      _status = 500;
+    }
   }
 }
 
 DefaultTask::~DefaultTask() {
-  //   delete _cgi;
+  delete _cgi;
 }
 
-void DefaultTask::onData(std::vector<char> const &) {
+void DefaultTask::onData(std::vector<char> const &data) {
   //   if (_cgi)
   //     _cgi->onData(data);
+  (void)data;
 }
 
 void DefaultTask::onEof() {
   if (_status != -1)
     cycle.sendErrorPage(_status);
   else if (_cgi)
-    ;
-  // _cgi->onEof();
+    ; //_cgi->onEof();
   else
     onEofDefault();
 }
@@ -219,7 +219,11 @@ void DefaultTask::sendFile() {
       throw;
     }
     close(fd);
-  } else
+  } else if (errno == ENOENT)
+    cycle.sendErrorPage(404);
+  else if (errno == EACCES)
+    cycle.sendErrorPage(403);
+  else
     cycle.sendErrorPage(500);
 }
 
@@ -300,6 +304,7 @@ void DefaultTask::onCancel() {
 // }
 
 // void DefaultTask::CgiProcess::onSignaled(int) {
+//   _task.cycle.abort();
 // }
 
 // void DefaultTask::CgiProcess::onData(std::vector<char> const &data) {
@@ -310,28 +315,6 @@ void DefaultTask::onCancel() {
 // void DefaultTask::CgiProcess::onEof() {
 //   ftev::WritePipeTransport &transport = _writePipe->getTransport();
 //   transport.close();
-// }
-
-// DefaultTask::CgiProcess::CgiReadPipe::CgiReadPipe(CgiProcess &process, int
-// fd)
-//     : _process(process), _readPipe(NULL) {
-//   _readPipe = new ftev::ReadPipeTransport(process.loop, *this, fd);
-// }
-
-// DefaultTask::CgiProcess::CgiReadPipe::~CgiReadPipe() {
-//   delete _readPipe;
-// }
-
-// void DefaultTask::CgiProcess::CgiReadPipe::onData(
-//     std::vector<char> const &data) {
-//   _process._task.cycle.send(data.data(), data.size(), true);
-// }
-
-// void DefaultTask::CgiProcess::CgiReadPipe::onEof() {
-//   _process._task.cycle.send(NULL, 0, false);
-// }
-
-// void DefaultTask::CgiProcess::CgiReadPipe::onExcept() {
 // }
 
 // DefaultTask::CgiProcess::CgiWritePipe::CgiWritePipe(CgiProcess &process, int
@@ -353,4 +336,26 @@ void DefaultTask::onCancel() {
 // }
 
 // void DefaultTask::CgiProcess::CgiWritePipe::onExcept() {
+// }
+
+// DefaultTask::CgiProcess::CgiReadPipe::CgiReadPipe(CgiProcess &process, int
+// fd)
+//     : _process(process), _readPipe(NULL) {
+//   _readPipe = new ftev::ReadPipeTransport(process.loop, *this, fd);
+// }
+
+// DefaultTask::CgiProcess::CgiReadPipe::~CgiReadPipe() {
+//   delete _readPipe;
+// }
+
+// void DefaultTask::CgiProcess::CgiReadPipe::onData(
+//     std::vector<char> const &data) {
+//   /*Cgiの返り値についてガッツリ検証するStateマシンがここには必要かと思う。*/
+// }
+
+// void DefaultTask::CgiProcess::CgiReadPipe::onEof() {
+//   _process._task.cycle.send(NULL, 0, false);
+// }
+
+// void DefaultTask::CgiProcess::CgiReadPipe::onExcept() {
 // }

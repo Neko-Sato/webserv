@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/08 13:47:37 by hshimizu          #+#    #+#              #
-#    Updated: 2025/04/27 04:21:01 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/04/30 14:35:14 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,9 +21,9 @@ servers:
       - { code: 404, path: /home/hshimizu/webserv/html/404.html }
       - { code: 500, path: /home/hshimizu/webserv/html/500.html }
     locations:
-      - path: /default
+      - path: /
         type: default
-        root: /home/hshimizu/webserv/html/
+        root: /
         index: [index.html, index.htm]
         autoindex: true
         cgi:
@@ -39,6 +39,7 @@ servers:
       - { port: 8082 }
     locations:
       - path: /
+        allow_methods: [GET, HEAD]
         type: redirect
         code: 301
         redirect: https://profile.intra.42.fr/users/hshimizu
