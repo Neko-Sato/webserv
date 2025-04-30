@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 23:45:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/30 07:22:53 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/30 13:26:53 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include "constants.hpp"
 #include "utility.hpp"
 
+#include <ftpp/algorithm.hpp>
 #include <ftpp/format/Format.hpp>
 #include <ftpp/logger/Logger.hpp>
 #include <ftpp/string/string.hpp>
@@ -44,7 +45,7 @@ Connection::Cycle::Cycle(Connection &connection)
       }
       if (_connection._request.version != "HTTP/1.1")
         throw HttpException(505);
-      if (!_connection._request.path.compare(0, 1, "/"))
+      if (!ftpp::starts_with(_connection._request.path, std::string("/")))
         throw HttpException(400);
       {
         it = _connection._request.headers.find("connection");
@@ -126,6 +127,10 @@ void Connection::Cycle::bufferUpdate() {
       _connection._complete->start();
   } else if (_connection._bufferClosed)
     throw std::runtime_error("interrupted body");
+}
+
+ftev::EventLoop &Connection::Cycle::getLoop() {
+  return _connection.loop;
 }
 
 ServerConf const &Connection::Cycle::getServerConf() const {
@@ -265,12 +270,13 @@ void Connection::Cycle::sendErrorPage(int code) {
         close(fd);
         throw;
       }
+      close(fd);
       return;
     }
   }
   Response::Headers headers;
-  std::string const &reason = getHttpStatusReason(code);
   std::ostringstream oss;
+  std::string const &reason = getHttpStatusReason(code);
   oss << "<!DOCTYPE html>";
   oss << "<html>";
   oss << "<head>";
@@ -281,8 +287,8 @@ void Connection::Cycle::sendErrorPage(int code) {
   oss << "<hr><center>webserv</center>";
   oss << "</body>";
   oss << "</html>";
-  headers["content-type"].push_back("text/html");
   std::string const &body = oss.str();
+  headers["content-type"].push_back("text/html");
   headers["content-length"].push_back(ftpp::to_string(body.size()));
   send(code, headers);
   send(body.c_str(), body.size(), false);

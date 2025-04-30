@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/28 08:36:45 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/30 15:34:04 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,10 @@
 #include <ftpp/pathlib/pathlib.hpp>
 
 #include <stdexcept>
+
+void LocationDefault::Cgi::swap(Cgi &rhs) throw() {
+  bin.swap(rhs.bin);
+}
 
 LocationDefault::LocationDefault() : _autoindex(false) {
 }
@@ -58,7 +62,9 @@ void LocationDefault::_takeRoot(ftjson::Object const &location) {
     throw std::runtime_error("root is not found");
   if (!it->second.isType<ftjson::String>())
     throw std::runtime_error("root is not string");
-  std::string const &root = it->second.as_unsafe<std::string>();
+  std::string const &root = it->second.as_unsafe<ftjson::String>();
+  if (root.empty())
+    throw std::runtime_error("root is empty");
   if (!ftpp::isAbsolutePath(root))
     throw std::runtime_error("root is not absolute path");
   _root = root;
@@ -115,6 +121,7 @@ void LocationDefault::_takeCgi(ftjson::Object const &location) {
         throw std::runtime_error("cgi ext is empty");
       if (ext[0] != '.')
         throw std::runtime_error("cgi ext is not start with dot");
+      Cgi tmp;
       jt = cgi.find("bin");
       if (jt == cgi.end())
         throw std::runtime_error("cgi without bin");
@@ -123,7 +130,10 @@ void LocationDefault::_takeCgi(ftjson::Object const &location) {
       std::string const &bin = jt->second.as_unsafe<ftjson::String>();
       if (bin.empty())
         throw std::runtime_error("cgi bin is empty");
-      _cgi[ext] = bin;
+      if (!ftpp::isAbsolutePath(bin))
+        throw std::runtime_error("cgi bin is not absolute path");
+      tmp.bin = bin;
+      _cgi[ext].swap(tmp);
     }
   }
 }
@@ -138,6 +148,10 @@ LocationDefault::Indexes const &LocationDefault::getIndex() const {
 
 bool LocationDefault::getAutoindex() const {
   return _autoindex;
+}
+
+LocationDefault::Cgis const &LocationDefault::getCgis() const {
+  return _cgi;
 }
 
 Task *LocationDefault::createTask(Connection::Cycle &cycle) const {

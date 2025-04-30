@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 03:13:29 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/28 07:10:37 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/30 13:23:32 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ public:
 
   void bufferUpdate();
 
+  ftev::EventLoop &getLoop();
   ServerConf const &getServerConf() const;
   Request const &getRequest() const;
 

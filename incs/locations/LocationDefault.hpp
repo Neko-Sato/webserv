@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 03:25:06 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/04/30 15:32:33 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,14 @@
 
 class LocationDefault : public Location::Detail {
 public:
+  struct Cgi {
+    std::string bin;
+
+    void swap(Cgi &rhs) throw();
+  };
+
   typedef std::set<std::string> Indexes;
-  typedef std::map<std::string, std::string> Cgis;
+  typedef std::map<std::string, Cgi> Cgis;
 
 private:
   std::string _root;
@@ -43,6 +49,7 @@ public:
   std::string const &getRoot() const;
   Indexes const &getIndex() const;
   bool getAutoindex() const;
+  Cgis const &getCgis() const;
 
   Task *createTask(Connection::Cycle &cycle) const;
 };
