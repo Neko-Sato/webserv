@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/30 04:04:12 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/02 01:13:05 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,7 @@ void EventLoop::_runIOPoll(int timeout) {
       _selector->select(events, timeout);
       break;
     } catch (ftpp::OSError const &e) {
-      switch (e.get_errno()) {
+      switch (e.getErrno()) {
       case EINTR:
         break;
       default:
@@ -128,14 +128,12 @@ void EventLoop::_runIOPoll(int timeout) {
     IOWatchers::iterator it = _ioWatchers.find(details.fd);
     if (it != _ioWatchers.end()) {
       IOWatcher *watcher = it->second;
+      if (watcher->_isActive && details.events & ftpp::Selector::READ)
+        watcher->onRead();
+      if (watcher->_isActive && details.events & ftpp::Selector::WRITE)
+        watcher->onWrite();
       if (watcher->_isActive && details.events & ftpp::Selector::EXCEPT)
         watcher->onExcept();
-      else {
-        if (watcher->_isActive && details.events & ftpp::Selector::READ)
-          watcher->onRead();
-        if (watcher->_isActive && details.events & ftpp::Selector::WRITE)
-          watcher->onWrite();
-      }
     }
     events.pop();
   }

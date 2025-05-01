@@ -6,15 +6,18 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/31 21:52:35 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/27 04:14:11 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/01 23:53:59 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <ftpp/exceptions/OSError.hpp>
 #include <ftpp/string/string.hpp>
 
 #include <cmath>
 #include <limits>
 #include <stdexcept>
+#include <sys/fcntl.h>
+#include <unistd.h>
 
 std::size_t parseSize(std::string const &str) {
   if (str.empty() || !isdigit(str[0]))
@@ -39,4 +42,15 @@ std::size_t parseSize(std::string const &str) {
   if (size > std::numeric_limits<std::size_t>::max() / unit)
     throw std::overflow_error("size overflow");
   return static_cast<std::size_t>(size * unit);
+}
+
+void setCloexec(int fd) {
+  int flags;
+  flags = fcntl(fd, F_GETFD);
+  if (flags == -1)
+    throw ftpp::OSError(errno, "fcntl");
+  if (!(flags & FD_CLOEXEC)) {
+    if (fcntl(fd, F_SETFD, flags | FD_CLOEXEC) == -1)
+      throw ftpp::OSError(errno, "fcntl");
+  }
 }

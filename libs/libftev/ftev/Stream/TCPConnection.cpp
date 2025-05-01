@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 01:47:05 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/16 21:32:00 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/01 23:33:16 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ TCPConnection::TCPConnection(EventLoop &loop, std::string const &host, int port)
     try {
       socket.connect(it->ai_addr, it->ai_addrlen);
     } catch (ftpp::OSError const &e) {
-      if (e.get_errno() != EINPROGRESS)
+      if (e.getErrno() != EINPROGRESS)
         continue;
     }
     _transport = new StreamConnectionTransport(loop, *this, socket);

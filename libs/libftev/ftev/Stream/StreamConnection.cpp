@@ -23,6 +23,9 @@
 
 namespace ftev {
 
+StreamConnectionProtocol::~StreamConnectionProtocol() {
+}
+
 StreamConnectionTransport::Handler::Handler(
     EventLoop &loop, StreamConnectionTransport &transport)
     : IOWatcher(loop), _transport(transport) {
@@ -39,9 +42,7 @@ void StreamConnectionTransport::Handler::onRead() {
   try {
     chank.resize(_transport._chankSize);
     chank.resize(_transport._socket.read(chank.data(), chank.size()));
-  } catch (std::exception const &e) {
-    ftpp::logger(ftpp::Logger::WARN,
-                 ftpp::Format("StreamTransport: {}") % e.what());
+  } catch (...) {
     return;
   }
   if (chank.empty()) {
@@ -61,9 +62,7 @@ void StreamConnectionTransport::Handler::onWrite() {
                                            _transport._buffer.size());
     _transport._buffer.erase(_transport._buffer.begin(),
                              _transport._buffer.begin() + size);
-  } catch (std::exception const &e) {
-    ftpp::logger(ftpp::Logger::WARN,
-                 ftpp::Format("StreamTransport: {}") % e.what());
+  } catch (...) {
     return;
   }
   if (_transport._buffer.empty()) {
@@ -80,7 +79,15 @@ void StreamConnectionTransport::Handler::onWrite() {
 }
 
 void StreamConnectionTransport::Handler::onExcept() {
-  _transport._protocol.onExcept();
+#if defined(FT_SUBJECT_NOT_COMPLIANT)
+  int err;
+  socklen_t errlen = sizeof(err);
+  _transport._socket.getsockopt(SOL_SOCKET, SO_ERROR, &err, &errlen);
+  if (err)
+    _transport._protocol.onError(ftpp::OSError(err));
+  else
+#endif
+    _transport._protocol.onError(std::runtime_error("Unkown error"));
 }
 
 StreamConnectionTransport::DrainHandler::DrainHandler(

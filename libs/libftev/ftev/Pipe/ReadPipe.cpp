@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 03:37:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/16 21:36:27 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/02 02:06:37 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,9 @@
 #include <fcntl.h>
 
 namespace ftev {
+
+ReadPipeProtocol::~ReadPipeProtocol() {
+}
 
 ReadPipeTransport::Handler::Handler(EventLoop &loop,
                                     ReadPipeTransport &transport)
@@ -41,19 +44,10 @@ void ReadPipeTransport::Handler::onRead() {
     if (unlikely(size == -1))
       throw ftpp::OSError(errno, "read");
     chank.resize(size);
-  } catch (std::exception const &e) {
-    ftpp::logger(ftpp::Logger::WARN,
-                 ftpp::Format("ReadPipeTransport: {}") % e.what());
+  } catch (...) {
     return;
   }
-  if (chank.empty()) {
-    event_t event = getEvents() & ~ftpp::Selector::READ;
-    if (event)
-      modify(event);
-    else
-      stop();
-    _transport._protocol.onEof();
-  } else
+  if (!chank.empty())
     _transport._protocol.onData(chank);
 }
 
@@ -62,7 +56,12 @@ void ReadPipeTransport::Handler::onWrite() {
 }
 
 void ReadPipeTransport::Handler::onExcept() {
-  _transport._protocol.onExcept();
+  event_t event = getEvents() & ~ftpp::Selector::READ;
+  if (event)
+    modify(event);
+  else
+    stop();
+  _transport._protocol.onEof();
 }
 
 std::size_t const ReadPipeTransport::_chankSize = 4096;

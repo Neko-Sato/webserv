@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 12:13:15 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 13:32:08 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/01 23:25:21 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ public:
       int dst;
       int src;
     };
-    pipe_pair *pipes;
+    pipe_pair const *pipes;
     std::size_t npipes;
   };
 

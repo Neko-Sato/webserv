@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 03:45:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/16 22:38:16 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/02 02:37:02 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,9 @@
 
 namespace ftev {
 
+WritePipeProtocol::~WritePipeProtocol() {
+}
+
 WritePipeTransport::Handler::Handler(EventLoop &loop,
                                      WritePipeTransport &transport)
     : IOWatcher(loop), _transport(transport) {
@@ -38,23 +41,18 @@ void WritePipeTransport::Handler::onRead() {
 }
 
 void WritePipeTransport::Handler::onWrite() {
-  if (!_transport._buffer.empty()) {
-    try {
-      ssize_t size = ::write(_transport._fd, _transport._buffer.data(),
-                             _transport._buffer.size());
-      if (unlikely(size == -1))
+  try {
+    ssize_t size = ::write(_transport._fd, _transport._buffer.data(),
+                           _transport._buffer.size());
+    if (unlikely(size == -1))
 #if defined(FT_SUBJECT_NOT_COMPLIANT)
-        throw ftpp::OSError(errno, "write");
+      throw ftpp::OSError(errno, "write");
 #else
-        throw std::runtime_error("write: No access to error details");
+      throw std::runtime_error("write: No access to error details");
 #endif
-      _transport._buffer.erase(_transport._buffer.begin(),
-                               _transport._buffer.begin() + size);
-    } catch (std::exception const &e) {
-      ftpp::logger(ftpp::Logger::WARN,
-                   ftpp::Format("StreamTransport: {}") % e.what());
-      return;
-    }
+    _transport._buffer.erase(_transport._buffer.begin(),
+                             _transport._buffer.begin() + size);
+  } catch (...) {
   }
   if (_transport._buffer.empty()) {
     event_t event = getEvents() & ~ftpp::Selector::WRITE;
@@ -70,7 +68,6 @@ void WritePipeTransport::Handler::onWrite() {
 }
 
 void WritePipeTransport::Handler::onExcept() {
-  _transport._protocol.onExcept();
 }
 
 WritePipeTransport::DrainHandler::DrainHandler(EventLoop &loop,

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 03:45:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/16 21:38:13 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/02 02:37:18 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@
 namespace ftev {
 
 struct WritePipeProtocol {
+  virtual ~WritePipeProtocol();
   virtual void onDrain() = 0;
-  virtual void onExcept() = 0;
 };
 
 class WritePipeTransport : private ftpp::NonCopyable {

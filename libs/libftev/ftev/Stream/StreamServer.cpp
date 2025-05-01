@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:47:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/16 21:30:27 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/02 00:39:32 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,9 @@
 #include <fcntl.h>
 
 namespace ftev {
+
+StreamServerProtocol::~StreamServerProtocol() {
+}
 
 StreamServerTransport::Handler::Handler(EventLoop &loop,
                                         StreamServerTransport &transport)

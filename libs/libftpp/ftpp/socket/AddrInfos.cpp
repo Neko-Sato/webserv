@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/25 04:39:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 17:55:34 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/01 23:33:16 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ AddrInfos::GAIError &AddrInfos::GAIError::operator=(GAIError const &rhs) {
   return *this;
 }
 
-int AddrInfos::GAIError::get_errno() const {
+int AddrInfos::GAIError::getErrno() const {
   return _errno;
 }
 

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:47:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/16 21:29:12 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/02 00:39:21 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 namespace ftev {
 
 struct StreamServerProtocol {
+  virtual ~StreamServerProtocol();
   virtual void onConnect(ftpp::Socket &conn) = 0;
 };
 
