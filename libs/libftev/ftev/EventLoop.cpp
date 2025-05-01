@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/02 01:13:05 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/02 03:26:30 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 #include <ftpp/macros.hpp>
 #include <ftpp/selectors/Selector.hpp>
 
+#include <csignal>
 #include <algorithm>
 #include <cassert>
 #include <cstdlib>
@@ -42,6 +43,7 @@ ftpp::Selector *EventLoop::defaultSelectorFactory() {
 EventLoop::EventLoop(selector_factory_t factory)
     : _selector(factory()), _time(0), _running(false), _stopFlag(false),
       _signalpipeWatcher(NULL), _waitWatcher(NULL) {
+  signal(SIGPIPE, SIG_IGN);
   _updateTime();
 }
 
@@ -55,6 +57,7 @@ EventLoop::~EventLoop() {
   if (_signalpipe[1] != -1)
     close(_signalpipe[1]);
   delete _selector;
+  signal(SIGPIPE, SIG_DFL);
 }
 
 void EventLoop::_cleanup() {
