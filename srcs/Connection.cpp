@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 01:41:18 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 03:14:57 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/02 03:01:11 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,8 +105,9 @@ void Connection::onDrain() {
   release();
 }
 
-void Connection::onExcept() {
-  ftpp::logger(ftpp::Logger::ERROR, "Connection except");
+void Connection::onError(std::exception const &exce) {
+  ftpp::logger(ftpp::Logger::ERROR,
+               ftpp::Format("Connection error: {}") % exce.what());
   ftev::StreamConnectionTransport &transport = getTransport();
   transport.close();
   release();
