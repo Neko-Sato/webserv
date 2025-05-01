@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 04:11:13 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/16 21:45:19 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/02 02:55:28 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ public:
   void onData(std::vector<char> const &data);
   void onEof();
   void onDrain();
-  void onExcept();
+  void onError(std::exception const &exce);
   void onRelease();
 };
 

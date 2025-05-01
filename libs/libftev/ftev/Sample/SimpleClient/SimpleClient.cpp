@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 04:36:16 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/16 21:48:37 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/02 02:59:02 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,9 @@ void SimpleClient::onEof() {
   ftpp::logger(ftpp::Logger::INFO, "recv: eof");
 }
 
-void SimpleClient::onExcept() {
-  ftpp::logger(ftpp::Logger::ERROR, "SimpleClient: error");
+void SimpleClient::onError(std::exception const &exce) {
+  ftpp::logger(ftpp::Logger::ERROR,
+               ftpp::Format("SimpleClient: error: {}") % exce.what());
   StreamConnectionTransport &transport = getTransport();
   if (_timer->getIsActive())
     _timer->cancel();

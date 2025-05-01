@@ -26,7 +26,7 @@ struct StreamConnectionProtocol {
   virtual void onData(std::vector<char> const &data) = 0;
   virtual void onEof() = 0;
   virtual void onDrain() = 0;
-  virtual void onError(std::exception const &exec) = 0;
+  virtual void onError(std::exception const &exce) = 0;
 };
 
 class StreamConnectionTransport : private ftpp::NonCopyable {

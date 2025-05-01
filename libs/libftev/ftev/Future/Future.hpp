@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 08:48:37 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/21 09:38:57 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/02 02:57:27 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,10 @@ public:
   virtual ~Future();
 
   void setResult(T const &result);
-  template <typename E> void setError(E const &exec);
+  template <typename E> void setError(E const &exce);
 
   virtual void onDone(T const &result) = 0;
-  virtual void onError(std::exception const &exec) = 0;
+  virtual void onError(std::exception const &exce) = 0;
 };
 
 template <typename T>
@@ -77,7 +77,7 @@ template <typename T> void Future<T>::setResult(T const &data) {
 
 template <typename T>
 template <typename E>
-void Future<T>::setError(E const &exec) {
+void Future<T>::setError(E const &exce) {
   if (_result || _exec)
     throw std::runtime_error("already set");
   _exec = new E(exec);

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 04:11:13 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/16 21:46:27 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/02 02:57:40 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,9 @@ void EchoConnection::onDrain() {
   release();
 }
 
-void EchoConnection::onExcept() {
+void EchoConnection::onError(std::exception const &exce) {
+  ftpp::logger(ftpp::Logger::INFO,
+               ftpp::Format("EchoConnection: {}") % exce.what());
   StreamConnectionTransport &transport = getTransport();
   transport.close();
   release();
