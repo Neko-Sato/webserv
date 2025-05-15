@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 17:53:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/02 02:40:32 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/16 05:42:01 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,50 +21,65 @@
 #include <ftev/Pipe/WritePipe.hpp>
 #include <ftpp/noncopyable/NonCopyable.hpp>
 
+#include <vector>
+
 class DefaultTask : public Task {
 public:
-  class CgiProcess : public ftev::EventLoop::ProcessWatcher {
+  class CgiManager : private ftpp::NonCopyable {
   public:
-    class CgiWritePipe : public ftev::WritePipeProtocol,
-                         private ftpp::NonCopyable {
+    class Process : public ftev::EventLoop::ProcessWatcher {
     private:
-      CgiProcess &_process;
-      ftev::WritePipeTransport *_transport;
+      CgiManager &_manager;
 
     public:
-      CgiWritePipe(CgiProcess &process, int fd);
-      ~CgiWritePipe();
+      Process(ftev::EventLoop &loop, CgiManager &manager, int inputFd,
+              int outputFd);
+      ~Process();
 
-      ftev::WritePipeTransport &getTransport();
-      void onDrain();
+      void onExited(int status);
+      void onSignaled(int signum);
     };
 
-    class CgiReadPipe : public ftev::ReadPipeProtocol,
-                        private ftpp::NonCopyable {
+    class ReadPipe : public ftev::ReadPipeProtocol, private ftpp::NonCopyable {
     private:
-      CgiProcess &_process;
+      CgiManager &_manager;
       ftev::ReadPipeTransport *_transport;
 
     public:
-      CgiReadPipe(CgiProcess &process, int fd);
-      ~CgiReadPipe();
+      ReadPipe(CgiManager &manager, int fd);
+      ~ReadPipe();
 
       void onData(std::vector<char> const &data);
       void onEof();
     };
 
+    class WritePipe : public ftev::WritePipeProtocol,
+                      private ftpp::NonCopyable {
+    private:
+      CgiManager &_manager;
+      ftev::WritePipeTransport *_transport;
+
+    public:
+      WritePipe(CgiManager &manager, int fd);
+      ~WritePipe();
+
+      void onDrain();
+    };
+
   private:
     DefaultTask &_task;
-    CgiWritePipe *_writePipe;
-    CgiReadPipe *_readPipe;
+    LocationDefault::Cgi const &_cgi;
+    Process *_process;
+    std::vector<char> _buffer;
+    ReadPipe *_readPipe;
+    WritePipe *_writePipe;
+
+    CgiManager();
 
   public:
-    CgiProcess(ftev::EventLoop &loop, DefaultTask &task,
-               LocationDefault::Cgi const &cgi);
-    ~CgiProcess();
+    CgiManager(DefaultTask &task, LocationDefault::Cgi const &cgi);
+    ~CgiManager();
 
-    void onExited(int status);
-    void onSignaled(int signum);
     void onData(std::vector<char> const &data);
     void onEof();
   };
@@ -72,7 +87,7 @@ public:
 private:
   LocationDefault const &_location;
   std::string _path;
-  CgiProcess *_cgi;
+  CgiManager *_cgiManager;
   int _status;
 
 public:
@@ -81,7 +96,6 @@ public:
 
   void onData(std::vector<char> const &data);
   void onEof();
-  void onCancel();
 
   void onEofDefault();
 

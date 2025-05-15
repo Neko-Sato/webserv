@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 20:46:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/02 03:01:48 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/16 05:45:24 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 #include <ftpp/subprocess/Subprocess.hpp>
 
 #include <cerrno>
+#include <cstdio>
 #include <cstring>
 #include <dirent.h>
 #include <fcntl.h>
@@ -36,7 +37,7 @@
 
 DefaultTask::DefaultTask(Connection::Cycle &cycle,
                          LocationDefault const &location)
-    : Task(cycle), _location(location), _cgi(NULL), _status(-1) {
+    : Task(cycle), _location(location), _cgiManager(NULL), _status(-1) {
   Request const &request = cycle.getRequest();
   ftpp::normpath(_location.getRoot() + request.path).swap(_path);
   if (!ftpp::starts_with(_path, _location.getRoot()))
@@ -55,7 +56,7 @@ DefaultTask::DefaultTask(Connection::Cycle &cycle,
             else
               throw ftpp::OSError(errno, "access");
           } else
-            _cgi = new CgiProcess(cycle.getLoop(), *this, it->second);
+            _cgiManager = new CgiManager(*this, it->second);
           break;
         }
       }
@@ -66,19 +67,19 @@ DefaultTask::DefaultTask(Connection::Cycle &cycle,
 }
 
 DefaultTask::~DefaultTask() {
-  delete _cgi;
+  delete _cgiManager;
 }
 
 void DefaultTask::onData(std::vector<char> const &data) {
-  if (_cgi)
-    _cgi->onData(data);
+  if (_cgiManager)
+    _cgiManager->onData(data);
 }
 
 void DefaultTask::onEof() {
   if (_status != -1)
     cycle.sendErrorPage(_status);
-  else if (_cgi)
-    _cgi->onEof();
+  else if (_cgiManager)
+    _cgiManager->onEof();
   else
     onEofDefault();
 }
@@ -239,141 +240,135 @@ void DefaultTask::sendFile() {
     cycle.sendErrorPage(500);
 }
 
-void DefaultTask::onCancel() {
-  if (_cgi)
-    cycle.abort();
-}
-
-DefaultTask::CgiProcess::CgiProcess(ftev::EventLoop &loop, DefaultTask &task,
+DefaultTask::CgiManager::CgiManager(DefaultTask &task,
                                     LocationDefault::Cgi const &cgi)
-    : ProcessWatcher(loop), _task(task), _writePipe(NULL), _readPipe(NULL) {
-  try {
-    int fds[2][2] = {{-1, -1}, {-1, -1}};
-    try {
-      if (pipe(fds[0]) == -1)
-        throw ftpp::OSError(errno, "pipe");
-      if (pipe(fds[1]) == -1)
-        throw ftpp::OSError(errno, "pipe");
-      setCloexec(fds[0][1]);
-      setCloexec(fds[1][0]);
-      ftpp::Subprocess::options opts;
-      opts.path = cgi.bin.c_str();
-      char const *argv[3];
-      argv[0] = cgi.bin.c_str();
-      argv[1] = _task._path.c_str();
-      argv[2] = NULL;
-      opts.argv = argv;
-      std::vector<char const *> envp;
-      for (char **i = environ; *i; ++i)
-        envp.push_back(*i);
-      envp.push_back(NULL);
-      opts.envp = envp.data();
-      opts.cwd = NULL;
-      ftpp::Subprocess::options::pipe_pair pipePair[2];
-      pipePair[0].dst = STDIN_FILENO;
-      pipePair[0].src = fds[0][0];
-      pipePair[1].dst = STDOUT_FILENO;
-      pipePair[1].src = fds[1][1];
-      opts.pipes = pipePair;
-      opts.npipes = sizeof(pipePair) / sizeof(pipePair[0]);
-      ftpp::Subprocess subprocess(opts);
-      close(fds[0][0]);
-      fds[0][0] = -1;
-      close(fds[1][1]);
-      fds[1][1] = -1;
-      _writePipe = new CgiWritePipe(*this, fds[0][1]);
-      fds[0][1] = -1;
-      _readPipe = new CgiReadPipe(*this, fds[1][0]);
-      fds[1][0] = -1;
-      start(subprocess.getPid());
-      subprocess.detach();
-    } catch (...) {
-      if (fds[0][0] != -1)
-        close(fds[0][0]);
-      if (fds[0][1] != -1)
-        close(fds[0][1]);
-      if (fds[1][0] != -1)
-        close(fds[1][0]);
-      throw;
-    }
-  } catch (...) {
-    delete _writePipe;
-    delete _readPipe;
-    throw;
-  }
-  _task.cycle.send(200, Response::Headers());
+    : _task(task), _cgi(cgi), _process(NULL), _readPipe(NULL),
+      _writePipe(NULL) {
 }
 
-DefaultTask::CgiProcess::~CgiProcess() {
-  if (getIsActive())
-    kill(SIGINT), detach();
-  delete _writePipe;
+DefaultTask::CgiManager::~CgiManager() {
+  delete _process;
   delete _readPipe;
 }
 
-void DefaultTask::CgiProcess::onExited(int) {
+void DefaultTask::CgiManager::onData(std::vector<char> const &data) {
+  _buffer.insert(_buffer.end(), data.begin(), data.end());
 }
 
-void DefaultTask::CgiProcess::onSignaled(int signum) {
+void DefaultTask::CgiManager::onEof() {
+  int pipefd[4] = {-1, -1, -1, -1};
+  try {
+    if (pipe(&pipefd[0]) == -1 || pipe(&pipefd[2]) == -1)
+      throw ftpp::OSError(errno, "pipe");
+    for (int i = 0; i < 4; ++i)
+      setCloexec(pipefd[i]);
+    _process = new Process(_task.cycle.getLoop(), *this, pipefd[0], pipefd[3]);
+    close(pipefd[0]), close(pipefd[3]);
+    pipefd[0] = pipefd[3] = -1;
+    _readPipe = new ReadPipe(*this, pipefd[2]);
+    pipefd[2] = -1;
+    _writePipe = new WritePipe(*this, pipefd[1]);
+    pipefd[1] = -1;
+  } catch (...) {
+    delete _readPipe;
+    _readPipe = NULL;
+    delete _writePipe;
+    _writePipe = NULL;
+    delete _process;
+    _process = NULL;
+    for (int i = 0; i < 4; ++i) {
+      if (pipefd[i] != -1)
+        close(pipefd[i]);
+    }
+    throw;
+  }
+}
+
+DefaultTask::CgiManager::Process::Process(ftev::EventLoop &loop,
+                                          CgiManager &manager, int inputFd,
+                                          int outputFd)
+    : ProcessWatcher(loop), _manager(manager) {
+  ftpp::Subprocess::options opts;
+  opts.path = _manager._cgi.bin.c_str();
+  char const *argv[3];
+  argv[0] = _manager._cgi.bin.c_str();
+  argv[1] = _manager._task._path.c_str();
+  argv[2] = NULL;
+  opts.argv = argv;
+  std::vector<char const *> envp;
+  for (char **i = environ; *i; ++i)
+    envp.push_back(*i);
+  envp.push_back(NULL);
+  opts.envp = envp.data();
+  opts.cwd = NULL;
+  ftpp::Subprocess::options::pipe_pair pipePair[2];
+  pipePair[0].dst = STDIN_FILENO;
+  pipePair[0].src = inputFd;
+  pipePair[1].dst = STDOUT_FILENO;
+  pipePair[1].src = outputFd;
+  opts.pipes = pipePair;
+  opts.npipes = sizeof(pipePair) / sizeof(pipePair[0]);
+  ftpp::Subprocess subprocess(opts);
+  start(subprocess.getPid());
+  subprocess.detach();
+}
+
+DefaultTask::CgiManager::Process::~Process() {
+  if (getIsActive())
+    kill(SIGINT), detach();
+}
+
+void DefaultTask::CgiManager::Process::onExited(int) {
+}
+
+void DefaultTask::CgiManager::Process::onSignaled(int signum) {
   ftpp::logger(ftpp::Logger::ERROR,
                ftpp::Format("CgiProcess signaled: {}") % strsignal(signum));
-  _task.cycle.abort();
+  onExited(signum | 128);
 }
 
-void DefaultTask::CgiProcess::onData(std::vector<char> const &data) {
-  ftev::WritePipeTransport &transport = _writePipe->getTransport();
-  transport.write(data.data(), data.size());
+DefaultTask::CgiManager::ReadPipe::ReadPipe(CgiManager &manager, int fd)
+    : _manager(manager), _transport(NULL) {
+  _transport =
+      new ftev::ReadPipeTransport(manager._task.cycle.getLoop(), *this, fd);
+  _manager._task.cycle.send(200, Response::Headers());
 }
 
-void DefaultTask::CgiProcess::onEof() {
-  ftev::WritePipeTransport &transport = _writePipe->getTransport();
-  transport.close();
-}
-
-DefaultTask::CgiProcess::CgiWritePipe::CgiWritePipe(CgiProcess &process, int fd)
-    : _process(process), _transport(NULL) {
-  UNUSED(_process);
-  _transport = new ftev::WritePipeTransport(process.loop, *this, fd);
-}
-
-DefaultTask::CgiProcess::CgiWritePipe::~CgiWritePipe() {
+DefaultTask::CgiManager::ReadPipe::~ReadPipe() {
   delete _transport;
 }
 
-ftev::WritePipeTransport &
-DefaultTask::CgiProcess::CgiWritePipe::getTransport() {
-  return *_transport;
-}
-
-void DefaultTask::CgiProcess::CgiWritePipe::onDrain() {
-}
-
-DefaultTask::CgiProcess::CgiReadPipe::CgiReadPipe(CgiProcess &process, int fd)
-    : _process(process), _transport(NULL) {
-  _transport = new ftev::ReadPipeTransport(process.loop, *this, fd);
-}
-
-DefaultTask::CgiProcess::CgiReadPipe::~CgiReadPipe() {
-  delete _transport;
-}
-
-void DefaultTask::CgiProcess::CgiReadPipe::onData(
-    std::vector<char> const &data) {
+void DefaultTask::CgiManager::ReadPipe::onData(std::vector<char> const &data) {
   try {
-    _process._task.cycle.send(data.data(), data.size(), true);
+    _manager._task.cycle.send(data.data(), data.size(), true);
   } catch (std::exception &e) {
     ftpp::logger(ftpp::Logger::ERROR,
                  ftpp::Format("CgiProcess CgiReadPipe onData: {}") % e.what());
-    _process._task.cycle.abort();
+    _manager._task.cycle.abort();
   }
 }
 
-void DefaultTask::CgiProcess::CgiReadPipe::onEof() {
+void DefaultTask::CgiManager::ReadPipe::onEof() {
   try {
-    _process._task.cycle.send(NULL, 0, false);
+    _manager._task.cycle.send(NULL, 0, false);
   } catch (std::exception &e) {
     ftpp::logger(ftpp::Logger::ERROR,
                  ftpp::Format("CgiProcess CgiReadPipe onEof: {}") % e.what());
-    _process._task.cycle.abort();
+    _manager._task.cycle.abort();
   }
+}
+
+DefaultTask::CgiManager::WritePipe::WritePipe(CgiManager &manager, int fd)
+    : _manager(manager), _transport(NULL) {
+  _transport =
+      new ftev::WritePipeTransport(manager._task.cycle.getLoop(), *this, fd);
+  _transport->write(_manager._buffer.data(), _manager._buffer.size());
+  _manager._buffer.clear();
+}
+
+DefaultTask::CgiManager::WritePipe::~WritePipe() {
+  delete _transport;
+}
+
+void DefaultTask::CgiManager::WritePipe::onDrain() {
 }

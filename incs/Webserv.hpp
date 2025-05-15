@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/26 07:59:54 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/26 01:27:31 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/13 04:23:51 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ public:
   typedef std::list<Server *> Servers;
 
 private:
-  Configs const &_configs;
+  Configs _configs;
   ftev::LoopStopper _stopper;
   Servers _servers;
 

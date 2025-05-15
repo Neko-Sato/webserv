@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 00:49:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/28 06:35:25 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/13 20:24:11 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ App::~App() {
 void App::onData(std::vector<char> const &data) {
   _bodySize += data.size();
   if (_task && _bodySize > cycle.getServerConf().getClientMaxBodySize()) {
-    _task->onCancel();
     delete _task;
     _task = NULL;
     if (_status == -1)

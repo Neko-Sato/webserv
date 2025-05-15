@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 17:56:36 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/25 01:27:08 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/13 20:24:56 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,4 @@ void RedirectTask::onEof() {
   headers["Content-Length"].push_back("0");
   cycle.send(_location.getCode(), headers);
   cycle.send(NULL, 0, false);
-}
-
-void RedirectTask::onCancel() {
 }

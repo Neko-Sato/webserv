@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 17:56:36 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 02:44:56 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/13 20:24:37 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,5 +25,4 @@ public:
 
   void onData(std::vector<char> const &data);
   void onEof();
-  void onCancel();
 };
