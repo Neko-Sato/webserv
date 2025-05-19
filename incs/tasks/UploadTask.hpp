@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 18:00:43 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 02:45:04 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/13 20:24:41 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 class UploadTask : public Task {
 private:
   LocationUpload const &_location;
+  int _status;
 
 public:
   UploadTask(Connection::Cycle &cycle, LocationUpload const &location);
@@ -25,5 +26,4 @@ public:
 
   void onData(std::vector<char> const &data);
   void onEof();
-  void onCancel();
 };

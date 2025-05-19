@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 17:53:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/16 09:15:59 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/19 21:13:22 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ public:
 
     class ReadPipe : public ftev::ReadPipeProtocol, private ftpp::NonCopyable {
     public:
-      enum State { Header, Body };
+      enum State { HEADER, BODY };
 
     private:
       CgiManager &_manager;
@@ -50,12 +50,13 @@ public:
       State _state;
       std::deque<char> _buffer;
       bool _bufferClosed;
-      std::size_t pos;
+      std::size_t _pos;
       typedef std::vector<std::string> HeaderValues;
       typedef std::map<std::string, HeaderValues> Headers;
       Headers _headers;
 
       void _process();
+      bool _parseHeader();
 
     public:
       ReadPipe(CgiManager &manager, int fd);

@@ -6,13 +6,14 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 20:46:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/19 17:39:32 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/19 22:35:31 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "tasks/DefaultTask.hpp"
 #include "Cycle.hpp"
 #include "HttpException.hpp"
+#include "constants.hpp"
 #include "utility.hpp"
 
 #include <ftpp/algorithm.hpp>
@@ -25,8 +26,8 @@
 #include <ftpp/string/string.hpp>
 #include <ftpp/subprocess/Subprocess.hpp>
 
+#include <cassert>
 #include <cerrno>
-#include <vector>
 #include <cstring>
 #include <dirent.h>
 #include <fcntl.h>
@@ -34,6 +35,7 @@
 #include <sstream>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <vector>
 
 DefaultTask::DefaultTask(Connection::Cycle &cycle,
                          LocationDefault const &location)
@@ -138,7 +140,7 @@ void DefaultTask::onEofDefault() {
 }
 
 void DefaultTask::sendAutoindex() {
-  Response::Headers headers;
+  Headers headers;
   if (!ftpp::ends_with(cycle.getRequest().uri.getPath(), std::string("/"))) {
     headers["location"].push_back(cycle.getRequest().uri.getPath() + "/");
     cycle.send(301, headers);
@@ -215,7 +217,7 @@ void DefaultTask::sendFile() {
   int fd = open(_path.c_str(), O_RDONLY);
   if (fd != -1) {
     try {
-      Response::Headers headers;
+      Headers headers;
       cycle.send(200, headers);
       for (;;) {
         char buf[4096];
@@ -289,6 +291,7 @@ DefaultTask::CgiManager::Process::Process(ftev::EventLoop &loop,
                                           CgiManager &manager, int inputFd,
                                           int outputFd)
     : ProcessWatcher(loop), _manager(manager) {
+  Request const &request = _manager._task.cycle.getRequest();
   ftpp::Subprocess::options opts;
   opts.path = _manager._cgi.bin.c_str();
   char const *argv[3];
@@ -297,22 +300,31 @@ DefaultTask::CgiManager::Process::Process(ftev::EventLoop &loop,
   argv[2] = NULL;
   opts.argv = argv;
   std::vector<char const *> envp;
-  for (char **i = environ; *i; ++i)
-    envp.push_back(*i);
   envp.push_back("GATEWAY_INTERFACE=CGI/1.1");
   envp.push_back("SERVER_PROTOCOL=HTTP/1.1");
   envp.push_back("SERVER_SOFTWARE=Weberv");
-  std::vector<std::string> envStrs;
-  envStrs.push_back("SCRIPT_NAME=" +
-                    _manager._task.cycle.getRequest().uri.getPath());
-  envStrs.push_back("REQUEST_METHOD=" +
-                    _manager._task.cycle.getRequest().method);
-  envStrs.push_back("REQUEST_PATH=" +
-                    _manager._task.cycle.getRequest().uri.getPath());
-  envStrs.push_back("REQUEST_QUERY=" +
-                    _manager._task.cycle.getRequest().uri.getQuery());
-  for (std::vector<std::string>::const_iterator it = envStrs.begin();
-       it != envStrs.end(); ++it)
+  std::vector<std::string> envpStrs;
+  envpStrs.push_back("SCRIPT_NAME=" + request.uri.getPath());
+  envpStrs.push_back("REQUEST_METHOD=" + request.method);
+  envpStrs.push_back("REQUEST_PATH=" + request.uri.getPath());
+  envpStrs.push_back("REQUEST_QUERY=" + request.uri.getQuery());
+  {
+    Headers::const_iterator it;
+    if ((it = request.headers.find("content-type")) != request.headers.end())
+      envpStrs.push_back("CONTENT_TYPE=" + it->second[0]);
+    if ((it = request.headers.find("content-length")) != request.headers.end())
+      envpStrs.push_back("CONTENT_LENGTH=" + it->second[0]);
+  }
+  for (Headers::const_iterator it = request.headers.begin();
+       it != request.headers.end(); ++it) {
+    if (it->first == "content-type" || it->first == "content-length")
+      continue;
+    envpStrs.push_back(
+        "HTTP_" + ftpp::toupper(it->first) + "=" +
+        ftpp::strjoin(it->second.begin(), it->second.end(), ","));
+  }
+  for (std::vector<std::string>::const_iterator it = envpStrs.begin();
+       it != envpStrs.end(); ++it)
     envp.push_back(it->c_str());
   envp.push_back(NULL);
   opts.envp = envp.data();
@@ -344,8 +356,8 @@ void DefaultTask::CgiManager::Process::onSignaled(int signum) {
 }
 
 DefaultTask::CgiManager::ReadPipe::ReadPipe(CgiManager &manager, int fd)
-    : _manager(manager), _transport(NULL), _state(Header), _bufferClosed(false),
-      pos(0) {
+    : _manager(manager), _transport(NULL), _state(HEADER), _bufferClosed(false),
+      _pos(0) {
   _transport =
       new ftev::ReadPipeTransport(manager._task.cycle.getLoop(), *this, fd);
 }
@@ -359,7 +371,7 @@ void DefaultTask::CgiManager::ReadPipe::onData(std::vector<char> const &data) {
     _buffer.insert(_buffer.end(), data.begin(), data.end());
   } catch (std::exception &e) {
     ftpp::logger(ftpp::Logger::ERROR,
-                 ftpp::Format("CgiProcess: {}") % e.what());
+                 ftpp::Format("DefaultTask::CgiManager: {}") % e.what());
     _manager._task.cycle.abort();
     return;
   }
@@ -371,25 +383,69 @@ void DefaultTask::CgiManager::ReadPipe::onEof() {
   _process();
 }
 
-/*
-
 void DefaultTask::CgiManager::ReadPipe::_process() {
   try {
     for (bool flag = true; flag;) {
-      if (_state == Header) {
+      if (_state == HEADER) {
         flag = _parseHeader();
         if (!flag && _bufferClosed)
-          throw std::runtime_error("Header parse error");
-      } else if (_state == Body) {
+          _manager._task.cycle.sendErrorPage(500);
+      } else if (_state == BODY) {
+        std::vector<char> tmp(_buffer.begin(), _buffer.end());
+        _buffer.clear();
+        _manager._task.cycle.send(tmp.data(), tmp.size(), _bufferClosed);
+        flag = false;
       }
     }
   } catch (std::exception &e) {
     ftpp::logger(ftpp::Logger::ERROR,
-                 ftpp::Format("CgiProcess: {}") % e.what());
+                 ftpp::Format("DefaultTask::CgiManager: {}") % e.what());
     _manager._task.cycle.abort();
   }
 }
-*/
+
+bool DefaultTask::CgiManager::ReadPipe::_parseHeader() {
+  assert(_state == HEADER);
+  if (_buffer.size() - _pos < DOUBLE_CRLF.size())
+    return false;
+  std::deque<char>::iterator match =
+      std::search(_buffer.begin() + _pos, _buffer.end(), DOUBLE_CRLF.begin(),
+                  DOUBLE_CRLF.end());
+  if (match == _buffer.end()) {
+    _pos = _buffer.size() - DOUBLE_CRLF.size();
+    return false;
+  }
+  _pos = 0;
+  Headers headers;
+  int status = 200;
+  try {
+    Headers tmp;
+    parseHeaders(tmp, std::string(_buffer.begin(), match + CRLF.size()));
+    if (tmp.find("content-type") == tmp.end())
+      throw std::runtime_error("Invalid content-type");
+    for (Headers::const_iterator it = tmp.begin(); it != tmp.end(); ++it) {
+      if (it->first == "status") {
+        if (it->second.size() != 1)
+          throw std::runtime_error("Invalid status");
+        status = ftpp::stoul(it->second[0]);
+        if (status < 100 || status > 599)
+          throw std::runtime_error("Invalid status");
+      } else if (it->first == "transfer-encoding") {
+      } else
+        headers[it->first] = it->second;
+    }
+  } catch (std::exception &e) {
+    ftpp::logger(ftpp::Logger::ERROR,
+                 ftpp::Format("DefaultTask::CgiManager: {}") % e.what());
+    _transport->pause();
+    _manager._task.cycle.sendErrorPage(500);
+    return false;
+  }
+  _manager._task.cycle.send(status, headers);
+  _buffer.erase(_buffer.begin(), match + DOUBLE_CRLF.size());
+  _state = BODY;
+  return true;
+}
 
 DefaultTask::CgiManager::WritePipe::WritePipe(CgiManager &manager, int fd)
     : _manager(manager), _transport(NULL) {

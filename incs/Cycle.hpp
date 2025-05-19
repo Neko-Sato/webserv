@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 03:13:29 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/30 13:23:32 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/19 21:48:48 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ public:
   ServerConf const &getServerConf() const;
   Request const &getRequest() const;
 
-  void send(int code, Response::Headers const &headers);
+  void send(int code, Headers const &headers);
   void send(char const *data, std::size_t size, bool more);
   void sendErrorPage(int code);
   void abort();
