@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 20:46:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/16 05:45:24 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/19 17:39:32 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 #include <ftpp/subprocess/Subprocess.hpp>
 
 #include <cerrno>
-#include <cstdio>
+#include <vector>
 #include <cstring>
 #include <dirent.h>
 #include <fcntl.h>
@@ -39,7 +39,7 @@ DefaultTask::DefaultTask(Connection::Cycle &cycle,
                          LocationDefault const &location)
     : Task(cycle), _location(location), _cgiManager(NULL), _status(-1) {
   Request const &request = cycle.getRequest();
-  ftpp::normpath(_location.getRoot() + request.path).swap(_path);
+  ftpp::normpath(_location.getRoot() + request.uri.getPath()).swap(_path);
   if (!ftpp::starts_with(_path, _location.getRoot()))
     _status = 403;
   else {
@@ -139,15 +139,15 @@ void DefaultTask::onEofDefault() {
 
 void DefaultTask::sendAutoindex() {
   Response::Headers headers;
-  if (!ftpp::ends_with(cycle.getRequest().path, std::string("/"))) {
-    headers["location"].push_back(cycle.getRequest().path + "/");
+  if (!ftpp::ends_with(cycle.getRequest().uri.getPath(), std::string("/"))) {
+    headers["location"].push_back(cycle.getRequest().uri.getPath() + "/");
     cycle.send(301, headers);
     cycle.send(NULL, 0, false);
     return;
   }
   std::ostringstream oss;
   try {
-    std::string path = ftpp::htmlEscape(cycle.getRequest().path);
+    std::string path = ftpp::htmlEscape(cycle.getRequest().uri.getPath());
     oss << "<html>";
     oss << "<head><title>Index of " << path << "</title></head>";
     oss << "<body>";
@@ -248,6 +248,7 @@ DefaultTask::CgiManager::CgiManager(DefaultTask &task,
 
 DefaultTask::CgiManager::~CgiManager() {
   delete _process;
+  delete _writePipe;
   delete _readPipe;
 }
 
@@ -280,7 +281,7 @@ void DefaultTask::CgiManager::onEof() {
       if (pipefd[i] != -1)
         close(pipefd[i]);
     }
-    throw;
+    _task.cycle.sendErrorPage(500);
   }
 }
 
@@ -298,6 +299,21 @@ DefaultTask::CgiManager::Process::Process(ftev::EventLoop &loop,
   std::vector<char const *> envp;
   for (char **i = environ; *i; ++i)
     envp.push_back(*i);
+  envp.push_back("GATEWAY_INTERFACE=CGI/1.1");
+  envp.push_back("SERVER_PROTOCOL=HTTP/1.1");
+  envp.push_back("SERVER_SOFTWARE=Weberv");
+  std::vector<std::string> envStrs;
+  envStrs.push_back("SCRIPT_NAME=" +
+                    _manager._task.cycle.getRequest().uri.getPath());
+  envStrs.push_back("REQUEST_METHOD=" +
+                    _manager._task.cycle.getRequest().method);
+  envStrs.push_back("REQUEST_PATH=" +
+                    _manager._task.cycle.getRequest().uri.getPath());
+  envStrs.push_back("REQUEST_QUERY=" +
+                    _manager._task.cycle.getRequest().uri.getQuery());
+  for (std::vector<std::string>::const_iterator it = envStrs.begin();
+       it != envStrs.end(); ++it)
+    envp.push_back(it->c_str());
   envp.push_back(NULL);
   opts.envp = envp.data();
   opts.cwd = NULL;
@@ -328,10 +344,10 @@ void DefaultTask::CgiManager::Process::onSignaled(int signum) {
 }
 
 DefaultTask::CgiManager::ReadPipe::ReadPipe(CgiManager &manager, int fd)
-    : _manager(manager), _transport(NULL) {
+    : _manager(manager), _transport(NULL), _state(Header), _bufferClosed(false),
+      pos(0) {
   _transport =
       new ftev::ReadPipeTransport(manager._task.cycle.getLoop(), *this, fd);
-  _manager._task.cycle.send(200, Response::Headers());
 }
 
 DefaultTask::CgiManager::ReadPipe::~ReadPipe() {
@@ -340,23 +356,40 @@ DefaultTask::CgiManager::ReadPipe::~ReadPipe() {
 
 void DefaultTask::CgiManager::ReadPipe::onData(std::vector<char> const &data) {
   try {
-    _manager._task.cycle.send(data.data(), data.size(), true);
+    _buffer.insert(_buffer.end(), data.begin(), data.end());
   } catch (std::exception &e) {
     ftpp::logger(ftpp::Logger::ERROR,
-                 ftpp::Format("CgiProcess CgiReadPipe onData: {}") % e.what());
+                 ftpp::Format("CgiProcess: {}") % e.what());
     _manager._task.cycle.abort();
+    return;
   }
+  _process();
 }
 
 void DefaultTask::CgiManager::ReadPipe::onEof() {
+  _bufferClosed = true;
+  _process();
+}
+
+/*
+
+void DefaultTask::CgiManager::ReadPipe::_process() {
   try {
-    _manager._task.cycle.send(NULL, 0, false);
+    for (bool flag = true; flag;) {
+      if (_state == Header) {
+        flag = _parseHeader();
+        if (!flag && _bufferClosed)
+          throw std::runtime_error("Header parse error");
+      } else if (_state == Body) {
+      }
+    }
   } catch (std::exception &e) {
     ftpp::logger(ftpp::Logger::ERROR,
-                 ftpp::Format("CgiProcess CgiReadPipe onEof: {}") % e.what());
+                 ftpp::Format("CgiProcess: {}") % e.what());
     _manager._task.cycle.abort();
   }
 }
+*/
 
 DefaultTask::CgiManager::WritePipe::WritePipe(CgiManager &manager, int fd)
     : _manager(manager), _transport(NULL) {

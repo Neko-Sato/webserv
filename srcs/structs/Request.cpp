@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 02:12:43 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/23 20:31:47 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/16 06:38:16 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 
 void Request::swap(Request &rhs) throw() {
   method.swap(rhs.method);
-  path.swap(rhs.path);
+  uri.swap(rhs.uri);
   version.swap(rhs.version);
   headers.swap(rhs.headers);
 }
@@ -43,11 +43,9 @@ void parseRequest(Request &res, std::string const &data) {
       is_first_line = false;
       std::istringstream iss(line);
       ftpp::URI uri;
-      iss >> tmp.method >> uri >> tmp.version;
+      iss >> tmp.method >> tmp.uri >> tmp.version;
       if (iss.fail())
         throw std::runtime_error("Invalid request");
-      tmp.path = uri.getPath();
-      tmp.query = uri.getQuery();
     } else {
       std::string::size_type pos = line.find(":");
       if (pos == std::string::npos)
@@ -58,5 +56,8 @@ void parseRequest(Request &res, std::string const &data) {
     if (it == data.end())
       break;
   }
+  std::cerr << "Request: " << tmp.method << "\n " << tmp.uri.toString() << "\n "
+			<< tmp.version << std::endl;
   res.swap(tmp);
+
 }

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/24 21:37:12 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/23 20:30:27 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/16 06:33:49 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,8 @@ struct Request {
   typedef std::map<std::string, HeaderValues> Headers;
 
   std::string method;
-  std::string path;
+  ftpp::URI uri;
   std::string version;
-  std::string query;
   Headers headers;
 
   void swap(Request &rhs) throw();

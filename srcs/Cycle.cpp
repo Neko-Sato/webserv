@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 23:45:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/30 13:26:53 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/16 06:37:45 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ Connection::Cycle::Cycle(Connection &connection)
       }
       if (_connection._request.version != "HTTP/1.1")
         throw HttpException(505);
-      if (!ftpp::starts_with(_connection._request.path, std::string("/")))
+      if (!ftpp::starts_with(_connection._request.uri.getPath(), std::string("/")))
         throw HttpException(400);
       {
         it = _connection._request.headers.find("connection");
@@ -224,7 +224,7 @@ void Connection::Cycle::send(int code, Response::Headers const &headers) {
 #else
     ftpp::logger(ftpp::Logger::INFO,
                  ftpp::Format("{} {} -> {}{} {}{}") %
-                     _connection._request.method % _connection._request.path %
+                     _connection._request.method % _connection._request.uri %
                      _statusColorEscape(tmp.status) % tmp.status % tmp.reason %
                      _resetColorEscape);
 #endif
