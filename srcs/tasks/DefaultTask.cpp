@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 20:46:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/19 22:35:31 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/19 23:02:41 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -347,6 +347,7 @@ DefaultTask::CgiManager::Process::~Process() {
 }
 
 void DefaultTask::CgiManager::Process::onExited(int) {
+  _manager._task.cycle.send(NULL, 0, false);
 }
 
 void DefaultTask::CgiManager::Process::onSignaled(int signum) {
@@ -393,7 +394,7 @@ void DefaultTask::CgiManager::ReadPipe::_process() {
       } else if (_state == BODY) {
         std::vector<char> tmp(_buffer.begin(), _buffer.end());
         _buffer.clear();
-        _manager._task.cycle.send(tmp.data(), tmp.size(), _bufferClosed);
+        _manager._task.cycle.send(tmp.data(), tmp.size(), true);
         flag = false;
       }
     }
