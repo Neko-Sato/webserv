@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 03:45:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/02 02:37:02 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/20 14:36:18 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,10 +100,10 @@ WritePipeTransport::WritePipeTransport(EventLoop &loop,
 }
 
 WritePipeTransport::~WritePipeTransport() {
+  if (!_closed)
+    close();
   delete _drainHandler;
   delete _handler;
-  if (!_closed)
-    ::close(_fd);
 }
 
 void WritePipeTransport::write(char const *buffer, size_t size) {

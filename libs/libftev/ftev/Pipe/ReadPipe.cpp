@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 03:37:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/02 02:06:37 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/20 14:41:49 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,9 +73,9 @@ ReadPipeTransport::ReadPipeTransport(EventLoop &loop,
 }
 
 ReadPipeTransport::~ReadPipeTransport() {
-  delete _handler;
   if (!_closed)
-    ::close(_fd);
+    close();
+  delete _handler;
 }
 
 void ReadPipeTransport::resume() {
