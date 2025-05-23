@@ -167,7 +167,7 @@ void StreamConnectionTransport::write(char const *buffer, size_t size) {
     }
   }
   if (_handler->getIsActive()) {
-    Handler::event_t event = _handler->getIsActive();
+    Handler::event_t event = _handler->getEvents();
     if (!(event & ftpp::Selector::WRITE))
       _handler->modify(event | ftpp::Selector::WRITE);
   } else
