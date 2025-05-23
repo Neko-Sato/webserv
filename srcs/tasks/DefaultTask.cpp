@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 20:46:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/19 23:02:41 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/24 04:39:02 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -255,6 +255,13 @@ DefaultTask::CgiManager::~CgiManager() {
 }
 
 void DefaultTask::CgiManager::onData(std::vector<char> const &data) {
+  /*
+  I really wanted to make it streamable, but that is more than necessary and not
+  required for CGI, so I tried to compromise with temporary files. But this
+  subject does not have the requirements to use temporary files, such as mktemp
+  and lseek. lseek is not available because it is done. It is garbage shit. No
+  choice but to use std::vector<char> and pipe
+  */
   _buffer.insert(_buffer.end(), data.begin(), data.end());
 }
 
