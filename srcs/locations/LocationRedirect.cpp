@@ -6,11 +6,12 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 03:00:19 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/25 04:37:01 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "locations/LocationRedirect.hpp"
+#include "ValidationError.hpp"
 #include "tasks/RedirectTask.hpp"
 
 #include <stdexcept>
@@ -48,24 +49,24 @@ LocationRedirect *LocationRedirect::clone() const {
 void LocationRedirect::_takeCode(ftjson::Object const &location) {
   ftjson::Object::const_iterator it = location.find("code");
   if (it == location.end())
-    throw std::runtime_error("code is not found");
+    throw ValidationError("code is not found");
   if (!it->second.isType<ftjson::Number>())
-    throw std::runtime_error("code is not number");
+    throw ValidationError("code is not number");
   double code = it->second.as_unsafe<ftjson::Number>();
   if (code < 300 || code >= 400 || code != static_cast<int>(code))
-    throw std::runtime_error("code is not valid redirect code");
+    throw ValidationError("code is not valid redirect code");
   _code = static_cast<int>(code);
 }
 
 void LocationRedirect::_takeRedirect(ftjson::Object const &location) {
   ftjson::Object::const_iterator it = location.find("redirect");
   if (it == location.end())
-    throw std::runtime_error("redirect is not found");
+    throw ValidationError("redirect is not found");
   if (!it->second.isType<ftjson::String>())
-    throw std::runtime_error("redirect is not string");
+    throw ValidationError("redirect is not string");
   std::string const &redirect = it->second.as_unsafe<std::string>();
   if (redirect.empty())
-    throw std::runtime_error("redirect is empty");
+    throw ValidationError("redirect is empty");
   _redirect = it->second.as_unsafe<std::string>();
 }
 

@@ -6,11 +6,12 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:18:19 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/28 06:00:00 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/25 04:40:07 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "configs/Location.hpp"
+#include "ValidationError.hpp"
 #include "locations/LocationDefault.hpp"
 #include "locations/LocationRedirect.hpp"
 #include "locations/LocationUpload.hpp"
@@ -88,12 +89,12 @@ void Location::_takeAllowMethods(ftjson::Object const &location) {
   ftjson::Object::const_iterator it = location.find("allow_methods");
   if (it != location.end()) {
     if (!it->second.isType<ftjson::Array>())
-      throw std::runtime_error("allow_methods is not array");
+      throw ValidationError("allow_methods is not array");
     ftjson::Array const &methods = it->second.as_unsafe<ftjson::Array>();
     for (ftjson::Array::const_iterator it = methods.begin();
          it != methods.end(); ++it) {
       if (!it->isType<ftjson::String>())
-        throw std::runtime_error("allow_methods is not string");
+        throw ValidationError("allow_methods is not string");
       _allowMethods.insert(it->as_unsafe<ftjson::String>());
     }
   }
@@ -102,13 +103,13 @@ void Location::_takeAllowMethods(ftjson::Object const &location) {
 void Location::_takeDetail(ftjson::Object const &location) {
   ftjson::Object::const_iterator it = location.find("type");
   if (it == location.end())
-    throw std::runtime_error("Location without type");
+    throw ValidationError("Location without type");
   if (!it->second.isType<ftjson::String>())
-    throw std::runtime_error("Location type is not string");
+    throw ValidationError("Location type is not string");
   std::string const &type = it->second.as_unsafe<ftjson::String>();
   Detail::Factories::const_iterator factory = Detail::factories.find(type);
   if (factory == Detail::factories.end())
-    throw std::runtime_error("Unknown location type: " + type);
+    throw ValidationError("Unknown location type: " + type);
   ftpp::ScopedPtr<Detail>(factory->second(location)).swap(_detail);
 }
 

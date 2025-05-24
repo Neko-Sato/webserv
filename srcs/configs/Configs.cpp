@@ -6,11 +6,12 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 08:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 03:27:17 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/25 04:40:22 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "configs/Configs.hpp"
+#include "ValidationError.hpp"
 
 #include <ftjson/Json.hpp>
 #include <ftjson/JsonParser.hpp>
@@ -46,9 +47,9 @@ Configs Configs::load(std::string const &filename) {
     ftpp::Any configs;
     ftjson::JsonParser::parse(ifs).swap(configs);
     if (!configs.isType<ftjson::Object>())
-      throw std::runtime_error("configs is not object");
+      throw ValidationError("configs is not object");
     return Configs(configs.as_unsafe<ftjson::Object>());
-  } catch (std::exception const &e) {
+  } catch (ValidationError const &e) {
     throw std::runtime_error("Could not parse configuration file: " +
                              std::string(e.what()));
   }
@@ -62,12 +63,12 @@ void Configs::_takeServers(ftjson::Object const &configs) {
   ftjson::Object::const_iterator it = configs.find("servers");
   if (it != configs.end()) {
     if (!it->second.isType<ftjson::Array>())
-      throw std::runtime_error("servers is not array");
+      throw ValidationError("servers is not array");
     ftjson::Array const &server = it->second.as_unsafe<ftjson::Array>();
     for (ftjson::Array::const_iterator it = server.begin(); it != server.end();
          ++it) {
       if (!it->isType<ftjson::Object>())
-        throw std::runtime_error("server is not object");
+        throw ValidationError("server is not object");
       _servers.push_back(ServerConf(it->as_unsafe<ftjson::Object>()));
     }
   }
@@ -92,7 +93,7 @@ ServerConf const &Configs::findServer(Address const &addr,
     }
   }
   if (!first)
-    throw std::runtime_error("Not found server");
+    throw ValidationError("Not found server");
   return *first;
 }
 
