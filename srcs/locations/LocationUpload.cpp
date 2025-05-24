@@ -6,13 +6,13 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/25 04:36:43 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/05/25 04:42:04 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "locations/LocationUpload.hpp"
-#include "tasks/UploadTask.hpp"
 #include "ValidationError.hpp"
+#include "tasks/UploadTask.hpp"
 
 #include <stdexcept>
 
@@ -20,8 +20,8 @@ LocationUpload::LocationUpload() {
 }
 
 LocationUpload::LocationUpload(ftjson::Object const &location) {
-	_takeStore(location);
-	_takeRedirect(location);
+  _takeStore(location);
+  _takeRedirect(location);
 }
 
 LocationUpload::LocationUpload(LocationUpload const &rhs)
