@@ -6,13 +6,15 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/25 04:42:04 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/06/10 23:44:16 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "locations/LocationUpload.hpp"
 #include "ValidationError.hpp"
 #include "tasks/UploadTask.hpp"
+
+#include <ftpp/pathlib/pathlib.hpp>
 
 #include <stdexcept>
 
@@ -55,6 +57,8 @@ void LocationUpload::_takeStore(ftjson::Object const &location) {
   std::string const &store = it->second.as_unsafe<ftjson::String>();
   if (store.empty())
     throw ValidationError("store is empty");
+  if (!ftpp::isAbsolutePath(store))
+	throw ValidationError("store is not absolute path");
   _store = store;
 }
 

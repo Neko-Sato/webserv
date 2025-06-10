@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/08 13:47:37 by hshimizu          #+#    #+#              #
-#    Updated: 2025/04/30 14:35:14 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/06/10 23:42:31 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,7 +31,8 @@ servers:
           - { ext: .php, bin: /usr/bin/php-cgi }
       - path: /upload
         type: upload
-        store: ~/uploads
+        store: /home/hshimizu/webserv/html/uploads
+        redirect: /home/hshimizu/webserv/html/default/upload.html
   # Server to redirect to profile
   - server_names: [hshimizu.42.fr, hshimizu.42tokyo.jp]
     listen:
