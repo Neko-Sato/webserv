@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import sys
 import os
 import time
@@ -15,10 +16,8 @@ while True:
 	time.sleep(0.1)
 	i += 1
 	if i > 4:
-		print(os.environ, file=sys.stdout)
-		sys.stdout.flush()
-		# time.sleep(0.1)
-		# os.kill(os.getpid(),11)
-		print("end", file=sys.stdout)
 		break
-
+print(file=sys.stdout)
+for k, v in os.environ.items():
+	print(f"{k}: {v}", file=sys.stdout)
+sys.stdout.flush()

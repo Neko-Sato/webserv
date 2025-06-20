@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2025/06/21 00:41:40 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/06/21 03:41:25 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -115,20 +115,24 @@ $(LIBFTJSON): $(LIBFTPP)
 	@$(MAKE) -C $@
 
 tester:
-	@if [ "$(shell uname)" = "Darwin" ]; then \
-		wget -O $@ https://cdn.intra.42.fr/document/document/31201/tester; \
-	else \
-		wget -O $@ https://cdn.intra.42.fr/document/document/31204/ubuntu_tester; \
-	fi
-	@chmod +x $@
+	@{ \
+		if [ "$(shell uname)" = "Darwin" ]; then \
+			DOWNLOAD_PATH="https://cdn.intra.42.fr/document/document/35504/tester"; \
+		else \
+			DOWNLOAD_PATH="https://cdn.intra.42.fr/document/document/35507/ubuntu_tester"; \
+		fi; \
+		wget -O $@ "$$DOWNLOAD_PATH" && chmod +x $@; \
+	} || { $(RM) $@; exit 1; }
 
 cgi_tester:
-	@if [ "$(shell uname)" = "Darwin" ]; then \
-		wget -O $@ https://cdn.intra.42.fr/document/document/31203/cgi_tester; \
-	else \
-		wget -O $@ https://cdn.intra.42.fr/document/document/31202/ubuntu_cgi_tester; \
-	fi
-	@chmod +x $@
+	@{ \
+		if [ "$(shell uname)" = "Darwin" ]; then \
+			DOWNLOAD_PATH="https://cdn.intra.42.fr/document/document/35506/cgi_tester"; \
+		else \
+			DOWNLOAD_PATH="https://cdn.intra.42.fr/document/document/35505/ubuntu_cgi_tester"; \
+		fi; \
+		wget -O $@ "$$DOWNLOAD_PATH" && chmod +x $@; \
+	} || { $(RM) $@; exit 1; }
 
 # At first I tried yaml but found it cumbersome and switched to json.
 # yaml was friendly when I read it but json is easier to parse.
@@ -144,10 +148,10 @@ yaml2json:
 	@echo "json.dump(yaml.safe_load(sys.stdin), sys.stdout)" >> $@
 	@chmod +x $@
 
-default.yaml: default.yaml.tmp
-	@sed "s|@@@ROOT@@@|$(CURDIR)|g" $< > $@ || { $(RM) $@; exit 1;}
+%.yaml: %.yaml.tmp
+	sed "s|@@@ROOT@@@|$(CURDIR)|g" $< > $@ || { $(RM) $@; exit 1;}
 
-default.json: default.yaml | yaml2json
-	@./yaml2json < $<  > $@ || { $(RM) $@; exit 1;}
+%.json: %.yaml | yaml2json
+	./yaml2json < $<  > $@ || { $(RM) $@; exit 1;}
 
 -include $(DEPS)
