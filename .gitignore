@@ -8,3 +8,7 @@ a.out
 *.d
 /webserv
 /yaml2json
+/default.json
+/default.yaml
+/uploads/*
+!/uploads/.gitkeep
