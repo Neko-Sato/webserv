@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2025/06/21 00:27:01 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/06/21 00:41:40 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -71,10 +71,10 @@ export CPLUS_INCLUDE_PATH LD_RUN_PATH LIBRARY_PATH
 
 all: $(NAME)
 
+bonus: $(NAME)
+
 $(NAME): $(OBJS) | $(LIBFTEV) $(LIBFTPP) $(LIBFTJSON)
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
-
-bonus: $(NAME)
 
 $(OUT_DIR)/%.o: %.cpp
 	@mkdir -p $(@D)
