@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2025/04/28 05:48:53 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/06/21 00:27:01 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -143,5 +143,11 @@ yaml2json:
 	@echo "import json" >> $@
 	@echo "json.dump(yaml.safe_load(sys.stdin), sys.stdout)" >> $@
 	@chmod +x $@
+
+default.yaml: default.yaml.tmp
+	@sed "s|@@@ROOT@@@|$(CURDIR)|g" $< > $@ || { $(RM) $@; exit 1;}
+
+default.json: default.yaml | yaml2json
+	@./yaml2json < $<  > $@ || { $(RM) $@; exit 1;}
 
 -include $(DEPS)

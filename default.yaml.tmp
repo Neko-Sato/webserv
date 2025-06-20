@@ -1,12 +1,12 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
-#    default.yaml                                       :+:      :+:    :+:    #
+#    default.yaml.tmp                                   :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/08 13:47:37 by hshimizu          #+#    #+#              #
-#    Updated: 2025/06/10 23:42:31 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/06/21 00:17:41 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,8 +18,8 @@ servers:
       - { host: "::", port: 8081 }
     client_max_body_size: 10M
     error_pages:
-      - { code: 404, path: /home/hshimizu/webserv/html/404.html }
-      - { code: 500, path: /home/hshimizu/webserv/html/500.html }
+      - { code: 404, path: @@@ROOT@@@/html/404.html }
+      - { code: 500, path: @@@ROOT@@@/html/500.html }
     locations:
       - path: /
         type: default
@@ -31,8 +31,8 @@ servers:
           - { ext: .php, bin: /usr/bin/php-cgi }
       - path: /upload
         type: upload
-        store: /home/hshimizu/webserv/html/uploads
-        redirect: /home/hshimizu/webserv/html/default/upload.html
+        store: @@@ROOT@@@/html/uploads
+        redirect: @@@ROOT@@@/html/default/upload.html
   # Server to redirect to profile
   - server_names: [hshimizu.42.fr, hshimizu.42tokyo.jp]
     listen:
