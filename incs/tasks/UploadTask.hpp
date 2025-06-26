@@ -19,8 +19,6 @@
 
 class UploadTask : public Task {
 private:
-  enum State { INIT, DATA, EOF };
-
   LocationUpload const &_location;
   int _status;
   std::deque<char> _buffer;
