@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2025/06/21 03:41:25 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/06/28 01:48:10 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -85,7 +85,6 @@ clean:
 	@$(MAKE) -C $(LIBFTPP) fclean
 	@$(MAKE) -C $(LIBFTJSON) fclean
 	$(RM) -r $(OUT_DIR)
-	@$(RM) tester cgi_tester yaml2json
 
 fclean:
 	@$(MAKE) clean

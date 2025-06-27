@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 03:45:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/20 14:36:18 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/06/28 03:21:45 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,16 +42,18 @@ void WritePipeTransport::Handler::onRead() {
 
 void WritePipeTransport::Handler::onWrite() {
   try {
-    ssize_t size = ::write(_transport._fd, _transport._buffer.data(),
-                           _transport._buffer.size());
+    std::vector<char> chank(
+        _transport._buffer.begin(),
+        _transport._buffer.begin() +
+            std::min(_transport._chankSize, _transport._buffer.size()));
+    ssize_t size = ::write(_transport._fd, chank.data(), chank.size());
     if (unlikely(size == -1))
 #if defined(FT_SUBJECT_NOT_COMPLIANT)
       throw ftpp::OSError(errno, "write");
 #else
       throw std::runtime_error("write: No access to error details");
 #endif
-    _transport._buffer.erase(_transport._buffer.begin(),
-                             _transport._buffer.begin() + size);
+    _transport._buffer.erase(_transport._buffer.begin(), _transport._buffer.begin() + size);
   } catch (...) {
   }
   if (_transport._buffer.empty()) {
@@ -85,6 +87,8 @@ void WritePipeTransport::DrainHandler::onEvent() {
   _transport._protocol.onDrain();
 }
 
+std::size_t const WritePipeTransport::_chankSize = 4096;
+
 WritePipeTransport::WritePipeTransport(EventLoop &loop,
                                        WritePipeProtocol &protocol, int fd)
     : _protocol(protocol), _fd(fd), _handler(NULL), _drainHandler(NULL),
@@ -114,7 +118,7 @@ void WritePipeTransport::write(char const *buffer, size_t size) {
     return;
   if (_buffer.empty()) {
     try {
-      ssize_t written = ::write(_fd, buffer, size);
+      ssize_t written = ::write(_fd, buffer, std::min(size, _chankSize));
       if (unlikely(written == -1))
         throw ftpp::OSError(errno, "write");
       else if (static_cast<size_t>(written) == size)

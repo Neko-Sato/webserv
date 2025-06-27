@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 03:45:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/02 02:37:18 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/06/28 03:05:29 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,12 +49,14 @@ private:
     void onEvent();
   };
 
+  static std::size_t const _chankSize;
+
   WritePipeProtocol &_protocol;
   int _fd;
   Handler *_handler;
   DrainHandler *_drainHandler;
   bool _closed;
-  std::vector<char> _buffer;
+  std::deque<char> _buffer;
   bool _draining;
 
   WritePipeTransport();

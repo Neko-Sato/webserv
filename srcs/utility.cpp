@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/31 21:52:35 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/01 23:53:59 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/06/28 02:47:34 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ std::size_t parseSize(std::string const &str) {
     else
       throw std::runtime_error("invalid size unit");
   }
-  if (size > std::numeric_limits<std::size_t>::max() / unit)
+  if (unit > std::numeric_limits<std::size_t>::max() / size)
     throw std::overflow_error("size overflow");
   return static_cast<std::size_t>(size * unit);
 }
