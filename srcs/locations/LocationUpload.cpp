@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/06/10 23:44:16 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/06/28 03:54:56 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,6 @@ std::string const &LocationUpload::getRedirect() const {
   return _redirect;
 }
 
-Task *LocationUpload::createTask(Connection::Cycle &cycle, std::string const &path) const {
-  return new UploadTask(cycle, *this, path);
+Task *LocationUpload::createTask(Connection::Cycle &cycle) const {
+  return new UploadTask(cycle, *this);
 }

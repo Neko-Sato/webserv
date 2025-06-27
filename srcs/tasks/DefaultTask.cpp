@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 20:46:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/24 04:39:02 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/06/28 04:22:47 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,26 +37,40 @@
 #include <unistd.h>
 #include <vector>
 
+static inline std::string _getSuffix(const std::string &path) {
+  std::string::size_type slash_pos = path.find_last_of('/');
+  std::string filename =
+      slash_pos == std::string::npos ? path : path.substr(slash_pos + 1);
+  std::string::size_type dot_pos = filename.find_last_of('.');
+  if (dot_pos == std::string::npos)
+    return "";
+  return filename.substr(dot_pos);
+}
+
 DefaultTask::DefaultTask(Connection::Cycle &cycle,
-                         LocationDefault const &location, std::string const &path)
-    : Task(cycle, path), _location(location), _cgiManager(NULL), _status(-1) {
+                         LocationDefault const &location)
+    : Task(cycle), _location(location), _cgiManager(NULL), _status(-1) {
   Request const &request = cycle.getRequest();
-  ftpp::normpath(_location.getRoot() + "/" + path).swap(_path);
+  ftpp::normpath(_location.getRoot() + request.uri.getPath()).swap(_path);
+  if (!ftpp::starts_with(_path, _location.getRoot())) {
+    _status = 403;
+    return;
+  }
   try {
-    LocationDefault::Cgis const &cgis = _location.getCgis();
-    for (LocationDefault::Cgis::const_iterator it = cgis.begin();
-          it != cgis.end(); ++it) {
-      if (ftpp::ends_with(_path, it->first)) {
+    std::string _pathSuffix = _getSuffix(_path);
+    if (!_pathSuffix.empty()) {
+      LocationDefault::Cgis const &cgis = _location.getCgis();
+      LocationDefault::Cgis::const_iterator it = cgis.find(_pathSuffix);
+      if (it != cgis.end()) {
         if (access(_path.c_str(), F_OK) == -1) {
           if (errno == ENOENT)
-            continue;
+            _status = 404;
           else if (errno == EACCES)
             _status = 403;
           else
             throw ftpp::OSError(errno, "access");
         } else
           _cgiManager = new CgiManager(*this, it->second);
-        break;
       }
     }
     if (_status == -1 && !_cgiManager && request.method != "GET")
@@ -89,7 +103,7 @@ void DefaultTask::onEofDefault() {
   try {
     struct stat st;
     if (stat(_path.c_str(), &st) == -1) {
-      if (errno == ENOENT)
+      if (errno == ENOENT || errno == ENOTDIR)
         throw HttpException(404);
       else if (errno == EACCES)
         throw HttpException(403);
@@ -105,7 +119,7 @@ void DefaultTask::onEofDefault() {
         if (!ftpp::starts_with(index_path, _location.getRoot()))
           continue;
         if (stat(index_path.c_str(), &st) == -1) {
-          if (errno == ENOENT || errno == EACCES)
+          if (errno == ENOENT || errno == EACCES || errno == ENOTDIR)
             continue;
           else
             throw HttpException(500);

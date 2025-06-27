@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 00:49:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/16 06:34:46 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/06/28 03:52:50 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ App::App(Connection::Cycle &cycle)
             allowMethods.end())
       _status = 405;
     else 
-      _task = location->second.getDetail().createTask(cycle, std::string(request.uri.getPath(), location->first.size()));
+      _task = location->second.getDetail().createTask(cycle);
   }
 }
 

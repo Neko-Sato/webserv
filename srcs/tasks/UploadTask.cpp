@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 18:00:43 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/06/21 01:23:08 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/06/28 04:06:49 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,8 @@
 #include <set>
 #include <vector>
 
-UploadTask::UploadTask(Connection::Cycle &cycle, LocationUpload const &location, std::string const &path)
-    : Task(cycle, path), _location(location), _status(-1) {
+UploadTask::UploadTask(Connection::Cycle &cycle, LocationUpload const &location)
+    : Task(cycle), _location(location), _status(-1) {
   try {
     Request const &request = cycle.getRequest();
     if (request.method != "POST")

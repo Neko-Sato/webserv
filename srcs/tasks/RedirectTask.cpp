@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 17:56:36 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/19 21:48:48 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/06/28 04:06:35 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,8 @@
 #include <sstream>
 
 RedirectTask::RedirectTask(Connection::Cycle &cycle,
-                           LocationRedirect const &location, std::string const &path)
-    : Task(cycle, path), _location(location) {
+                           LocationRedirect const &location)
+    : Task(cycle), _location(location) {
 }
 
 RedirectTask::~RedirectTask() {

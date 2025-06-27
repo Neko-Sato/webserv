@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 02:52:27 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/25 22:25:25 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/06/28 03:51:39 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,5 +33,5 @@ protected:
 public:
   virtual ~Detail();
   virtual Detail *clone() const = 0;
-  virtual Task *createTask(Connection::Cycle &cycle, std::string const &path) const = 0;
+  virtual Task *createTask(Connection::Cycle &cycle) const = 0;
 };

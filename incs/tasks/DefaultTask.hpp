@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 17:53:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/19 21:13:22 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/06/28 03:53:57 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ private:
   int _status;
 
 public:
-  DefaultTask(Connection::Cycle &cycle, LocationDefault const &location, std::string const &path);
+  DefaultTask(Connection::Cycle &cycle, LocationDefault const &location);
   ~DefaultTask();
 
   void onData(std::vector<char> const &data);

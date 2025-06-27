@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/25 04:37:01 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/06/28 03:54:51 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,6 @@ std::string const &LocationRedirect::getRedirect() const {
   return _redirect;
 }
 
-Task *LocationRedirect::createTask(Connection::Cycle &cycle, std::string const &path) const {
-  return new RedirectTask(cycle, *this, path);
+Task *LocationRedirect::createTask(Connection::Cycle &cycle) const {
+  return new RedirectTask(cycle, *this);
 }

@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 03:25:09 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/06/28 03:53:33 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,5 +35,5 @@ public:
   int getCode() const;
   std::string const &getRedirect() const;
 
-  Task *createTask(Connection::Cycle &cycle, std::string const &path) const;
+  Task *createTask(Connection::Cycle &cycle) const;
 };

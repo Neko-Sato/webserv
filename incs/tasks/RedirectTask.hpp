@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 17:56:36 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/13 20:24:37 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/06/28 03:54:06 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ private:
   LocationRedirect const &_location;
 
 public:
-  RedirectTask(Connection::Cycle &cycle, LocationRedirect const &location, std::string const &path);
+  RedirectTask(Connection::Cycle &cycle, LocationRedirect const &location);
   ~RedirectTask();
 
   void onData(std::vector<char> const &data);

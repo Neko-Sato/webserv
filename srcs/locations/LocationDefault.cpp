@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/25 04:36:49 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/06/28 03:54:39 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,6 +155,6 @@ LocationDefault::Cgis const &LocationDefault::getCgis() const {
   return _cgi;
 }
 
-Task *LocationDefault::createTask(Connection::Cycle &cycle, std::string const &path) const {
-  return new DefaultTask(cycle, *this, path);
+Task *LocationDefault::createTask(Connection::Cycle &cycle) const {
+  return new DefaultTask(cycle, *this);
 }

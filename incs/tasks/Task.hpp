@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 00:41:05 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/13 20:23:58 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/06/28 03:54:10 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ private:
   Task();
 
 protected:
-  Task(Connection::Cycle &cycle, std::string const &path);
+  Task(Connection::Cycle &cycle);
 
 public:
   virtual ~Task();
