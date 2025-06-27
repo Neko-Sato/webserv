@@ -104,7 +104,7 @@ private:
   int _status;
 
 public:
-  DefaultTask(Connection::Cycle &cycle, LocationDefault const &location);
+  DefaultTask(Connection::Cycle &cycle, LocationDefault const &location, std::string const &path);
   ~DefaultTask();
 
   void onData(std::vector<char> const &data);

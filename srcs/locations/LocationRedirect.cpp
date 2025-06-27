@@ -78,6 +78,6 @@ std::string const &LocationRedirect::getRedirect() const {
   return _redirect;
 }
 
-Task *LocationRedirect::createTask(Connection::Cycle &cycle) const {
-  return new RedirectTask(cycle, *this);
+Task *LocationRedirect::createTask(Connection::Cycle &cycle, std::string const &path) const {
+  return new RedirectTask(cycle, *this, path);
 }

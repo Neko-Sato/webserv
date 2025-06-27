@@ -27,8 +27,8 @@
 #include <set>
 #include <vector>
 
-UploadTask::UploadTask(Connection::Cycle &cycle, LocationUpload const &location)
-    : Task(cycle), _location(location), _status(-1) {
+UploadTask::UploadTask(Connection::Cycle &cycle, LocationUpload const &location, std::string const &path)
+    : Task(cycle, path), _location(location), _status(-1) {
   try {
     Request const &request = cycle.getRequest();
     if (request.method != "POST")

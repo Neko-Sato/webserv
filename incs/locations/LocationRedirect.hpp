@@ -35,5 +35,5 @@ public:
   int getCode() const;
   std::string const &getRedirect() const;
 
-  Task *createTask(Connection::Cycle &cycle) const;
+  Task *createTask(Connection::Cycle &cycle, std::string const &path) const;
 };

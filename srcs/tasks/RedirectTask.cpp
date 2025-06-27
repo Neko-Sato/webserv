@@ -18,8 +18,8 @@
 #include <sstream>
 
 RedirectTask::RedirectTask(Connection::Cycle &cycle,
-                           LocationRedirect const &location)
-    : Task(cycle), _location(location) {
+                           LocationRedirect const &location, std::string const &path)
+    : Task(cycle, path), _location(location) {
 }
 
 RedirectTask::~RedirectTask() {

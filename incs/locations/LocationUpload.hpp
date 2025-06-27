@@ -35,5 +35,5 @@ public:
   std::string const &getStore() const;
   std::string const &getRedirect() const;
 
-  Task *createTask(Connection::Cycle &cycle) const;
+  Task *createTask(Connection::Cycle &cycle, std::string const &path) const;
 };

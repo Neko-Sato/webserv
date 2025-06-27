@@ -15,10 +15,12 @@
 #include "structs/Response.hpp"
 
 #include <ftpp/string/string.hpp>
+#include <ftpp/macros.hpp>
 
 #include <fstream>
 
-Task::Task(Connection::Cycle &cycle) : cycle(cycle) {
+Task::Task(Connection::Cycle &cycle, std::string const &path) : cycle(cycle) {
+    UNUSED(path);
 }
 
 Task::~Task() {

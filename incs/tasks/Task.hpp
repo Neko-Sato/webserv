@@ -24,7 +24,7 @@ private:
   Task();
 
 protected:
-  Task(Connection::Cycle &cycle);
+  Task(Connection::Cycle &cycle, std::string const &path);
 
 public:
   virtual ~Task();

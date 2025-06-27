@@ -82,6 +82,6 @@ std::string const &LocationUpload::getRedirect() const {
   return _redirect;
 }
 
-Task *LocationUpload::createTask(Connection::Cycle &cycle) const {
-  return new UploadTask(cycle, *this);
+Task *LocationUpload::createTask(Connection::Cycle &cycle, std::string const &path) const {
+  return new UploadTask(cycle, *this, path);
 }

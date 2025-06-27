@@ -155,6 +155,6 @@ LocationDefault::Cgis const &LocationDefault::getCgis() const {
   return _cgi;
 }
 
-Task *LocationDefault::createTask(Connection::Cycle &cycle) const {
-  return new DefaultTask(cycle, *this);
+Task *LocationDefault::createTask(Connection::Cycle &cycle, std::string const &path) const {
+  return new DefaultTask(cycle, *this, path);
 }

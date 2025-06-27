@@ -8,7 +8,7 @@ servers:
         autoindex: true
         root: /
         cgi:
-          - { ext: .bla, bin: @@@ROOT@@@/cgi_test }
+          - { ext: .bla, bin: @@@ROOT@@@/cgi_tester }
       - path: /put_test/
         type: upload
         allow_methods: [PUT]
@@ -19,8 +19,11 @@ servers:
         allow_methods: [POST]
         root: @@@ROOT@@@/post_body_root
         client_max_body_size: 100
+        cgi:
+          - { ext: .bla, bin: @@@ROOT@@@/cgi_tester }
       - path: /directory
         type: default
-        allow_methods: [GET]
         root: @@@ROOT@@@/YoupiBanane
         index: [youpi.bad_extension]
+        cgi:
+          - { ext: .bla, bin: @@@ROOT@@@/cgi_tester }

@@ -51,5 +51,5 @@ public:
   bool getAutoindex() const;
   Cgis const &getCgis() const;
 
-  Task *createTask(Connection::Cycle &cycle) const;
+  Task *createTask(Connection::Cycle &cycle, std::string const &path) const;
 };

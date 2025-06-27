@@ -38,33 +38,31 @@
 #include <vector>
 
 DefaultTask::DefaultTask(Connection::Cycle &cycle,
-                         LocationDefault const &location)
-    : Task(cycle), _location(location), _cgiManager(NULL), _status(-1) {
+                         LocationDefault const &location, std::string const &path)
+    : Task(cycle, path), _location(location), _cgiManager(NULL), _status(-1) {
   Request const &request = cycle.getRequest();
-  ftpp::normpath(_location.getRoot() + request.uri.getPath()).swap(_path);
-  if (!ftpp::starts_with(_path, _location.getRoot()))
-    _status = 403;
-  else {
-    try {
-      LocationDefault::Cgis const &cgis = _location.getCgis();
-      for (LocationDefault::Cgis::const_iterator it = cgis.begin();
-           it != cgis.end(); ++it) {
-        if (ftpp::ends_with(_path, it->first)) {
-          if (access(_path.c_str(), X_OK) == -1) {
-            if (errno == ENOENT)
-              continue;
-            else if (errno == EACCES)
-              _status = 403;
-            else
-              throw ftpp::OSError(errno, "access");
-          } else
-            _cgiManager = new CgiManager(*this, it->second);
-          break;
-        }
+  ftpp::normpath(_location.getRoot() + "/" + path).swap(_path);
+  try {
+    LocationDefault::Cgis const &cgis = _location.getCgis();
+    for (LocationDefault::Cgis::const_iterator it = cgis.begin();
+          it != cgis.end(); ++it) {
+      if (ftpp::ends_with(_path, it->first)) {
+        if (access(_path.c_str(), F_OK) == -1) {
+          if (errno == ENOENT)
+            continue;
+          else if (errno == EACCES)
+            _status = 403;
+          else
+            throw ftpp::OSError(errno, "access");
+        } else
+          _cgiManager = new CgiManager(*this, it->second);
+        break;
       }
-    } catch (std::exception &) {
-      _status = 500;
     }
+    if (_status == -1 && !_cgiManager && request.method != "GET")
+      _status = 405;
+  } catch (std::exception &) {
+    _status = 500;
   }
 }
 
@@ -311,6 +309,7 @@ DefaultTask::CgiManager::Process::Process(ftev::EventLoop &loop,
   envp.push_back("SERVER_PROTOCOL=HTTP/1.1");
   envp.push_back("SERVER_SOFTWARE=Weberv");
   std::vector<std::string> envpStrs;
+  envpStrs.push_back("PATH_INFO=/");
   envpStrs.push_back("SCRIPT_NAME=" + request.uri.getPath());
   envpStrs.push_back("REQUEST_METHOD=" + request.method);
   envpStrs.push_back("REQUEST_PATH=" + request.uri.getPath());
@@ -461,6 +460,7 @@ DefaultTask::CgiManager::WritePipe::WritePipe(CgiManager &manager, int fd)
       new ftev::WritePipeTransport(manager._task.cycle.getLoop(), *this, fd);
   _transport->write(_manager._buffer.data(), _manager._buffer.size());
   _manager._buffer.clear();
+  _transport->drain();
 }
 
 DefaultTask::CgiManager::WritePipe::~WritePipe() {
@@ -468,4 +468,5 @@ DefaultTask::CgiManager::WritePipe::~WritePipe() {
 }
 
 void DefaultTask::CgiManager::WritePipe::onDrain() {
+  _transport->close();
 }

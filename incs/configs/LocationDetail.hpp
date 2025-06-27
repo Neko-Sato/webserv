@@ -33,5 +33,5 @@ protected:
 public:
   virtual ~Detail();
   virtual Detail *clone() const = 0;
-  virtual Task *createTask(Connection::Cycle &cycle) const = 0;
+  virtual Task *createTask(Connection::Cycle &cycle, std::string const &path) const = 0;
 };

@@ -25,7 +25,7 @@ private:
   std::string _boundary;
 
 public:
-  UploadTask(Connection::Cycle &cycle, LocationUpload const &location);
+  UploadTask(Connection::Cycle &cycle, LocationUpload const &location, std::string const &path);
   ~UploadTask();
 
   void onData(std::vector<char> const &data);

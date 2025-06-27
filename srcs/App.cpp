@@ -27,8 +27,8 @@ App::App(Connection::Cycle &cycle)
         std::find(allowMethods.begin(), allowMethods.end(), request.method) ==
             allowMethods.end())
       _status = 405;
-    else
-      _task = location->second.getDetail().createTask(cycle);
+    else 
+      _task = location->second.getDetail().createTask(cycle, std::string(request.uri.getPath(), location->first.size()));
   }
 }
 

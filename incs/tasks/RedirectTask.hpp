@@ -20,7 +20,7 @@ private:
   LocationRedirect const &_location;
 
 public:
-  RedirectTask(Connection::Cycle &cycle, LocationRedirect const &location);
+  RedirectTask(Connection::Cycle &cycle, LocationRedirect const &location, std::string const &path);
   ~RedirectTask();
 
   void onData(std::vector<char> const &data);
