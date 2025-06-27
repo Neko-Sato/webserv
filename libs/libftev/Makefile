@@ -40,7 +40,7 @@ LIBS		+= -Wl,-rpath,$(LD_RUN_PATH)
 endif
 
 ifeq ($(DEBUG), 1)
-CXXFLAGS	+= -g -fstandalone-debug -fsanitize=address
+CXXFLAGS	+= -g -fsanitize=address
 else
 CXXFLAGS	+= -O3 -DNDEBUG
 endif

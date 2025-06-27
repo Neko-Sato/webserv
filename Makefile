@@ -56,7 +56,7 @@ LIBS				+= -Wl,-rpath,$(LD_RUN_PATH)
 endif
 
 ifeq ($(DEBUG), 1)
-CXXFLAGS			+= -g -fstandalone-debug -fsanitize=address
+CXXFLAGS			+= -g -fsanitize=address
 else
 CXXFLAGS			+= -O3 -DNDEBUG
 endif
@@ -140,7 +140,6 @@ cgi_tester:
 # so I prepared a converterw here.
 # The great thing is, you can even write comments!
 yaml2json:
-	@pip3 install pyyaml > /dev/null
 	@echo "#!/usr/bin/env python3" > $@
 	@echo "import sys" >> $@
 	@echo "import yaml" >> $@
@@ -149,9 +148,9 @@ yaml2json:
 	@chmod +x $@
 
 %.yaml: %.yaml.tmp
-	sed "s|@@@ROOT@@@|$(CURDIR)|g" $< > $@ || { $(RM) $@; exit 1;}
+	@{ sed "s|@@@ROOT@@@|$(CURDIR)|g" $< > $@ || { $(RM) $@; exit 1; } }
 
 %.json: %.yaml | yaml2json
-	./yaml2json < $<  > $@ || { $(RM) $@; exit 1;}
+	@{ ./yaml2json < $<  > $@ || { $(RM) $@; exit 1; } }
 
 -include $(DEPS)

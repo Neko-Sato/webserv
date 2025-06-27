@@ -18,17 +18,17 @@ App::App(Connection::Cycle &cycle)
     : cycle(cycle), _status(-1), _task(NULL), _bodySize(0) {
   ServerConf const &serverConf = cycle.getServerConf();
   Request const &request = cycle.getRequest();
-  Location const *location = serverConf.findLocation(request.uri.getPath());
-  if (!location)
+  ServerConf::Locations::const_iterator location = serverConf.findLocation(request.uri.getPath());
+  if (location == serverConf.getLocations().end())
     _status = 404;
   else {
-    Location::AllowMethods const &allowMethods = location->getAllowMethods();
+    Location::AllowMethods const &allowMethods = location->second.getAllowMethods();
     if (!allowMethods.empty() &&
         std::find(allowMethods.begin(), allowMethods.end(), request.method) ==
             allowMethods.end())
       _status = 405;
     else
-      _task = location->getDetail().createTask(cycle);
+      _task = location->second.getDetail().createTask(cycle);
   }
 }
 

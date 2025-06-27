@@ -180,16 +180,16 @@ ServerConf::Locations const &ServerConf::getLocations() const {
   return _locations;
 }
 
-Location const *ServerConf::findLocation(std::string const &path) const {
+ServerConf::Locations::const_iterator ServerConf::findLocation(std::string const &path) const {
   for (Locations::const_reverse_iterator it =
            Locations::const_reverse_iterator(_locations.upper_bound(path));
        it != _locations.rend(); ++it) {
     if (!ftpp::starts_with(path, it->first))
       continue;
-    if (it->first.size() != path.size() && *it->first.rbegin() != '/' &&
-        path[it->first.size()] != '/')
+    if (it->first.size() != path.size() &&
+        !(*it->first.rbegin() == '/' || path[it->first.size()] == '/'))
       continue;
-    return &it->second;
+    return --it.base();
   }
-  return NULL;
+  return _locations.end();
 }

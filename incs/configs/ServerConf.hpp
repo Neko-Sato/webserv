@@ -57,5 +57,5 @@ public:
   ErrorPages const &getErrorPages() const;
   Locations const &getLocations() const;
 
-  Location const *findLocation(std::string const &path) const;
+  Locations::const_iterator findLocation(std::string const &path) const;
 };
