@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 01:41:18 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/16 06:28:53 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/06/30 02:13:36 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,6 +134,7 @@ void Connection::_process() {
         flag = false;
         break;
       case DONE:
+        _timeout->cancel();
         delete _cycle;
         _cycle = NULL;
         ftev::StreamConnectionTransport &transport = getTransport();
@@ -173,6 +174,5 @@ bool Connection::_processRequest() {
   _buffer.erase(_buffer.begin(), match + DOUBLE_CRLF.size());
   _state = RESPONSE;
   _cycle = new Cycle(*this);
-  _timeout->cancel();
   return true;
 }
