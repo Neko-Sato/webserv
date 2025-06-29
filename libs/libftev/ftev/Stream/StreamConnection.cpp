@@ -58,8 +58,11 @@ void StreamConnectionTransport::Handler::onRead() {
 
 void StreamConnectionTransport::Handler::onWrite() {
   try {
-    size_t size = _transport._socket.write(_transport._buffer.data(),
-                                           _transport._buffer.size());
+    std::vector<char> chank(
+        _transport._buffer.begin(),
+        _transport._buffer.begin() +
+            std::min(_transport._chankSize, _transport._buffer.size()));
+    size_t size = _transport._socket.write(chank.data(), chank.size());
     _transport._buffer.erase(_transport._buffer.begin(),
                              _transport._buffer.begin() + size);
   } catch (...) {
@@ -156,9 +159,10 @@ void StreamConnectionTransport::write(char const *buffer, size_t size) {
     throw std::runtime_error("already closed");
   if (!size)
     return;
+#if defined(FT_SUBJECT_NOT_COMPLIANT)
   if (_buffer.empty()) {
     try {
-      size_t written = _socket.write(buffer, size);
+      size_t written = _socket.write(buffer, std::min(size, _chankSize));
       if (written == size)
         return;
       buffer += written;
@@ -166,6 +170,7 @@ void StreamConnectionTransport::write(char const *buffer, size_t size) {
     } catch (...) {
     }
   }
+#endif
   if (_handler->getIsActive()) {
     Handler::event_t event = _handler->getEvents();
     if (!(event & ftpp::Selector::WRITE))

@@ -61,7 +61,7 @@ private:
   ftpp::Socket _socket;
   Handler *_handler;
   DrainHandler *_drainHandler;
-  std::vector<char> _buffer;
+  std::deque<char> _buffer;
   bool _draining;
   bool _closed;
 

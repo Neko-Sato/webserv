@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 03:45:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/06/28 03:21:45 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/06/30 01:54:12 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,7 @@ void WritePipeTransport::write(char const *buffer, size_t size) {
   assert(!_draining);
   if (!size)
     return;
+#ifdef FT_SUBJECT_NOT_COMPLIANT
   if (_buffer.empty()) {
     try {
       ssize_t written = ::write(_fd, buffer, std::min(size, _chankSize));
@@ -128,6 +129,7 @@ void WritePipeTransport::write(char const *buffer, size_t size) {
     } catch (...) {
     }
   }
+#endif
   if (_handler->getIsActive()) {
     Handler::event_t event = _handler->getEvents();
     if (!(event & ftpp::Selector::WRITE))

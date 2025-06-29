@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 03:37:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/20 14:41:49 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/06/30 02:01:05 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,11 @@ void ReadPipeTransport::Handler::onRead() {
     chank.resize(_transport._chankSize);
     ssize_t size = read(_transport._fd, chank.data(), chank.size());
     if (unlikely(size == -1))
+#if defined(FT_SUBJECT_NOT_COMPLIANT)
       throw ftpp::OSError(errno, "read");
+#else
+      throw std::runtime_error("read: No access to error details");
+#endif
     chank.resize(size);
   } catch (...) {
     return;
