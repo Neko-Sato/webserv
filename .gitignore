@@ -10,7 +10,5 @@ a.out
 /yaml2json
 /default.json
 /default.yaml
-/tetser_config.json
-/tetser_config.yaml
 /uploads/*
 !/uploads/.gitkeep
