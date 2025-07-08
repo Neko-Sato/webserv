@@ -3,20 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   TCPServer.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 01:07:13 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/21 12:39:59 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/08 18:02:55 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ftev/Stream/TCPServer.hpp>
-#include <ftev/utils/utils.hpp>
 
 #include <ftpp/exceptions/OSError.hpp>
 #include <ftpp/socket/AddrInfos.hpp>
 #include <ftpp/socket/Socket.hpp>
 #include <ftpp/string/string.hpp>
+#include <ftpp/fcntl/fcntl.hpp>
 
 #include <cassert>
 #include <fcntl.h>
@@ -30,13 +30,18 @@ TCPServer::TCPServer(EventLoop &loop, const std::string &host, int port, int bac
     ftpp::AddrInfos infos(host.c_str(), ftpp::to_string(port).c_str(), hints);
     for (ftpp::AddrInfos::iterator it = infos.begin(); it != infos.end();
          ++it) {
+#if defined(SOCK_NONBLOCK)
       ftpp::Socket socket(it->ai_family, it->ai_socktype | SOCK_CLOEXEC,
                           it->ai_protocol);
+#else
+      ftpp::Socket socket(it->ai_family, it->ai_socktype, it->ai_protocol);
+      ftpp::setcloexec(socket.getSockfd(), true);
+#endif
       {
         int opt = 1;
         socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
       }
-      setblocking(socket.getSockfd(), false);
+      ftpp::setblocking(socket.getSockfd(), false);
       socket.bind(it->ai_addr, it->ai_addrlen);
       socket.listen(backlog);
       StreamServerTransport *transport =

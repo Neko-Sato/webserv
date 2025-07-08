@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   WritePipe.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 03:45:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/06/30 01:54:12 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/06 20:28:19 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <ftpp/logger/Logger.hpp>
 #include <ftpp/macros.hpp>
 
+#include <unistd.h>
 #include <cassert>
 #include <fcntl.h>
 #include <stdexcept>

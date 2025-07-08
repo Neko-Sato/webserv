@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   KqueueSelector.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/30 01:46:45 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/06 20:27:15 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include <stdexcept>
 #include <sys/event.h>
 #include <unistd.h>
+#include <vector>
 
 namespace ftpp {
 
@@ -40,19 +41,79 @@ KqueueSelector::~KqueueSelector() {
 }
 
 void KqueueSelector::add(int fd, event_t events) {
-  throw std::logic_error("KqueueSelector::add not implemented");
+  Selector::add(fd, events);
+  try {
+    struct kevent change[2];
+    static size_t const size = sizeof(change) / sizeof(change[0]);
+    EV_SET(&change[0], fd, EVFILT_READ, EV_ADD | (events & READ ? EV_ENABLE : 0), 0, 0, NULL);
+    EV_SET(&change[1], fd, EVFILT_WRITE, EV_ADD | (events & WRITE ? EV_ENABLE : 0) , 0, 0, NULL);
+    if (unlikely(kevent(_kq, change, size, NULL, 0, NULL) == -1))
+      throw OSError(errno, "kqueue");
+  } catch (...) {
+    remove(fd);
+    throw;
+  }
 }
 
 void KqueueSelector::remove(int fd) {
-  throw std::logic_error("KqueueSelector::remove not implemented");
+  Selector::remove(fd);
+  try {
+    struct kevent change[2];
+    static size_t const size = sizeof(change) / sizeof(change[0]);
+    EV_SET(&change[0], fd, EVFILT_READ, EV_DELETE, 0, 0, NULL);
+    EV_SET(&change[1], fd, EVFILT_WRITE, EV_DELETE, 0, 0, NULL);
+    if (unlikely(kevent(_kq, change, size, NULL, 0, NULL) == -1))
+      throw OSError(errno, "kqueue");
+  } catch (OSError const &e){
+    UNUSED(e);
+  }
 }
 
 void KqueueSelector::modify(int fd, event_t events) {
-  throw std::logic_error("KqueueSelector::modify not implemented");
+  Selector::modify(fd, events);
+  try {
+    struct kevent change[2];
+    static size_t const size = sizeof(change) / sizeof(change[0]);
+    EV_SET(&change[0], fd, EVFILT_READ, events & READ ? EV_ENABLE : EV_DISABLE, 0, 0, NULL);
+    EV_SET(&change[1], fd, EVFILT_WRITE, events & WRITE ? EV_ENABLE : EV_DISABLE, 0, 0, NULL);
+    if (unlikely(kevent(_kq, change, size, NULL, 0, NULL) == -1))
+      throw OSError(errno, "kqueue");
+  } catch (...) {
+    Selector::remove(fd);
+    throw;
+  }
 }
 
 void KqueueSelector::select(Events &events, int timeout) const {
-  throw std::logic_error("KqueueSelector::select not implemented");
+  typedef std::vector<struct kevent> KqueueEvents;
+  KqueueEvents ev(max_events);
+  {
+    int nev;
+    if (timeout < 0)
+      nev = kevent(_kq, NULL, 0, ev.data(), ev.size(), NULL);
+    else {
+      struct timespec ts;
+      ts.tv_sec = timeout / 1000;
+      ts.tv_nsec = (timeout % 1000) * 1000000;
+      nev = kevent(_kq, NULL, 0, ev.data(), ev.size(), &ts);
+    }
+    if (nev == -1)
+      throw OSError(errno, "kevent");
+    ev.resize(nev);
+  }
+  for (KqueueEvents::const_iterator it = ev.begin(); it != ev.end(); ++it) {
+    event_details tmp;
+    tmp.fd = it->ident;
+    tmp.events = 0;
+    if (it->filter == EVFILT_READ)
+      tmp.events |= READ;
+    if (it->filter == EVFILT_WRITE)
+      tmp.events |= WRITE;
+    if (it->flags & EV_ERROR)
+      tmp.events |= EXCEPT;
+    if (tmp.events)
+      events.push(tmp);
+  }
 }
 
 } // namespace ftpp

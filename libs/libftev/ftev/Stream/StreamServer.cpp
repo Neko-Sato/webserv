@@ -3,15 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   StreamServer.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 00:47:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/02 00:39:32 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/08 17:59:58 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <ftev/Stream/StreamServer.hpp>
-#include <ftev/utils/utils.hpp>
 
 #include <ftpp/exceptions/OSError.hpp>
 #include <ftpp/format/Format.hpp>

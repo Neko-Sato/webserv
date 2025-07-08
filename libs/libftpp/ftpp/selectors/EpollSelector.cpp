@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   EpollSelector.cpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/30 01:46:23 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/06 20:07:25 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ void EpollSelector::select(Events &events, int timeout) const {
   if (unlikely(nfds == -1))
     throw OSError(errno, "epoll_wait");
   ev.resize(nfds);
-  for (EpollEvents::iterator it = ev.begin(); it != ev.end(); ++it) {
+  for (EpollEvents::const_iterator it = ev.begin(); it != ev.end(); ++it) {
     event_details tmp;
     tmp.fd = it->data.fd;
     tmp.events = 0;

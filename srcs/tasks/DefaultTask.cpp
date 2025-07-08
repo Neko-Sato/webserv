@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   DefaultTask.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 20:46:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/06/28 04:22:47 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/08 17:58:33 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 #include <ftpp/pathlib/pathlib.hpp>
 #include <ftpp/string/string.hpp>
 #include <ftpp/subprocess/Subprocess.hpp>
+#include <ftpp/fcntl/fcntl.hpp>
 
 #include <cassert>
 #include <cerrno>
@@ -283,7 +284,7 @@ void DefaultTask::CgiManager::onEof() {
     if (pipe(&pipefd[0]) == -1 || pipe(&pipefd[2]) == -1)
       throw ftpp::OSError(errno, "pipe");
     for (int i = 0; i < 4; ++i)
-      setCloexec(pipefd[i]);
+      ftpp::setcloexec(pipefd[i], true);
     _process = new Process(_task.cycle.getLoop(), *this, pipefd[0], pipefd[3]);
     close(pipefd[0]), close(pipefd[3]);
     pipefd[0] = pipefd[3] = -1;

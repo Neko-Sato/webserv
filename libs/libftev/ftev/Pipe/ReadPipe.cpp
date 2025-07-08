@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ReadPipe.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 03:37:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/06/30 02:01:05 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/06 20:30:04 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <ftpp/logger/Logger.hpp>
 #include <ftpp/macros.hpp>
 
+#include <unistd.h>
 #include <cassert>
 #include <fcntl.h>
 
@@ -40,7 +41,7 @@ void ReadPipeTransport::Handler::onRead() {
   std::vector<char> chank;
   try {
     chank.resize(_transport._chankSize);
-    ssize_t size = read(_transport._fd, chank.data(), chank.size());
+    ssize_t size = ::read(_transport._fd, chank.data(), chank.size());
     if (unlikely(size == -1))
 #if defined(FT_SUBJECT_NOT_COMPLIANT)
       throw ftpp::OSError(errno, "read");

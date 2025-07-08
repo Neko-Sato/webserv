@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utility.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/31 21:52:35 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/01 23:55:33 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/08 17:57:10 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,4 +16,3 @@
 #include <string>
 
 std::size_t parseSize(std::string const &str);
-void setCloexec(int fd);

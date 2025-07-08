@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   setblocking.cpp                                    :+:      :+:    :+:   */
+/*   fcntl.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/28 14:22:47 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/28 14:40:43 by hshimizu         ###   ########.fr       */
+/*   Created: 2025/07/08 17:48:38 by uakizuki          #+#    #+#             */
+/*   Updated: 2025/07/08 18:05:17 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,9 @@
 #include <ftpp/macros.hpp>
 
 #include <fcntl.h>
+#include <unistd.h>
 
-namespace ftev {
+namespace ftpp {
 
 void setblocking(int fd, bool blocking) {
   int flags = fcntl(fd, F_GETFL, 0);
@@ -24,6 +25,15 @@ void setblocking(int fd, bool blocking) {
   if ((!!(flags & O_NONBLOCK)) ^ !!blocking)
     if (unlikely(fcntl(fd, F_SETFL, flags ^ O_NONBLOCK) == -1))
       throw ftpp::OSError(errno, "fcntl");
-}
+}  
 
-} // namespace ftev
+void setcloexec(int fd, bool cloexec) {
+  int flags = fcntl(fd, F_GETFD, 0);
+  if (unlikely(flags == -1))
+    throw ftpp::OSError(errno, "fcntl");
+  if ((!!(flags & FD_CLOEXEC)) ^ !cloexec)
+    if (unlikely(fcntl(fd, F_SETFD, flags ^ FD_CLOEXEC) == -1))
+      throw ftpp::OSError(errno, "fcntl");
+}
+  
+} // namespace ftpp

@@ -3,21 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   utility.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/31 21:52:35 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/06/28 02:47:34 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/08 17:47:52 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <ftpp/exceptions/OSError.hpp>
 #include <ftpp/string/string.hpp>
 
 #include <cmath>
 #include <limits>
 #include <stdexcept>
-#include <sys/fcntl.h>
-#include <unistd.h>
 
 std::size_t parseSize(std::string const &str) {
   if (str.empty() || !isdigit(str[0]))
@@ -42,15 +39,4 @@ std::size_t parseSize(std::string const &str) {
   if (unit > std::numeric_limits<std::size_t>::max() / size)
     throw std::overflow_error("size overflow");
   return static_cast<std::size_t>(size * unit);
-}
-
-void setCloexec(int fd) {
-  int flags;
-  flags = fcntl(fd, F_GETFD);
-  if (flags == -1)
-    throw ftpp::OSError(errno, "fcntl");
-  if (!(flags & FD_CLOEXEC)) {
-    if (fcntl(fd, F_SETFD, flags | FD_CLOEXEC) == -1)
-      throw ftpp::OSError(errno, "fcntl");
-  }
 }

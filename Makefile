@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
+#    By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2025/06/28 01:48:10 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/07/08 19:10:01 by uakizuki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -67,7 +67,7 @@ endif
 
 export CPLUS_INCLUDE_PATH LD_RUN_PATH LIBRARY_PATH
 
-.PHONY: all bonus clean fclean re neko author
+.PHONY: all bonus clean fclean re neko author docker
 
 all: $(NAME)
 
@@ -151,5 +151,8 @@ yaml2json:
 
 %.json: %.yaml | yaml2json
 	@{ ./yaml2json < $<  > $@ || { $(RM) $@; exit 1; } }
+
+docker:
+	docker run --rm -it --network host -v .:/mnt -w /mnt gcc
 
 -include $(DEPS)

@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include <ftev/Stream/StreamConnection.hpp>
-#include <ftev/utils/utils.hpp>
 
 #include <ftpp/exceptions/OSError.hpp>
 #include <ftpp/format/Format.hpp>
