@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   URI.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/28 14:50:24 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/24 23:55:10 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/12 07:24:57 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,3 +145,11 @@ std::istream &operator>>(std::istream &is, URI &uri) {
 }
 
 } // namespace ftpp
+
+namespace std {
+
+void swap(ftpp::URI &lhs, ftpp::URI &rhs) throw() {
+  lhs.swap(rhs);
+}
+
+} // namespace std

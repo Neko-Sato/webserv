@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Any.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:17:50 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/23 00:10:20 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/12 07:38:28 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,3 +63,11 @@ bool Any::isvalid() const {
 }
 
 } // namespace ftpp
+
+namespace std {
+
+void swap(ftpp::Any& lhs, ftpp::Any& rhs) throw() {
+  lhs.swap(rhs);
+}
+
+} // namespace std

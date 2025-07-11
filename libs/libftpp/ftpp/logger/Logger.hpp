@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Logger.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 11:58:37 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 01:12:12 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/12 07:37:53 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,3 +60,10 @@ public:
 extern Logger logger;
 
 } // namespace ftpp
+
+
+namespace std {
+
+void swap(ftpp::Logger& lhs, ftpp::Logger& rhs) throw();
+
+} // namespace std

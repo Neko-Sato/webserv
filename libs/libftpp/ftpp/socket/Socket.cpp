@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/30 03:30:48 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 17:55:34 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/12 07:22:11 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,3 +212,11 @@ void Socket::setsockopt(int level, int optname, void const *optval,
 }
 
 } // namespace ftpp
+
+namespace std {
+
+void swap(ftpp::Socket &lhs, ftpp::Socket &rhs) throw() {
+  lhs.swap(rhs);
+}
+
+} // namespace std

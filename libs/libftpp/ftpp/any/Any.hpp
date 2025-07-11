@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Any.hpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:17:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/23 00:10:06 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/12 07:38:25 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,3 +136,10 @@ template <typename T> bool Any::isType() const {
 }
 
 } // namespace ftpp
+
+namespace std {
+
+void swap(ftpp::Any& lhs, ftpp::Any& rhs) throw();
+
+} // namespace std
+  

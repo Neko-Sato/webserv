@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   SharedPtr.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 18:26:07 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/01/26 20:03:20 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/12 07:18:51 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,3 +101,13 @@ template <typename T> std::size_t SharedPtr<T>::use_count() const {
 }
 
 } // namespace ftpp
+
+namespace std {
+
+template <typename T>
+void swap(ftpp::SharedPtr<T> &lhs, ftpp::SharedPtr<T> &rhs) throw() {
+  lhs.swap(rhs);
+}
+
+} // namespace std
+  

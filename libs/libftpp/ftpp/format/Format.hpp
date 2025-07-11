@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Format.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 20:55:26 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 10:09:50 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/12 07:38:41 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,3 +70,9 @@ template <typename T> Format &Format::operator%(T const &value) {
 std::ostream &operator<<(std::ostream &os, Format const &fmt);
 
 } // namespace ftpp
+
+namespace std {
+
+void swap(ftpp::Format& lhs, ftpp::Format& rhs) throw();
+
+} // namespace std

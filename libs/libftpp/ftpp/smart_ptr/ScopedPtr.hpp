@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ScopedPtr.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/23 18:26:07 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 17:55:34 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/12 07:18:03 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,3 +71,13 @@ template <typename T> void ScopedPtr<T>::swap(ScopedPtr &rhs) throw() {
 }
 
 } // namespace ftpp
+
+namespace std {
+
+template <typename T>
+void swap(ftpp::ScopedPtr<T>& lhs, ftpp::ScopedPtr<T>& rhs) throw() {
+  lhs.swap(rhs);
+}
+
+} // namespace std
+  

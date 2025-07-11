@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Subprocess.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 12:13:15 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/24 14:37:32 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/12 07:22:37 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,3 +118,11 @@ pid_t Subprocess::spawn(options const &opts) {
 }
 
 } // namespace ftpp
+
+namespace std {
+
+void swap(ftpp::Subprocess &lhs, ftpp::Subprocess &rhs) throw() {
+  lhs.swap(rhs);
+}
+
+} // namespace std

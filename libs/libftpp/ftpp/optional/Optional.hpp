@@ -6,7 +6,7 @@
 /*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 16:27:54 by uakizuki          #+#    #+#             */
-/*   Updated: 2025/07/12 05:25:40 by uakizuki         ###   ########.fr       */
+/*   Updated: 2025/07/12 07:16:44 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ public:
   Optional &operator=(Optional const &rhs);
   Optional &operator=(T const &value);
   
+  void swap(Optional &rhs) throw();
+
   operator bool() const;
   void *ptr();
   void activate();
@@ -93,6 +95,12 @@ Optional<T> &Optional<T>::operator=(T const &value) {
 }
 
 template <typename T>
+void Optional<T>::swap(Optional &rhs) throw() {
+  std::swap(*reinterpret_cast<T *>(_data), *reinterpret_cast<T *>(rhs._data));
+  std::swap(_enable, rhs._enable);
+}
+
+template <typename T>
 Optional<T>::operator bool() const {
   return _enable;
 }
@@ -135,3 +143,12 @@ void Optional<T>::destroy() {
 }
 
 } // namespace ftpp
+
+namespace std {
+
+template <typename T>
+void swap(ftpp::Optional<T>& lhs, ftpp::Optional<T>& rhs) throw() {
+  lhs.swap(rhs);
+}
+
+} // namespace std

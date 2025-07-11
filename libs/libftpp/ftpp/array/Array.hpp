@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Array.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/11 14:38:17 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/18 23:01:57 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/12 07:14:20 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,3 +84,13 @@ void Array<T, N>::swap(Array &rhs) throw() {
 }
 
 } // namespace ftpp
+
+namespace std {
+
+template <typename T, std::size_t N>
+void swap(ftpp::Array<T, N>& lhs, ftpp::Array<T, N>& rhs) throw() {
+  lhs.swap(rhs);
+}
+
+} // namespace std
+  
