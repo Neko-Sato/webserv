@@ -6,7 +6,7 @@
 /*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/10 16:27:54 by uakizuki          #+#    #+#             */
-/*   Updated: 2025/07/12 07:16:44 by uakizuki         ###   ########.fr       */
+/*   Updated: 2025/07/12 07:47:51 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,17 @@ Optional<T> &Optional<T>::operator=(T const &value) {
 
 template <typename T>
 void Optional<T>::swap(Optional &rhs) throw() {
-  std::swap(*reinterpret_cast<T *>(_data), *reinterpret_cast<T *>(rhs._data));
+  if(this == &rhs)
+    return;
+  if (_enable && rhs._enable) {
+    std::swap(*(*this), *rhs);
+  } else if (_enable && !rhs._enable) {
+    new (rhs._data) T(*(*this));
+    (*this)->~T();
+  } else if (!_enable && rhs._enable) {
+    new (_data) T(*rhs);
+    rhs->~T();
+  }
   std::swap(_enable, rhs._enable);
 }
 
