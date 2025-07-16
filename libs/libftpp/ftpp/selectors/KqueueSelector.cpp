@@ -6,7 +6,7 @@
 /*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/07/06 20:27:15 by uakizuki         ###   ########.fr       */
+/*   Updated: 2025/07/17 05:25:14 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,8 @@ void KqueueSelector::add(int fd, event_t events) {
   try {
     struct kevent change[2];
     static size_t const size = sizeof(change) / sizeof(change[0]);
-    EV_SET(&change[0], fd, EVFILT_READ, EV_ADD | (events & READ ? EV_ENABLE : 0), 0, 0, NULL);
-    EV_SET(&change[1], fd, EVFILT_WRITE, EV_ADD | (events & WRITE ? EV_ENABLE : 0) , 0, 0, NULL);
+    EV_SET(&change[0], fd, EVFILT_READ, EV_ADD | (events & READ ? EV_ENABLE : EV_DISABLE), 0, 0, NULL);
+    EV_SET(&change[1], fd, EVFILT_WRITE, EV_ADD | (events & WRITE ? EV_ENABLE : EV_DISABLE) , 0, 0, NULL);
     if (unlikely(kevent(_kq, change, size, NULL, 0, NULL) == -1))
       throw OSError(errno, "kqueue");
   } catch (...) {

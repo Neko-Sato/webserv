@@ -6,7 +6,7 @@
 /*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 20:46:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/07/16 22:52:24 by uakizuki         ###   ########.fr       */
+/*   Updated: 2025/07/17 05:33:59 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ TaskCgi::CgiManager::CgiManager(WebservApp::Context const &ctx,
                                 std::string const &path,
                                 std::string const &pathInfo)
     : _ctx(ctx), _cgi(cgi), _path(path), _pathInfo(pathInfo), _process(NULL),
-      _readPipe(NULL), _writePipe(NULL) {
+      _readPipe(NULL), _writePipe(NULL), _state(HEADER) {
   int pipefd[4] = {-1, -1, -1, -1};
   try {
     if (pipe(&pipefd[0]) == -1 || pipe(&pipefd[2]) == -1)
@@ -166,7 +166,10 @@ TaskCgi::CgiManager::Process::~Process() {
 }
 
 void TaskCgi::CgiManager::Process::onExited(int) {
-  _manager._ctx.cycle.send(NULL, 0, false);
+  if (_manager._state == HEADER)
+    _manager._ctx.cycle.sendErrorPage(500);
+  else
+    _manager._ctx.cycle.send(NULL, 0, false);
 }
 
 void TaskCgi::CgiManager::Process::onSignaled(int signum) {
@@ -176,7 +179,7 @@ void TaskCgi::CgiManager::Process::onSignaled(int signum) {
 }
 
 TaskCgi::CgiManager::ReadPipe::ReadPipe(CgiManager &manager, int fd)
-    : _manager(manager), _transport(NULL), _state(HEADER), _bufferClosed(false),
+    : _manager(manager), _transport(NULL), _bufferClosed(false),
       _pos(0) {
   _transport =
       new ftev::ReadPipeTransport(manager._ctx.cycle.getLoop(), *this, fd);
@@ -206,11 +209,11 @@ void TaskCgi::CgiManager::ReadPipe::onEof() {
 void TaskCgi::CgiManager::ReadPipe::_process() {
   try {
     for (bool flag = true; flag;) {
-      if (_state == HEADER) {
+      if (_manager._state == HEADER) {
         flag = _parseHeader();
         if (!flag && _bufferClosed)
           _manager._ctx.cycle.sendErrorPage(500);
-      } else if (_state == BODY) {
+      } else if (_manager._state == BODY) {
         std::vector<char> tmp(_buffer.begin(), _buffer.end());
         _buffer.clear();
         _manager._ctx.cycle.send(tmp.data(), tmp.size(), true);
@@ -225,7 +228,7 @@ void TaskCgi::CgiManager::ReadPipe::_process() {
 }
 
 bool TaskCgi::CgiManager::ReadPipe::_parseHeader() {
-  assert(_state == HEADER);
+  assert(_manager._state == HEADER);
   if (_buffer.size() - _pos < DOUBLE_CRLF.size())
     return false;
   std::deque<char>::iterator match =
@@ -263,7 +266,7 @@ bool TaskCgi::CgiManager::ReadPipe::_parseHeader() {
   }
   _manager._ctx.cycle.send(status, headers);
   _buffer.erase(_buffer.begin(), match + DOUBLE_CRLF.size());
-  _state = BODY;
+  _manager._state = BODY;
   return true;
 }
 

@@ -3,14 +3,16 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
+#    By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2025/07/16 23:10:33 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/07/17 05:18:18 by uakizuki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME				:= webserv
+
+UNAME_S				:= $(shell uname -s)
 
 DIR					:= .
 INCS_DIR			:= $(DIR)/incs
@@ -26,7 +28,11 @@ CPLUS_INCLUDE_PATH	:= $(CPLUS_INCLUDE_PATH):$(CURDIR)/$(LIBFTEV)
 CPLUS_INCLUDE_PATH	:= $(CPLUS_INCLUDE_PATH):$(CURDIR)/$(LIBFTPP)
 CPLUS_INCLUDE_PATH	:= $(CPLUS_INCLUDE_PATH):$(CURDIR)/$(LIBFTJSON)
 
+ifneq ($(LD_RUN_PATH),)
+LD_RUN_PATH			:= $(CURDIR)/$(LIBFTEV)
+else
 LD_RUN_PATH			:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTEV)
+endif
 LD_RUN_PATH			:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTPP)
 LD_RUN_PATH			:= $(LD_RUN_PATH):$(CURDIR)/$(LIBFTJSON)
 
@@ -45,14 +51,15 @@ IDFLAGS				:= -I$(INCS_DIR)
 LDFLAGS				:= 
 LIBS				:= -lftev -lftpp -lftjson
 
+COMMA				:= ,
 ifneq ($(CPLUS_INCLUDE_PATH),)
-IDFLAGS				+= -I$(CPLUS_INCLUDE_PATH)
+IDFLAGS				+= $(foreach it,$(subst :, ,$(CPLUS_INCLUDE_PATH)),$(if $(it),-I$(it)))
 endif
 ifneq ($(LIBRARY_PATH),)
-LDFLAGS				+= -L$(LIBRARY_PATH)
+LDFLAGS				+= $(foreach it,$(subst :, ,$(LIBRARY_PATH)),$(if $(it),-L$(it)))
 endif
 ifneq ($(LD_RUN_PATH),)
-LIBS				+= -Wl,-rpath,$(LD_RUN_PATH)
+LIBS				+= $(foreach it,$(subst :, ,$(LD_RUN_PATH)),$(if $(it),-Wl$(COMMA)-rpath$(COMMA)$(it)))
 endif
 
 ifeq ($(DEBUG), 1)

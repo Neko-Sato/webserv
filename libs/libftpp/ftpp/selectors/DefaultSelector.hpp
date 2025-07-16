@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   DefaultSelector.hpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 00:04:05 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/03/30 01:48:10 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/17 04:29:41 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,7 @@ namespace ftpp {
 #if defined(__linux__)
 typedef EpollSelector DefaultSelector;
 #elif defined(__APPLE__) || defined(__FreeBSD__)
-// typedef KqueueSelector DefaultSelector;
-typedef PollSelector DefaultSelector;
+typedef KqueueSelector DefaultSelector;
 #elif defined(__sun__)
 // typedef DevpollSelector DefaultSelector;
 typedef PollSelector DefaultSelector;

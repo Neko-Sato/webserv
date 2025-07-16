@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   SignalWatcher.hpp                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 00:22:29 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/16 05:10:35 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/17 04:11:54 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,8 @@ private:
   };
 
   static void _signalHandler(int signum);
+
+  typedef void (*sighandler_t)(int);
 
   sighandler_t _oldHandler;
 

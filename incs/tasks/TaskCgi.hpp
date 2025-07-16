@@ -6,7 +6,7 @@
 /*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 17:53:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/07/16 22:36:39 by uakizuki         ###   ########.fr       */
+/*   Updated: 2025/07/17 05:31:30 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ class TaskCgi : public TaskStatic {
 public:
   class CgiManager : private ftpp::NonCopyable {
   public:
+    enum State { HEADER, BODY };
+    
     class Process : public ftev::EventLoop::ProcessWatcher {
     private:
       CgiManager &_manager;
@@ -39,13 +41,9 @@ public:
     };
 
     class ReadPipe : public ftev::ReadPipeProtocol, private ftpp::NonCopyable {
-    public:
-      enum State { HEADER, BODY };
-
     private:
       CgiManager &_manager;
       ftev::ReadPipeTransport *_transport;
-      State _state;
       std::deque<char> _buffer;
       bool _bufferClosed;
       std::size_t _pos;
@@ -85,6 +83,7 @@ public:
     Process *_process;
     ReadPipe *_readPipe;
     WritePipe *_writePipe;
+    State _state;
 
     CgiManager();
 

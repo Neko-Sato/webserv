@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   TaskUpload.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 18:00:43 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/07/16 23:37:33 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/17 05:42:21 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void TaskUpload::execute() {
     defaultResponse();
   else if (ctx.cycle.getRequest().method == "POST")
     doPost();
-  else if (ctx.cycle.getRequest().method == "DELET")
+  else if (ctx.cycle.getRequest().method == "DELETE")
     doDelete();
   else
     ctx.cycle.sendErrorPage(405);
@@ -43,7 +43,7 @@ void TaskUpload::doPost() {
   try {
     constructPath().swap(path);
     if (path == location.getRoot())
-      throw HttpException(403);
+      throw HttpException(400);
     try {
       int fd = -1;
       try {
@@ -87,7 +87,7 @@ void TaskUpload::doDelete() {
   try {
     constructPath().swap(path);
     if (path == location.getRoot())
-      throw HttpException(403);
+      throw HttpException(400);
     struct stat st;
     try {
       if (stat(path.c_str(), &st) == -1)

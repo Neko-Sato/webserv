@@ -4,6 +4,7 @@
 a.out
 *.a
 *.so
+*.dylib
 *.o
 *.d
 /webserv
