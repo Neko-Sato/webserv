@@ -3,19 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   LocationRedirect.hpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/06/28 03:53:33 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/12 20:07:05 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "configs/LocationDetail.hpp"
-#include "tasks/Task.hpp"
+#include "configs/Location.hpp"
 
-class LocationRedirect : public Location::Detail {
+class LocationRedirect : public Location {
 private:
   int _code;
   std::string _redirect;
@@ -34,6 +33,4 @@ public:
 
   int getCode() const;
   std::string const &getRedirect() const;
-
-  Task *createTask(Connection::Cycle &cycle) const;
 };

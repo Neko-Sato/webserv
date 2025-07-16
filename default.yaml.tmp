@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    default.yaml.tmp                                   :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
+#    By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/08 13:47:37 by hshimizu          #+#    #+#              #
-#    Updated: 2025/06/21 01:42:38 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/07/12 15:33:48 by uakizuki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,7 +22,7 @@ servers:
       - { code: 500, path: @@@ROOT@@@/html/error/500.html }
     locations:
       - path: /
-        type: default
+        type: static
         root: @@@ROOT@@@/html
         index: [index.html, index.htm]
         autoindex: true
@@ -31,8 +31,7 @@ servers:
           - { ext: .php, bin: /usr/bin/php }
       - path: /upload
         type: upload
-        store: @@@ROOT@@@/uploads
-        redirect: /upload.html
+        root: @@@ROOT@@@/html
   # Server to redirect to profile
   - server_names: [hshimizu.42.fr, hshimizu.42tokyo.jp]
     listen:
@@ -40,7 +39,6 @@ servers:
       - { port: 8082 }
     locations:
       - path: /
-        allow_methods: [GET, HEAD]
         type: redirect
         code: 301
         redirect: https://profile.intra.42.fr/users/hshimizu

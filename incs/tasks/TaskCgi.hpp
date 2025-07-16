@@ -1,19 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   DefaultTask.hpp                                    :+:      :+:    :+:   */
+/*   TaskCgi.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 17:53:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/06/28 03:53:57 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/16 22:36:39 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
-
-#include "locations/LocationDefault.hpp"
-#include "tasks/Task.hpp"
 
 #include <ftev/EventLoop.hpp>
 #include <ftev/EventLoop/ProcessWatcher.hpp>
@@ -21,9 +18,10 @@
 #include <ftev/Pipe/WritePipe.hpp>
 #include <ftpp/noncopyable/NonCopyable.hpp>
 
-#include <vector>
+#include "locations/LocationCgi.hpp"
+#include "tasks/TaskStatic.hpp"
 
-class DefaultTask : public Task {
+class TaskCgi : public TaskStatic {
 public:
   class CgiManager : private ftpp::NonCopyable {
   public:
@@ -80,38 +78,30 @@ public:
     };
 
   private:
-    DefaultTask &_task;
-    LocationDefault::Cgi const &_cgi;
+    WebservApp::Context const &_ctx;
+    LocationCgi::Cgi const &_cgi;
+    std::string _path;
+    std::string _pathInfo;
     Process *_process;
-    std::vector<char> _buffer;
     ReadPipe *_readPipe;
     WritePipe *_writePipe;
 
     CgiManager();
 
   public:
-    CgiManager(DefaultTask &task, LocationDefault::Cgi const &cgi);
+    CgiManager(WebservApp::Context const &ctx, LocationCgi::Cgi const &cgi,
+               std::string const &path, std::string const &pathInfo);
     ~CgiManager();
-
-    void onData(std::vector<char> const &data);
-    void onEof();
   };
 
 private:
-  LocationDefault const &_location;
-  std::string _path;
   CgiManager *_cgiManager;
-  int _status;
 
 public:
-  DefaultTask(Connection::Cycle &cycle, LocationDefault const &location);
-  ~DefaultTask();
+  TaskCgi(WebservApp::Context const &ctx);
+  virtual ~TaskCgi();
 
-  void onData(std::vector<char> const &data);
-  void onEof();
-
-  void onEofDefault();
-
-  void sendAutoindex();
-  void sendFile();
+  void execute();
+  void caseFile(std::string const &path, std::string const &pathInfo = "");
+  void caseAutoindex(std::string const &path);
 };

@@ -12,3 +12,4 @@ a.out
 /default.yaml
 /uploads/*
 !/uploads/.gitkeep
+.DS_Store

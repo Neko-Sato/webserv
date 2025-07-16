@@ -3,29 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   LocationRedirect.cpp                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 18:38:02 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/06/28 03:54:51 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/12 16:10:55 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "locations/LocationRedirect.hpp"
 #include "ValidationError.hpp"
-#include "tasks/RedirectTask.hpp"
 
-#include <stdexcept>
-
-LocationRedirect::LocationRedirect() : _code(0) {
+LocationRedirect::LocationRedirect() : _code(-1) {
 }
 
-LocationRedirect::LocationRedirect(ftjson::Object const &location) {
+LocationRedirect::LocationRedirect(ftjson::Object const &location) : Location(location) {
   _takeCode(location);
   _takeRedirect(location);
 }
 
 LocationRedirect::LocationRedirect(LocationRedirect const &rhs)
-    : Detail(rhs), _code(rhs._code), _redirect(rhs._redirect) {
+    : Location(rhs), _code(rhs._code), _redirect(rhs._redirect) {
 }
 
 LocationRedirect &LocationRedirect::operator=(LocationRedirect const &rhs) {
@@ -38,6 +35,7 @@ LocationRedirect::~LocationRedirect() {
 }
 
 void LocationRedirect::swap(LocationRedirect &rhs) throw() {
+  Location::swap(rhs);
   std::swap(_code, rhs._code);
   _redirect.swap(rhs._redirect);
 }
@@ -76,8 +74,4 @@ int LocationRedirect::getCode() const {
 
 std::string const &LocationRedirect::getRedirect() const {
   return _redirect;
-}
-
-Task *LocationRedirect::createTask(Connection::Cycle &cycle) const {
-  return new RedirectTask(cycle, *this);
 }

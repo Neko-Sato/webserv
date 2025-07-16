@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Connection.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/02 23:06:24 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/02 03:00:20 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/14 06:45:46 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@
 
 class Connection : public ftev::TCPConnection, public ftev::EventLoop::Reaper {
 public:
+  class Cycle;
+
   class Timeout : public ftev::EventLoop::TimerWatcher {
   private:
     Connection &_connection;
@@ -54,7 +56,19 @@ public:
     void onEvent();
   };
 
-  class Cycle;
+  class App : private ftpp::NonCopyable {
+    public:
+      Cycle &cycle;
+    
+    protected:
+      App(Cycle &cycle);
+    
+    public:
+      virtual ~App();
+    
+      virtual void onData(std::vector<char> const &data) = 0;
+      virtual void onEof() = 0;
+  };
 
   static time_t const requestTimeout;
   using TCPConnection::loop;

@@ -3,16 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   Cycle.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 03:13:29 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/19 21:48:48 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/14 06:44:04 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "App.hpp"
 #include "Connection.hpp"
 
 class Connection::Cycle : private ftpp::NonCopyable {

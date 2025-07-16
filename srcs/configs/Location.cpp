@@ -3,77 +3,74 @@
 /*                                                        :::      ::::::::   */
 /*   Location.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:18:19 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/25 04:40:07 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/12 16:00:07 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "configs/Location.hpp"
 #include "ValidationError.hpp"
-#include "locations/LocationDefault.hpp"
+#include "locations/LocationStatic.hpp"
 #include "locations/LocationRedirect.hpp"
 #include "locations/LocationUpload.hpp"
+#include "locations/LocationCgi.hpp"
+#include "utility.hpp"
 
 #include <ftjson/Json.hpp>
-#include <ftpp/any/Any.hpp>
+#include <ftpp/math/math.hpp>
 #include <ftpp/macros.hpp>
-#include <ftpp/string/string.hpp>
 
-#include <stdexcept>
+#include <cassert>
+#include <limits>
 
 template <typename T>
-static Location::Detail *_createLocationDetail(ftjson::Object const &location) {
+static Location *_createLocationDetail(ftjson::Object const &location) {
   return new T(location);
 }
 
-static Location::Detail::Factories _initFactories() {
-  typedef Location::Detail::Factories Factories;
+static Location::Factories _initFactories() {
+  typedef Location::Factories Factories;
   Factories factories;
-  factories["default"] = &_createLocationDetail<LocationDefault>;
+  factories["static"] = &_createLocationDetail<LocationStatic>;
+  factories["cgi"] = &_createLocationDetail<LocationCgi>;
   factories["upload"] = &_createLocationDetail<LocationUpload>;
   factories["redirect"] = &_createLocationDetail<LocationRedirect>;
   return factories;
 }
 
-Location::Detail::Factories Location::Detail::factories = _initFactories();
+Location::Factories Location::factories = _initFactories();
 
-Location::Detail::Detail() {
+Location *Location::create(ftjson::Object const &location) {
+  ftjson::Object::const_iterator it = location.find("type");
+  if (it == location.end())
+    throw ValidationError("Location without type");
+  if (!it->second.isType<ftjson::String>())
+    throw ValidationError("Location type is not string");
+  std::string const &type = it->second.as_unsafe<ftjson::String>();
+  Factories::const_iterator factory = factories.find(type);
+  if (factory == factories.end())
+    throw ValidationError("Unknown location type: " + type);
+  return factory->second(location);
 }
 
-Location::Detail::Detail(Detail const &rhs) {
-  UNUSED(rhs);
+Location::Location() {
 }
 
-Location::Detail::Detail(ftjson::Object const &location) {
-  UNUSED(location);
-}
-
-Location::Detail &Location::Detail::operator=(Detail const &rhs) {
-  UNUSED(rhs);
-  return *this;
-}
-
-Location::Detail::~Detail() {
-}
-
-Location::Location() : _detail(NULL) {
+Location::Location(Location const &rhs)
+  : _allowMethods(rhs._allowMethods),
+    _clientMaxBodySize(rhs._clientMaxBodySize) {
 }
 
 Location::Location(ftjson::Object const &location) {
   _takeAllowMethods(location);
-  _takeDetail(location);
-}
-
-Location::Location(Location const &rhs)
-    : _allowMethods(rhs._allowMethods),
-      _detail(rhs._detail ? rhs._detail->clone() : NULL) {
+  _takeClientMaxBodySize(location);
 }
 
 Location &Location::operator=(Location const &rhs) {
-  if (this != &rhs)
-    Location(rhs).swap(*this);
+  assert(false);
+  UNUSED(rhs);
   return *this;
 }
 
@@ -82,7 +79,7 @@ Location::~Location() {
 
 void Location::swap(Location &rhs) throw() {
   _allowMethods.swap(rhs._allowMethods);
-  _detail.swap(rhs._detail);
+  _clientMaxBodySize.swap(rhs._clientMaxBodySize);
 }
 
 void Location::_takeAllowMethods(ftjson::Object const &location) {
@@ -100,23 +97,28 @@ void Location::_takeAllowMethods(ftjson::Object const &location) {
   }
 }
 
-void Location::_takeDetail(ftjson::Object const &location) {
-  ftjson::Object::const_iterator it = location.find("type");
-  if (it == location.end())
-    throw ValidationError("Location without type");
-  if (!it->second.isType<ftjson::String>())
-    throw ValidationError("Location type is not string");
-  std::string const &type = it->second.as_unsafe<ftjson::String>();
-  Detail::Factories::const_iterator factory = Detail::factories.find(type);
-  if (factory == Detail::factories.end())
-    throw ValidationError("Unknown location type: " + type);
-  ftpp::ScopedPtr<Detail>(factory->second(location)).swap(_detail);
+void Location::_takeClientMaxBodySize(ftjson::Object const &location) {
+  ftjson::Object::const_iterator const &it = location.find("client_max_body_size");
+  if (it != location.end()) {
+    if (it->second.isType<ftjson::String>()) {
+      std::string const &sizeStr = it->second.as_unsafe<ftjson::String>();
+      _clientMaxBodySize = parseSize(sizeStr);
+    } else if (it->second.isType<ftjson::Number>()) {
+      double tmp = it->second.as_unsafe<ftjson::Number>();
+      if (static_cast<double>(std::numeric_limits<std::size_t>::min()) > tmp ||
+        static_cast<double>(std::numeric_limits<std::size_t>::max()) < tmp ||
+        ftpp::isInteger(tmp))
+        throw ValidationError("client_max_body_size out of range");
+      _clientMaxBodySize = static_cast<std::size_t>(tmp);
+    } else
+      throw ValidationError("client_max_body_size is not string or number");
+  }
 }
 
 Location::AllowMethods const &Location::getAllowMethods() const {
   return _allowMethods;
 }
 
-Location::Detail const &Location::getDetail() const {
-  return *_detail;
+ftpp::Optional<std::size_t> const &Location::getClientMaxBodySize() const {
+  return _clientMaxBodySize;
 }

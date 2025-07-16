@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ServerConf.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 17:07:45 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/28 06:11:16 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/12 08:12:05 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "configs/Location.hpp"
 #include "structs/Address.hpp"
 
+#include <ftpp/wrapper/Wrapper.hpp>
 #include <ftjson/Json.hpp>
 
 #include <map>
@@ -28,19 +29,19 @@ public:
   typedef std::set<std::string> ServerNames;
   typedef std::set<Address> Addresses;
   typedef std::map<int, std::string> ErrorPages;
-  typedef std::map<std::string, Location> Locations;
+  typedef std::map<std::string, ftpp::Wrapper<Location> > Locations;
 
 private:
   ServerNames _serverNames;
   Addresses _addresses;
-  std::size_t _clientMaxBodySize;
   ErrorPages _errorPages;
+  std::size_t _clientMaxBodySize;
   Locations _locations;
 
   void _takeServerNames(ftjson::Object const &server);
   void _takeAddresses(ftjson::Object const &server);
-  void _takeClientBodySize(ftjson::Object const &server);
   void _takeErrorPages(ftjson::Object const &server);
+  void _takeClientMaxBodySize(ftjson::Object const &server);
   void _takeLocations(ftjson::Object const &server);
 
 public:
@@ -53,8 +54,8 @@ public:
 
   ServerNames const &getServerNames() const;
   Addresses const &getAddresses() const;
-  std::size_t getClientMaxBodySize() const;
   ErrorPages const &getErrorPages() const;
+  std::size_t getClientMaxBodySize() const;
   Locations const &getLocations() const;
 
   Locations::const_iterator findLocation(std::string const &path) const;

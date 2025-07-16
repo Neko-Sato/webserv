@@ -3,13 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   Cycle.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 23:45:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/19 22:33:09 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/12 16:22:22 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "WebservApp.hpp"
 #include "Cycle.hpp"
 #include "Connection.hpp"
 #include "HttpException.hpp"
@@ -83,7 +84,7 @@ Connection::Cycle::Cycle(Connection &connection)
             _reader = new ContentLengthReader(n);
         }
       }
-      _app = new App(*this);
+      _app = new WebservApp(*this);
     } catch (HttpException &) {
       throw;
     } catch (...) {

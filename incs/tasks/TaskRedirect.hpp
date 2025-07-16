@@ -1,28 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   RedirectTask.hpp                                   :+:      :+:    :+:   */
+/*   TaskRedirect.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 17:56:36 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/06/28 03:54:06 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/14 08:24:58 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "locations/LocationRedirect.hpp"
-#include "tasks/Task.hpp"
+#include "WebservApp.hpp"
 
-class RedirectTask : public Task {
-private:
-  LocationRedirect const &_location;
-
+class TaskRedirect : public WebservApp::Task {
 public:
-  RedirectTask(Connection::Cycle &cycle, LocationRedirect const &location);
-  ~RedirectTask();
+  TaskRedirect(WebservApp::Context const &ctx);
+  ~TaskRedirect();
 
-  void onData(std::vector<char> const &data);
-  void onEof();
+  void execute();
 };

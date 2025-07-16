@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Connection.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 01:41:18 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/06/30 02:13:36 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/14 06:46:59 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,12 @@
 
 #include <algorithm>
 #include <cassert>
+
+Connection::App::App(Connection::Cycle &cycle) : cycle(cycle) {
+}
+
+Connection::App::~App() {
+}
 
 time_t const Connection::requestTimeout = 10000;
 
