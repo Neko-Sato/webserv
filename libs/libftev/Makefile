@@ -6,7 +6,7 @@
 #    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2025/04/28 05:49:18 by hshimizu         ###   ########.fr        #
+#    Updated: 2025/07/16 23:10:33 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,6 +41,9 @@ endif
 
 ifeq ($(DEBUG), 1)
 CXXFLAGS	+= -g -fsanitize=address
+ifneq ($(shell $(CXX) --version | grep -i clang),)
+CXXFLAGS			+= -fstandalone-debug
+endif
 else
 CXXFLAGS	+= -O3 -DNDEBUG
 endif

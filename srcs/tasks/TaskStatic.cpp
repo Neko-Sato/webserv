@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   TaskStatic.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 20:46:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/07/16 21:53:27 by uakizuki         ###   ########.fr       */
+/*   Updated: 2025/07/16 23:26:29 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,7 +151,7 @@ void TaskStatic::sendAutoindex(std::string const &path) {
       if (entry->d_name[0] == '.')
         continue;
       struct stat st;
-      if (stat((_path + "/" + entry->d_name).c_str(), &st) == -1)
+      if (stat(ftpp::pathjoin(path, entry->d_name).c_str(), &st) == -1)
         throw HttpException(500);
       std::string name = entry->d_name;
       if (S_ISDIR(st.st_mode))

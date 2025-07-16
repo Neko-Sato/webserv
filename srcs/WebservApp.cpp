@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   WebservApp.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 00:49:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/07/14 08:24:44 by uakizuki         ###   ########.fr       */
+/*   Updated: 2025/07/16 22:59:50 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "WebservApp.hpp"
-// #include "tasks/TaskStatic.hpp"
-// #include "tasks/TaskCgi.hpp"
-// #include "tasks/TaskUpload.hpp"
+#include "tasks/TaskStatic.hpp"
+#include "tasks/TaskCgi.hpp"
+#include "tasks/TaskUpload.hpp"
 #include "tasks/TaskRedirect.hpp"
 #include "configs/Location.hpp"
 
@@ -29,9 +29,9 @@ static WebservApp::Task *_createTask(WebservApp::Context const &ctx) {
 static WebservApp::Task::Factories _initFactories() {
   typedef WebservApp::Task::Factories Factories;
   Factories factories;
-  // factories[&typeid(TaskStatic)] = _createTask<TaskStatic>;
-  // factories[&typeid(TaskCgi)] = _createTask<TaskCgi>;
-  // factories[&typeid(TaskUpload)] = _createTask<TaskUpload>;
+  factories[&typeid(LocationStatic)] = _createTask<TaskStatic>;
+  factories[&typeid(LocationCgi)] = _createTask<TaskCgi>;
+  factories[&typeid(LocationUpload)] = _createTask<TaskUpload>;
   factories[&typeid(LocationRedirect)] = _createTask<TaskRedirect>;
   return factories;
 }

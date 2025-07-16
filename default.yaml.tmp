@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    default.yaml.tmp                                   :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+         #
+#    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/08 13:47:37 by hshimizu          #+#    #+#              #
-#    Updated: 2025/07/12 15:33:48 by uakizuki         ###   ########.fr        #
+#    Updated: 2025/07/16 23:17:30 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,12 +26,17 @@ servers:
         root: @@@ROOT@@@/html
         index: [index.html, index.htm]
         autoindex: true
+      - path: /cgi
+        type: cgi
+        root: @@@ROOT@@@/html/cgi
+        autoindex: true
         cgi:
           - { ext: .py, bin: /usr/bin/python3 }
           - { ext: .php, bin: /usr/bin/php }
       - path: /upload
         type: upload
-        root: @@@ROOT@@@/html
+        root: @@@ROOT@@@/html/upload
+        autoindex: true
   # Server to redirect to profile
   - server_names: [hshimizu.42.fr, hshimizu.42tokyo.jp]
     listen:

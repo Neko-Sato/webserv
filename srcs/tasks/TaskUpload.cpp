@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   TaskUpload.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 18:00:43 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/07/16 21:51:04 by uakizuki         ###   ########.fr       */
+/*   Updated: 2025/07/16 23:37:33 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,9 +37,13 @@ void TaskUpload::execute() {
 }
 
 void TaskUpload::doPost() {
+  LocationUpload const &location =
+      static_cast<LocationUpload const &>(ctx.location);
   std::string path;
   try {
     constructPath().swap(path);
+    if (path == location.getRoot())
+      throw HttpException(403);
     try {
       int fd = -1;
       try {
@@ -77,9 +81,13 @@ void TaskUpload::doPost() {
 }
 
 void TaskUpload::doDelete() {
+  LocationUpload const &location =
+      static_cast<LocationUpload const &>(ctx.location);
   std::string path;
   try {
     constructPath().swap(path);
+    if (path == location.getRoot())
+      throw HttpException(403);
     struct stat st;
     try {
       if (stat(path.c_str(), &st) == -1)
