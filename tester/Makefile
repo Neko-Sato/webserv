@@ -6,14 +6,14 @@
 #    By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/17 05:54:22 by uakizuki          #+#    #+#              #
-#    Updated: 2025/07/18 07:50:46 by uakizuki         ###   ########.fr        #
+#    Updated: 2025/07/18 07:58:35 by uakizuki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 UNAME_S			:= $(shell uname -s)
 
 WEBSERV_DIR		:= ..
-WEBSERV_DEV		:= $(WEBSERV_DIR)/webserv_dev
+WEBSERV			:= $(WEBSERV_DIR)/webserv
 CONFIGURE_JSON	:= configre.json
 
 ifeq ($(UNAME_S), Darwin)
@@ -30,9 +30,9 @@ endif
 
 .PHONY: test run clean
 
-test: $(WEBSERV_DEV) $(CONFIGURE_JSON) tester cgi_tester
+test: $(WEBSERV) $(CONFIGURE_JSON) tester cgi_tester
 	@{ \
-	  $(WEBSERV_DEV) $(CONFIGURE_JSON) & \
+	  $(WEBSERV) $(CONFIGURE_JSON) & \
 	  PID=$$!; \
 	  sleep 1; \
 	  ./tester http://localhost:4242 </dev/null; \
@@ -42,8 +42,8 @@ test: $(WEBSERV_DEV) $(CONFIGURE_JSON) tester cgi_tester
 	  exit 1; \
 	}
 
-run: $(WEBSERV_DEV) $(CONFIGURE_JSON)
-	$(WEBSERV_DEV) $(CONFIGURE_JSON)
+run: $(WEBSERV) $(CONFIGURE_JSON)
+	$(WEBSERV) $(CONFIGURE_JSON)
 
 clean:
 	@$(RM) tester cgi_tester $(CONFIGURE_JSON)
@@ -51,8 +51,8 @@ clean:
 $(CONFIGURE_JSON):
 	@$(MAKE) -C$(WEBSERV_DIR) $(CURDIR)/$@
 
-$(WEBSERV_DEV):
-	@$(MAKE) -C$(WEBSERV_DIR) webserv_dev -j $(shell nproc)
+$(WEBSERV):
+	@$(MAKE) -C$(WEBSERV_DIR) webserv -j $(shell nproc)
 
 tester:
 	@{ wget -O $@ $(TESTER_URI) --no-check-certificate && chmod +x $@ } || { $(RM) $@; exit 1; }
