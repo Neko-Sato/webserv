@@ -6,13 +6,14 @@
 #    By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2025/07/17 05:18:18 by uakizuki         ###   ########.fr        #
+#    Updated: 2025/07/18 07:51:55 by uakizuki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME				:= webserv
-
 UNAME_S				:= $(shell uname -s)
+
+NAME				:= webserv
+NAME_DEV			:= $(addsuffix _dev, $(NAME))
 
 DIR					:= .
 INCS_DIR			:= $(DIR)/incs
@@ -42,7 +43,9 @@ LIBRARY_PATH		:= $(LIBRARY_PATH):$(CURDIR)/$(LIBFTJSON)
 
 SRCS				:= $(shell find $(SRCS_DIR) -name "*.cpp")
 OBJS				:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=.o))
+OBJS_DEV			:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=_dev.o))
 DEPS				:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=.d))
+DEPS				:= $(addprefix $(OUT_DIR)/, $(SRCS:.cpp=_dev.d))
 
 CXX					:= c++
 CXXFLAGS			:= -Wall -Wextra -Werror
@@ -50,6 +53,7 @@ CXXFLAGS			+= -std=c++98 -pedantic
 IDFLAGS				:= -I$(INCS_DIR)
 LDFLAGS				:= 
 LIBS				:= -lftev -lftpp -lftjson
+LIBS_DEV			:= -lftev_dev -lftpp_dev -lftjson_dev
 
 COMMA				:= ,
 ifneq ($(CPLUS_INCLUDE_PATH),)
@@ -60,15 +64,13 @@ LDFLAGS				+= $(foreach it,$(subst :, ,$(LIBRARY_PATH)),$(if $(it),-L$(it)))
 endif
 ifneq ($(LD_RUN_PATH),)
 LIBS				+= $(foreach it,$(subst :, ,$(LD_RUN_PATH)),$(if $(it),-Wl$(COMMA)-rpath$(COMMA)$(it)))
+LIBS_DEV			+= $(foreach it,$(subst :, ,$(LD_RUN_PATH)),$(if $(it),-Wl$(COMMA)-rpath$(COMMA)$(it)))
 endif
 
-ifeq ($(DEBUG), 1)
-CXXFLAGS			+= -g -fsanitize=address
+CXXFLAGS_OPT		:= -O3 -DNDEBUG
+CXXFLAGS_DEV		:= -g -fsanitize=address
 ifneq ($(shell $(CXX) --version | grep -i clang),)
-CXXFLAGS			+= -fstandalone-debug
-endif
-else
-CXXFLAGS			+= -O3 -DNDEBUG
+CXXFLAGS_DEV	+= -fstandalone-debug
 endif
 
 ifeq ($(NOT_COMPLIANT), 1)
@@ -77,16 +79,27 @@ endif
 
 export CPLUS_INCLUDE_PATH LD_RUN_PATH LIBRARY_PATH
 
-.PHONY: all bonus clean fclean re neko author docker
+.PHONY: all bonus clean fclean re neko author docker tester
 
-all: $(NAME)
+all:
+	@$(MAKE) $(NAME) $(NAME_DEV) -j $(shell nproc)
 
-bonus: $(NAME)
+bonus:
+	@$(MAKE) $(NAME) $(NAME_DEV) -j $(shell nproc)
 
+$(NAME): CXXFLAGS += $(CXXFLAGS_OPT)
 $(NAME): $(OBJS) | $(LIBFTEV) $(LIBFTPP) $(LIBFTJSON)
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS)
 
 $(OUT_DIR)/%.o: %.cpp
+	@mkdir -p $(@D)
+	$(CXX) -c $(CXXFLAGS) -MMD -MP $(IDFLAGS) $< -o $@
+
+$(NAME_DEV): CXXFLAGS += $(CXXFLAGS_DEV)
+$(NAME_DEV): $(OBJS_DEV) | $(LIBFTEV) $(LIBFTPP) $(LIBFTJSON)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS_DEV)
+
+$(OUT_DIR)/%_dev.o: %.cpp
 	@mkdir -p $(@D)
 	$(CXX) -c $(CXXFLAGS) -MMD -MP $(IDFLAGS) $< -o $@
 
@@ -98,7 +111,7 @@ clean:
 
 fclean:
 	@$(MAKE) clean
-	$(RM) $(NAME)
+	$(RM) $(NAME) $(NAME_DEV)
 
 re:
 	@$(MAKE) fclean
@@ -124,24 +137,7 @@ $(LIBFTJSON): $(LIBFTPP)
 	@$(MAKE) -C $@
 
 tester:
-	@{ \
-		if [ "$(shell uname)" = "Darwin" ]; then \
-			DOWNLOAD_PATH="https://cdn.intra.42.fr/document/document/35504/tester"; \
-		else \
-			DOWNLOAD_PATH="https://cdn.intra.42.fr/document/document/35507/ubuntu_tester"; \
-		fi; \
-		wget -O $@ "$$DOWNLOAD_PATH" && chmod +x $@; \
-	} || { $(RM) $@; exit 1; }
-
-cgi_tester:
-	@{ \
-		if [ "$(shell uname)" = "Darwin" ]; then \
-			DOWNLOAD_PATH="https://cdn.intra.42.fr/document/document/35506/cgi_tester"; \
-		else \
-			DOWNLOAD_PATH="https://cdn.intra.42.fr/document/document/35505/ubuntu_cgi_tester"; \
-		fi; \
-		wget -O $@ "$$DOWNLOAD_PATH" && chmod +x $@; \
-	} || { $(RM) $@; exit 1; }
+	@$(MAKE) -C ./tester test
 
 # At first I tried yaml but found it cumbersome and switched to json.
 # yaml was friendly when I read it but json is easier to parse.
@@ -157,7 +153,7 @@ yaml2json:
 	@chmod +x $@
 
 %.yaml: %.yaml.tmp
-	@{ sed "s|@@@ROOT@@@|$(CURDIR)|g" $< > $@ || { $(RM) $@; exit 1; } }
+	@{ sed "s|@@@ROOT@@@|$$(cd $(@D) && pwd)|g" $< > $@ || { $(RM) $@; exit 1; } }
 
 %.json: %.yaml | yaml2json
 	@{ ./yaml2json < $<  > $@ || { $(RM) $@; exit 1; } }
@@ -165,4 +161,4 @@ yaml2json:
 docker:
 	docker run --rm -it --network host -v .:/mnt -w /mnt gcc
 
--include $(DEPS)
+-include $(DEPS) $(DEPS_DEV)

@@ -8,6 +8,7 @@ a.out
 *.o
 *.d
 /webserv
+/webserv_dev
 /yaml2json
 /default.json
 /default.yaml

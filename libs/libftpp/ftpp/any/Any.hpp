@@ -6,7 +6,7 @@
 /*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 02:17:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/07/12 07:38:25 by uakizuki         ###   ########.fr       */
+/*   Updated: 2025/07/17 06:18:47 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,10 @@ template <typename T> T const &Any::as_unsafe() const {
 }
 
 template <typename T> bool Any::isType() const {
-  return _value->type() == typeid(T);
+  if (!_value)
+    return typeid(T) == typeid(void);
+  else
+    return _value->type() == typeid(T);
 }
 
 } // namespace ftpp
