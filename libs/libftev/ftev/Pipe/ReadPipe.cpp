@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 03:37:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/07/18 20:05:40 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/18 21:09:35 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@
 #include <ftpp/logger/Logger.hpp>
 #include <ftpp/macros.hpp>
 
-#include <unistd.h>
 #include <cassert>
 #include <fcntl.h>
+#include <unistd.h>
 
 namespace ftev {
 
@@ -61,11 +61,6 @@ void ReadPipeTransport::Handler::onWrite() {
 }
 
 void ReadPipeTransport::Handler::onExcept() {
-  event_t event = getEvents() & ~ftpp::Selector::READ;
-  if (event)
-    modify(event);
-  else
-    stop();
 }
 
 std::size_t const ReadPipeTransport::_chankSize = 4096;
