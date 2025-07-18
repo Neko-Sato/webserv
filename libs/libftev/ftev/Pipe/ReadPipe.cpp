@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ReadPipe.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 03:37:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/07/06 20:30:04 by uakizuki         ###   ########.fr       */
+/*   Updated: 2025/07/18 20:05:40 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,6 @@ void ReadPipeTransport::Handler::onExcept() {
     modify(event);
   else
     stop();
-  _transport._protocol.onEof();
 }
 
 std::size_t const ReadPipeTransport::_chankSize = 4096;
