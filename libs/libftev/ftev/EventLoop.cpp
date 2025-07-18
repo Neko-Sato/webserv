@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/05/02 03:26:30 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/18 19:49:57 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,14 @@
 #include <ftev/EventLoop/TimerWatcher.hpp>
 
 #include <ftpp/exceptions/OSError.hpp>
+#include <ftpp/format/Format.hpp>
 #include <ftpp/logger/Logger.hpp>
 #include <ftpp/macros.hpp>
 #include <ftpp/selectors/Selector.hpp>
 
-#include <csignal>
 #include <algorithm>
 #include <cassert>
+#include <csignal>
 #include <cstdlib>
 #include <fcntl.h>
 #include <functional>
@@ -42,7 +43,7 @@ ftpp::Selector *EventLoop::defaultSelectorFactory() {
 
 EventLoop::EventLoop(selector_factory_t factory)
     : _selector(factory()), _time(0), _running(false), _stopFlag(false),
-      _signalpipeWatcher(NULL), _waitWatcher(NULL) {
+      _cnt(0), _signalpipeWatcher(NULL), _waitWatcher(NULL) {
   signal(SIGPIPE, SIG_IGN);
   _updateTime();
 }
@@ -145,7 +146,9 @@ void EventLoop::_runIOPoll(int timeout) {
 void EventLoop::operator++() {
   _running = true;
   try {
-    ftpp::logger(ftpp::Logger::DEBUG, "EventLoop once");
+    // ftpp::logger(ftpp::Logger::DEBUG,
+    //              ftpp::Format("EventLoop once: {}") % _cnt);
+    ++_cnt;
     _runIOPoll(_backendTimeout());
     _runTimer();
     _runDefer();

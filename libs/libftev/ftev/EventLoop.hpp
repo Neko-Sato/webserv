@@ -6,7 +6,7 @@
 /*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:43:33 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/26 01:26:04 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/18 19:28:01 by hshimizu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ private:
   time_t _time;
   bool _running;
   bool _stopFlag;
+  std::size_t _cnt;
 
   void _cleanup();
   void _updateTime();
