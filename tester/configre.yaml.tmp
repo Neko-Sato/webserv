@@ -1,0 +1,39 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    configre.yaml.tmp                                  :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2025/07/17 06:29:12 by uakizuki          #+#    #+#              #
+#    Updated: 2025/07/18 13:46:26 by uakizuki         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+servers:
+  - server_names: [localhost]
+    listen:
+      - { port: 4242 }
+    locations:
+      - path: /
+        type: cgi
+        autoindex: true
+        root: @@@ROOT@@@/html/YoupiBanane
+        cgi:
+          - { ext: .bla, bin: @@@ROOT@@@/html/cgi_tester }
+      - path: /put_test/
+        type: upload
+        allow_methods: [POST]
+        root: @@@ROOT@@@/html/upload
+      - path: /post_body
+        type: upload
+        allow_methods: [POST]
+        root: @@@ROOT@@@/html/upload
+        client_max_body_size: 100
+      - path: /directory
+        type: cgi
+        root: @@@ROOT@@@/html/YoupiBanane
+        index: [youpi.bad_extension]
+        client_max_body_size: 100M
+        cgi:
+          - { ext: .bla, bin: @@@ROOT@@@/cgi_tester }
