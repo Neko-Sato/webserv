@@ -6,7 +6,7 @@
 /*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 18:00:43 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/07/17 05:42:21 by uakizuki         ###   ########.fr       */
+/*   Updated: 2025/07/18 11:51:30 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void TaskUpload::doPost() {
       static_cast<LocationUpload const &>(ctx.location);
   std::string path;
   try {
-    constructPath().swap(path);
+    constructPath(location.getRoot(), ctx.path).swap(path);
     if (path == location.getRoot())
       throw HttpException(400);
     try {
@@ -85,7 +85,7 @@ void TaskUpload::doDelete() {
       static_cast<LocationUpload const &>(ctx.location);
   std::string path;
   try {
-    constructPath().swap(path);
+    constructPath(location.getRoot(), ctx.path).swap(path);
     if (path == location.getRoot())
       throw HttpException(400);
     struct stat st;

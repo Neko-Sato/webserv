@@ -6,7 +6,7 @@
 #    By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/24 17:27:29 by hshimizu          #+#    #+#              #
-#    Updated: 2025/07/18 07:51:55 by uakizuki         ###   ########.fr        #
+#    Updated: 2025/07/18 09:30:26 by uakizuki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -159,6 +159,6 @@ yaml2json:
 	@{ ./yaml2json < $<  > $@ || { $(RM) $@; exit 1; } }
 
 docker:
-	docker run --rm -it --network host -v .:/mnt -w /mnt gcc
+	docker run --rm --platform linux/amd64 -it --network host -v .:/mnt -w /mnt gcc
 
 -include $(DEPS) $(DEPS_DEV)

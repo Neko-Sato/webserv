@@ -6,7 +6,7 @@
 /*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 17:53:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/07/16 21:22:20 by uakizuki         ###   ########.fr       */
+/*   Updated: 2025/07/18 11:44:33 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,5 +32,5 @@ public:
   void sendFile(std::string const &path);
   void sendAutoindex(std::string const &path);
 
-  std::string constructPath() const;
+  static std::string constructPath(std::string const &root, std::string const &path);
 };

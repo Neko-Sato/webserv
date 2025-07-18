@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   TaskStatic.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 20:46:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/07/16 23:26:29 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/18 11:49:13 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,11 +40,13 @@ void TaskStatic::execute() {
 }
 
 void TaskStatic::defaultResponse() {
+  LocationStatic const &location =
+      static_cast<LocationStatic const &>(ctx.location);
   try {
     std::string path, pathInfo;
-    constructPath().swap(path);
+    constructPath(location.getRoot(), ctx.path).swap(path);
     struct stat st;
-    do {
+    for (;;) {
       try {
         if (stat(path.c_str(), &st) == -1)
           throw ftpp::OSError(errno, "stat");
@@ -56,15 +58,16 @@ void TaskStatic::defaultResponse() {
           std::size_t pos = path.rfind('/');
           pathInfo += path.substr(pos);
           path.resize(pos);
-        }
           continue;
+        }
         case EACCES:
           throw HttpException(403);
         default:
           throw HttpException(500);
         }
       }
-    } while (false);
+      break;
+    }
     if (S_ISDIR(st.st_mode))
       caseDirectory(path);
     else if (S_ISREG(st.st_mode))
@@ -129,11 +132,11 @@ void TaskStatic::sendAutoindex(std::string const &path) {
   }
   std::ostringstream oss;
   std::string _path;
-  ftpp::htmlEscape(ctx.cycle.getRequest().uri.getPath()).swap(_path);
+  ftpp::htmlEscape(ctx.path).swap(_path);
   oss << "<html>";
-  oss << "<head><title>Index of " << path << "</title></head>";
+  oss << "<head><title>Index of " << _path << "</title></head>";
   oss << "<body>";
-  oss << "<h1>Index of " << path << "</h1>";
+  oss << "<h1>Index of " << _path << "</h1>";
   oss << "<hr><pre>";
   oss << "<a href=\"../ \">../</a>\n";
   DIR *dir = opendir(path.c_str());
@@ -219,15 +222,11 @@ void TaskStatic::sendFile(std::string const &path) {
     throw HttpException(500);
 }
 
-std::string TaskStatic::constructPath() const {
-  Request const &request = ctx.cycle.getRequest();
-  LocationStatic const &location =
-      static_cast<LocationStatic const &>(ctx.location);
-  std::string path;
-  ftpp::normpath(ftpp::pathjoin(
-      location.getRoot(),
-      request.uri.getPath().substr(ctx.path.size(), std::string::npos))).swap(path);
-  if (!ftpp::starts_with(path, location.getRoot()))
+std::string TaskStatic::constructPath(std::string const &root,
+                                      std::string const &path) {
+  std::string res;
+  ftpp::normpath(ftpp::pathjoin(root, path)).swap(res);
+  if (!ftpp::starts_with(res, root))
     throw HttpException(403);
-  return path;
+  return res;
 }

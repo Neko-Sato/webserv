@@ -6,7 +6,7 @@
 #    By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/17 05:54:22 by uakizuki          #+#    #+#              #
-#    Updated: 2025/07/18 07:59:51 by uakizuki         ###   ########.fr        #
+#    Updated: 2025/07/18 08:58:31 by uakizuki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,14 +31,14 @@ test: $(WEBSERV) $(CONFIGURE_JSON) tester cgi_tester
 	  $(WEBSERV) $(CONFIGURE_JSON) & \
 	  PID=$$!; \
 	  sleep 1; \
-	  ./tester http://localhost:4242 </dev/null; \
+	  ./tester http://localhost:4242 </dev/null | grep '^Test'; \
 	  kill $$PID; \
 	} || { \
 	  echo "Tester failed"; \
 	  exit 1; \
 	}
 
-run: $(WEBSERV) $(CONFIGURE_JSON)
+run: $(WEBSERV) $(CONFIGURE_JSON) tester cgi_tester
 	$(WEBSERV) $(CONFIGURE_JSON)
 
 clean:
@@ -51,7 +51,7 @@ $(WEBSERV):
 	@$(MAKE) -C$(WEBSERV_DIR) webserv -j $(shell nproc)
 
 tester:
-	@{ wget -O $@ $(TESTER_URI) --no-check-certificate && chmod +x $@ } || { $(RM) $@; exit 1; }
+	@{ wget -O $@ $(TESTER_URI) --no-check-certificate && chmod +x $@  || { $(RM) $@; exit 1; } }
 
 cgi_tester:
-	@{ wget -O $@ $(CGI_TESTER_URI) --no-check-certificate && chmod +x $@ } || { $(RM) $@; exit 1; }
+	@{ wget -O $@ $(CGI_TESTER_URI) --no-check-certificate && chmod +x $@ || { $(RM) $@; exit 1; } }
