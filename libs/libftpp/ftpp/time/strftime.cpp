@@ -6,7 +6,7 @@
 /*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 13:08:49 by uakizuki          #+#    #+#             */
-/*   Updated: 2025/07/18 13:12:21 by uakizuki         ###   ########.fr       */
+/*   Updated: 2025/07/18 14:10:01 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 #include <ctime>
 #include <string>
+#include <stdexcept>
 
 namespace ftpp {
 

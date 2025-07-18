@@ -6,7 +6,7 @@
 /*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 01:41:18 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/07/14 06:46:59 by uakizuki         ###   ########.fr       */
+/*   Updated: 2025/07/18 14:11:39 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ Connection::App::App(Connection::Cycle &cycle) : cycle(cycle) {
 Connection::App::~App() {
 }
 
-time_t const Connection::requestTimeout = 10000;
+time_t const Connection::requestTimeout = 60000;
 
 Connection::Timeout::Timeout(ftev::EventLoop &loop, Connection &connection)
     : TimerWatcher(loop), _connection(connection) {
