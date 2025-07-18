@@ -6,7 +6,7 @@
 /*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/30 14:28:11 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/07/12 08:12:19 by uakizuki         ###   ########.fr       */
+/*   Updated: 2025/07/18 13:50:49 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,7 @@ void ServerConf::_takeClientMaxBodySize(ftjson::Object const &server) {
       double tmp = it->second.as_unsafe<ftjson::Number>();
       if (static_cast<double>(std::numeric_limits<std::size_t>::min()) > tmp ||
         static_cast<double>(std::numeric_limits<std::size_t>::max()) < tmp ||
-        ftpp::isInteger(tmp))
+        !ftpp::isInteger(tmp))
         throw ValidationError("client_max_body_size out of range");
       _clientMaxBodySize = static_cast<std::size_t>(tmp);
     } else

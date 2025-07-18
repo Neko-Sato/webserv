@@ -6,7 +6,7 @@
 /*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 20:46:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/07/17 05:33:59 by uakizuki         ###   ########.fr       */
+/*   Updated: 2025/07/18 13:34:52 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,11 +122,11 @@ TaskCgi::CgiManager::Process::Process(ftev::EventLoop &loop,
   envp.push_back("SERVER_PROTOCOL=HTTP/1.1");
   envp.push_back("SERVER_SOFTWARE=Weberv");
   std::vector<std::string> envpStrs;
-  envpStrs.push_back("PATH_INFO=" + _manager._pathInfo);
-  envpStrs.push_back("SCRIPT_NAME=" + request.uri.getPath());
+  envpStrs.push_back("PATH_INFO=" + (_manager._pathInfo.empty() ? "/" : _manager._pathInfo));
   envpStrs.push_back("REQUEST_METHOD=" + request.method);
   envpStrs.push_back("REQUEST_PATH=" + request.uri.getPath());
-  envpStrs.push_back("REQUEST_QUERY=" + request.uri.getQuery());
+  if (!request.uri.getQuery().empty())
+    envpStrs.push_back("REQUEST_QUERY=" + request.uri.getQuery());
   {
     Headers::const_iterator it;
     if ((it = request.headers.find("content-type")) != request.headers.end())

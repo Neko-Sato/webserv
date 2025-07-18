@@ -6,13 +6,14 @@
 /*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 18:00:43 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/07/18 11:51:30 by uakizuki         ###   ########.fr       */
+/*   Updated: 2025/07/18 13:41:39 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "tasks/TaskUpload.hpp"
 #include "HttpException.hpp"
 
+#include <ftpp/pathlib/pathlib.hpp>
 #include <ftpp/exceptions/OSError.hpp>
 
 #include <fcntl.h>
@@ -36,14 +37,25 @@ void TaskUpload::execute() {
     ctx.cycle.sendErrorPage(405);
 }
 
+#include <ftpp/string/string.hpp>
+#include <ftpp/time/time.hpp>
+
 void TaskUpload::doPost() {
   LocationUpload const &location =
       static_cast<LocationUpload const &>(ctx.location);
   std::string path;
   try {
     constructPath(location.getRoot(), ctx.path).swap(path);
-    if (path == location.getRoot())
-      throw HttpException(400);
+    if (path == location.getRoot()) {
+      tm time;
+      time_t now = std::time(NULL);
+      localtime_r(&now, &time);
+      path = ftpp::strftime("%Y%m%d%H%M%S", time);
+      path += "_";
+      for (int i = 0; i < 6; ++i)
+        path += ftpp::ASCII_ALNUM[random() % ftpp::ASCII_ALNUM.size()];
+      path = ftpp::pathjoin(location.getRoot(), path);
+    }
     try {
       int fd = -1;
       try {

@@ -6,7 +6,7 @@
 /*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 20:46:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/07/18 11:49:13 by uakizuki         ###   ########.fr       */
+/*   Updated: 2025/07/18 12:46:50 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ void TaskStatic::caseDirectory(std::string const &path) {
   else if (location.getAutoindex())
     caseAutoindex(path);
   else
-    throw HttpException(403);
+    throw HttpException(404);
 }
 
 void TaskStatic::caseFile(std::string const &path,

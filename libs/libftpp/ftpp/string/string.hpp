@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   string.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/31 21:38:23 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/27 04:01:41 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/18 13:16:20 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,5 +65,11 @@ std::string strjoin(InputIter begin, InputIter end, std::string const &delim) {
   }
   return oss.str();
 }
+
+extern std::string const ASCII_LETTER;
+extern std::string const ASCII_LOWERCASE;
+extern std::string const ASCII_UPPERCASE;
+extern std::string const DIGITS;
+extern std::string const ASCII_ALNUM;
 
 } // namespace ftpp
