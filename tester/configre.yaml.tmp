@@ -6,7 +6,7 @@
 #    By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/17 06:29:12 by uakizuki          #+#    #+#              #
-#    Updated: 2025/07/18 13:46:26 by uakizuki         ###   ########.fr        #
+#    Updated: 2025/07/18 14:06:56 by uakizuki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ servers:
         autoindex: true
         root: @@@ROOT@@@/html/YoupiBanane
         cgi:
-          - { ext: .bla, bin: @@@ROOT@@@/html/cgi_tester }
+          - { ext: .bla, bin: @@@ROOT@@@/cgi_tester }
       - path: /put_test/
         type: upload
         allow_methods: [POST]
