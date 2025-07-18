@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+         #
+#    By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/17 05:54:22 by uakizuki          #+#    #+#              #
-#    Updated: 2025/07/18 08:58:31 by uakizuki         ###   ########.fr        #
+#    Updated: 2025/07/18 21:28:36 by hshimizu         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,10 +32,13 @@ test: $(WEBSERV) $(CONFIGURE_JSON) tester cgi_tester
 	  PID=$$!; \
 	  sleep 1; \
 	  ./tester http://localhost:4242 </dev/null | grep '^Test'; \
-	  kill $$PID; \
-	} || { \
-	  echo "Tester failed"; \
-	  exit 1; \
+	  STATUS="$${PIPESTATUS[0]}"; \
+	  read -p "Press Enter to continue..." -r; \
+	  kill -INT $$PID; \
+	  wait $$PID; \
+	  if [ $$STATUS -ne 0 ]; then \
+	    echo "Tests failed"; \
+	  fi; \
 	}
 
 run: $(WEBSERV) $(CONFIGURE_JSON) tester cgi_tester
