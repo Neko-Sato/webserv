@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ReadPipe.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 03:37:58 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/07/18 21:09:35 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/19 18:57:37 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,14 @@ void ReadPipeTransport::Handler::onRead() {
   } catch (...) {
     return;
   }
-  if (!chank.empty())
+  if (chank.empty()) {
+    event_t event = getEvents() & ~ftpp::Selector::READ;
+    if (event)
+      modify(event);
+    else
+      stop();
+    _transport._protocol.onEof();
+  } else
     _transport._protocol.onData(chank);
 }
 

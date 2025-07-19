@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   EventLoop.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 17:57:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/07/18 19:49:57 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/19 17:31:32 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,8 +146,8 @@ void EventLoop::_runIOPoll(int timeout) {
 void EventLoop::operator++() {
   _running = true;
   try {
-    // ftpp::logger(ftpp::Logger::DEBUG,
-    //              ftpp::Format("EventLoop once: {}") % _cnt);
+    ftpp::logger(ftpp::Logger::DEBUG,
+                 ftpp::Format("EventLoop once: {}") % _cnt);
     ++_cnt;
     _runIOPoll(_backendTimeout());
     _runTimer();
