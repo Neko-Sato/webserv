@@ -6,7 +6,7 @@
 /*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 17:53:55 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/07/17 05:31:30 by uakizuki         ###   ########.fr       */
+/*   Updated: 2025/07/20 08:01:06 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 #include <ftev/EventLoop.hpp>
 #include <ftev/EventLoop/ProcessWatcher.hpp>
+#include <ftev/EventLoop/TimerWatcher.hpp>
 #include <ftev/Pipe/ReadPipe.hpp>
 #include <ftev/Pipe/WritePipe.hpp>
 #include <ftpp/noncopyable/NonCopyable.hpp>
@@ -25,8 +26,19 @@ class TaskCgi : public TaskStatic {
 public:
   class CgiManager : private ftpp::NonCopyable {
   public:
-    enum State { HEADER, BODY };
-    
+    enum State { HEADER, BODY, DONE };
+
+    class Timeout : public ftev::EventLoop::TimerWatcher {
+    private:
+      CgiManager &_manager;
+
+    public:
+      Timeout(ftev::EventLoop &loop, CgiManager &manager);
+      ~Timeout();
+
+      void onTimeout();
+    };
+
     class Process : public ftev::EventLoop::ProcessWatcher {
     private:
       CgiManager &_manager;
@@ -75,11 +87,14 @@ public:
       void onDrain();
     };
 
+    static time_t const processTimeout;
+
   private:
     WebservApp::Context const &_ctx;
     LocationCgi::Cgi const &_cgi;
     std::string _path;
     std::string _pathInfo;
+    Timeout *_timeout;
     Process *_process;
     ReadPipe *_readPipe;
     WritePipe *_writePipe;
@@ -98,7 +113,7 @@ private:
 
 public:
   TaskCgi(WebservApp::Context const &ctx);
-  virtual ~TaskCgi();
+  ~TaskCgi();
 
   void execute();
   void caseFile(std::string const &path, std::string const &pathInfo = "");

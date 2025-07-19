@@ -6,7 +6,7 @@
 /*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 01:41:18 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/07/18 14:11:39 by uakizuki         ###   ########.fr       */
+/*   Updated: 2025/07/19 19:17:06 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ Connection::App::App(Connection::Cycle &cycle) : cycle(cycle) {
 Connection::App::~App() {
 }
 
-time_t const Connection::requestTimeout = 60000;
+time_t const Connection::requestTimeout = 150000;
 
 Connection::Timeout::Timeout(ftev::EventLoop &loop, Connection &connection)
     : TimerWatcher(loop), _connection(connection) {
@@ -140,7 +140,6 @@ void Connection::_process() {
         flag = false;
         break;
       case DONE:
-        _timeout->cancel();
         delete _cycle;
         _cycle = NULL;
         ftev::StreamConnectionTransport &transport = getTransport();
@@ -179,6 +178,7 @@ bool Connection::_processRequest() {
   parseRequest(_request, std::string(_buffer.begin(), match + CRLF.size()));
   _buffer.erase(_buffer.begin(), match + DOUBLE_CRLF.size());
   _state = RESPONSE;
+  _timeout->cancel();
   _cycle = new Cycle(*this);
   return true;
 }

@@ -6,7 +6,7 @@
 /*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 20:46:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/07/18 13:34:52 by uakizuki         ###   ########.fr       */
+/*   Updated: 2025/07/20 08:48:31 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <ftpp/fcntl/fcntl.hpp>
 #include <ftpp/format/Format.hpp>
 #include <ftpp/logger/Logger.hpp>
+#include <ftpp/macros.hpp>
 #include <ftpp/pathlib/pathlib.hpp>
 #include <ftpp/string/string.hpp>
 #include <ftpp/subprocess/Subprocess.hpp>
@@ -65,14 +66,17 @@ void TaskCgi::caseFile(std::string const &path, std::string const &pathInfo) {
   }
 }
 
+time_t const TaskCgi::CgiManager::processTimeout = 6000;
+
 TaskCgi::CgiManager::CgiManager(WebservApp::Context const &ctx,
                                 LocationCgi::Cgi const &cgi,
                                 std::string const &path,
                                 std::string const &pathInfo)
-    : _ctx(ctx), _cgi(cgi), _path(path), _pathInfo(pathInfo), _process(NULL),
-      _readPipe(NULL), _writePipe(NULL), _state(HEADER) {
+    : _ctx(ctx), _cgi(cgi), _path(path), _pathInfo(pathInfo), _timeout(NULL),
+      _process(NULL), _readPipe(NULL), _writePipe(NULL), _state(HEADER) {
   int pipefd[4] = {-1, -1, -1, -1};
   try {
+    _timeout = new Timeout(_ctx.cycle.getLoop(), *this);
     if (pipe(&pipefd[0]) == -1 || pipe(&pipefd[2]) == -1)
       throw ftpp::OSError(errno, "pipe");
     for (int i = 0; i < 4; ++i)
@@ -84,6 +88,7 @@ TaskCgi::CgiManager::CgiManager(WebservApp::Context const &ctx,
     pipefd[2] = -1;
     _writePipe = new WritePipe(*this, pipefd[1]);
     pipefd[1] = -1;
+    _timeout->start(processTimeout);
   } catch (...) {
     delete _readPipe;
     _readPipe = NULL;
@@ -95,14 +100,41 @@ TaskCgi::CgiManager::CgiManager(WebservApp::Context const &ctx,
       if (pipefd[i] != -1)
         close(pipefd[i]);
     }
+    delete _timeout;
     throw;
   }
 }
 
 TaskCgi::CgiManager::~CgiManager() {
+  delete _timeout;
   delete _process;
   delete _writePipe;
   delete _readPipe;
+}
+
+TaskCgi::CgiManager::Timeout::Timeout(ftev::EventLoop &loop,
+                                      CgiManager &manager)
+    : TimerWatcher(loop), _manager(manager) {
+}
+
+TaskCgi::CgiManager::Timeout::~Timeout() {
+  if (getIsActive())
+    cancel();
+}
+
+void TaskCgi::CgiManager::Timeout::onTimeout() {
+  switch (_manager._state) {
+  case DONE:
+    break;
+  case HEADER:
+    _manager._ctx.cycle.sendErrorPage(504);
+    _manager._state = DONE;
+    break;
+  case BODY:
+    ftpp::logger(ftpp::Logger::ERROR, "CgiManager: timeout");
+    _manager._ctx.cycle.abort();
+    break;
+  }
 }
 
 TaskCgi::CgiManager::Process::Process(ftev::EventLoop &loop,
@@ -122,7 +154,8 @@ TaskCgi::CgiManager::Process::Process(ftev::EventLoop &loop,
   envp.push_back("SERVER_PROTOCOL=HTTP/1.1");
   envp.push_back("SERVER_SOFTWARE=Weberv");
   std::vector<std::string> envpStrs;
-  envpStrs.push_back("PATH_INFO=" + (_manager._pathInfo.empty() ? "/" : _manager._pathInfo));
+  envpStrs.push_back("PATH_INFO=" +
+                     (_manager._pathInfo.empty() ? "/" : _manager._pathInfo));
   envpStrs.push_back("REQUEST_METHOD=" + request.method);
   envpStrs.push_back("REQUEST_PATH=" + request.uri.getPath());
   if (!request.uri.getQuery().empty())
@@ -162,14 +195,11 @@ TaskCgi::CgiManager::Process::Process(ftev::EventLoop &loop,
 
 TaskCgi::CgiManager::Process::~Process() {
   if (getIsActive())
-    kill(SIGINT), detach();
+    kill(SIGKILL), detach();
 }
 
-void TaskCgi::CgiManager::Process::onExited(int) {
-  if (_manager._state == HEADER)
-    _manager._ctx.cycle.sendErrorPage(500);
-  else
-    _manager._ctx.cycle.send(NULL, 0, false);
+void TaskCgi::CgiManager::Process::onExited(int status) {
+  UNUSED(status);
 }
 
 void TaskCgi::CgiManager::Process::onSignaled(int signum) {
@@ -179,8 +209,7 @@ void TaskCgi::CgiManager::Process::onSignaled(int signum) {
 }
 
 TaskCgi::CgiManager::ReadPipe::ReadPipe(CgiManager &manager, int fd)
-    : _manager(manager), _transport(NULL), _bufferClosed(false),
-      _pos(0) {
+    : _manager(manager), _transport(NULL), _bufferClosed(false), _pos(0) {
   _transport =
       new ftev::ReadPipeTransport(manager._ctx.cycle.getLoop(), *this, fd);
 }
@@ -211,12 +240,19 @@ void TaskCgi::CgiManager::ReadPipe::_process() {
     for (bool flag = true; flag;) {
       if (_manager._state == HEADER) {
         flag = _parseHeader();
-        if (!flag && _bufferClosed)
+        if (!flag && _bufferClosed) {
           _manager._ctx.cycle.sendErrorPage(500);
+          _manager._state = DONE;
+        }
       } else if (_manager._state == BODY) {
         std::vector<char> tmp(_buffer.begin(), _buffer.end());
         _buffer.clear();
-        _manager._ctx.cycle.send(tmp.data(), tmp.size(), true);
+        _manager._ctx.cycle.send(tmp.data(), tmp.size(), !_bufferClosed);
+        if (_bufferClosed)
+          _manager._state = DONE;
+        flag = false;
+      } else if (_manager._state == DONE) {
+        _buffer.clear();
         flag = false;
       }
     }
@@ -262,6 +298,7 @@ bool TaskCgi::CgiManager::ReadPipe::_parseHeader() {
                  ftpp::Format("DefaultTask::CgiManager: {}") % e.what());
     _transport->pause();
     _manager._ctx.cycle.sendErrorPage(500);
+    _manager._state = DONE;
     return false;
   }
   _manager._ctx.cycle.send(status, headers);

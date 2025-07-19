@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hshimizu <hshimizu@student.42.fr>          +#+  +:+       +#+        */
+/*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 01:40:08 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/04/16 22:08:00 by hshimizu         ###   ########.fr       */
+/*   Updated: 2025/07/20 08:40:52 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 
 Server::Server(ftev::EventLoop &loop, std::string const &host, int port,
                Configs const &configs)
-    : ftev::TCPServer(loop, host, port), _configs(configs),
+    : ftev::TCPServer(loop, host, port, 8192), _configs(configs),
       _address(host, port) {
   ftpp::logger(ftpp::Logger::INFO,
                ftpp::Format("Server created (host: {}, port: {})") %
