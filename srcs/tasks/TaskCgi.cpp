@@ -6,7 +6,7 @@
 /*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/17 20:46:41 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/07/20 08:48:31 by uakizuki         ###   ########.fr       */
+/*   Updated: 2025/07/20 09:22:04 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void TaskCgi::caseFile(std::string const &path, std::string const &pathInfo) {
   }
 }
 
-time_t const TaskCgi::CgiManager::processTimeout = 6000;
+time_t const TaskCgi::CgiManager::processTimeout = 60000;
 
 TaskCgi::CgiManager::CgiManager(WebservApp::Context const &ctx,
                                 LocationCgi::Cgi const &cgi,
