@@ -6,7 +6,7 @@
 /*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 03:45:51 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/07/06 20:28:19 by uakizuki         ###   ########.fr       */
+/*   Updated: 2025/07/20 12:35:52 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ void WritePipeTransport::DrainHandler::onEvent() {
   _transport._protocol.onDrain();
 }
 
-std::size_t const WritePipeTransport::_chankSize = 4096;
+std::size_t const WritePipeTransport::_chankSize = 65536;
 
 WritePipeTransport::WritePipeTransport(EventLoop &loop,
                                        WritePipeProtocol &protocol, int fd)

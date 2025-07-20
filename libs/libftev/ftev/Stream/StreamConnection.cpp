@@ -107,7 +107,7 @@ void StreamConnectionTransport::DrainHandler::onEvent() {
   _transport._protocol.onDrain();
 }
 
-std::size_t const StreamConnectionTransport::_chankSize = 8192;
+std::size_t const StreamConnectionTransport::_chankSize = 65536;
 
 StreamConnectionTransport::StreamConnectionTransport(
     EventLoop &loop, StreamConnectionProtocol &protocol, ftpp::Socket &socket)

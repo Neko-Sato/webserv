@@ -6,7 +6,7 @@
 #    By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/17 05:54:22 by uakizuki          #+#    #+#              #
-#    Updated: 2025/07/20 09:49:22 by uakizuki         ###   ########.fr        #
+#    Updated: 2025/07/20 12:02:42 by uakizuki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,18 +28,16 @@ endif
 
 test: $(WEBSERV) $(CONFIGURE_JSON) tester cgi_tester
 	@{ \
-	  STATUS=1 ; \
 	  $(WEBSERV) $(CONFIGURE_JSON) & \
 	  PID=$$! ; \
 	  sleep 1 ; \
 	  kill -0 $$PID && { \
 	    ./tester http://localhost:4242 </dev/null | grep '^Test' ; \
-	    STATUS="$${PIPESTATUS[0]}" ; \
-	    read -p "Press Enter to continue..." -r ; \
+		echo -n "Press Enter to stop the server..." ; \
+	    read dummy ; \
 	    kill -INT $$PID ; \
 	    wait $$PID || true ; \
 	  } ; \
-	  ( exit $$STATUS ) || echo "Tests failed" ; \
 	}
 
 run: $(WEBSERV) $(CONFIGURE_JSON) tester cgi_tester
