@@ -6,7 +6,7 @@
 /*   By: uakizuki <uakizuki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/13 16:35:30 by hshimizu          #+#    #+#             */
-/*   Updated: 2025/07/06 20:07:25 by uakizuki         ###   ########.fr       */
+/*   Updated: 2025/07/20 09:07:56 by uakizuki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ void EpollSelector::select(Events &events, int timeout) const {
     event_details tmp;
     tmp.fd = it->data.fd;
     tmp.events = 0;
-    if (it->events & EPOLLIN)
+    if (it->events & (EPOLLIN | EPOLLHUP))
       tmp.events |= READ;
     if (it->events & EPOLLOUT)
       tmp.events |= WRITE;
